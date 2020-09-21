@@ -3,7 +3,6 @@ import numpy as np
 
 f = open("words_lower.txt", "r")
 
-
 # word[:-1] to get rid of \n character
 wordlist = [word[:-1] for word in f]
 
@@ -226,13 +225,19 @@ def in_wordlist(l):
     """
     return True if l in wordlist else False
 
-def benchmark():
+def benchmark_unbiased():
+    """
+    Returns a tuple which shows running time of the functions.
+    """
     start = time.time()
     string = generate_random_string_of_length_unbiased(7)
-    print(string, combinations(string), get_first_possibility(string))
     stop = time.time()
+    return (string, combinations(string), get_first_possibility(string), stop - start)
+    # print(string, combinations(string), get_first_possibility(string))
+    # print(stop - start)
 
-    print(stop - start)
+# def setup(bot):
+#     bot.add_cog(alphafuseutil(bot))
 
 # benchmark()
 

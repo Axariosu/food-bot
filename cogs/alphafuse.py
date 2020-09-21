@@ -1,25 +1,41 @@
 import discord
-import time
-import alphafuseutil
+# import time
+# import alphafuseutil
 from discord.ext import commands
-from player import Player
+# from player import Player
 
-tracked_players = []
+# tracked_players = []
 
 
 
-class AlphaFuse(object):
-    def __init__(self, bot=None, server=None):
+class AlphaFuse(commands.Cog):
+    def __init__(self, bot):
         self.bot = bot
-        self.server = server
+        # self.server = server
         # self.round = 0
         # self.ingame = []
         # self.eliminated = []
 
+    @commands.Cog.listener()
+    async def on_ready(self):
+        print('Online')
 
-    # def game_start():
+    @commands.command()
+    async def ping(self, ctx):
+        await ctx.send('Pong!')
+
+    @commands.command()
+    async def alpha(self, ctx):
+        game_start()
+        await ctx.send('Starting Alpha Fuse!')
+    
+    async def game_start(self, ctx):
+        await ctx.send('test')
 
 
+
+def setup(bot): 
+    bot.add_cog(AlphaFuse(bot))
 
     # @bot.event
     # async def on_message(self, ctx):
