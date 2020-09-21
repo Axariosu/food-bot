@@ -30,7 +30,7 @@ async def on_ready():
 #     # AlphaFuse.__init__(bot)
 #     await ctx.send(message)
 
-@bot.command(name='quit')
+@bot.command()
 async def quit(ctx):
     message = 'Quitting!'
     await ctx.send(message)
