@@ -4,14 +4,16 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-from alphafuse import AlphaFuse
+# from alphafuse import AlphaFuse
 from player import Player
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
+
+__COGS__ = ['alphafuse.py']
 # GUILD = os.getenv('DISCORD_GUILD')
 
-client = discord.Client()
+# client = discord.Client()
 
 bot = commands.Bot(command_prefix="!")
 
@@ -22,19 +24,17 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
-@bot.command(name='alpha')
-async def alpha(ctx):
-    message = 'Starting Alpha Fuse!'
-    AlphaFuse.__init__(bot)
-    await ctx.send(message)
+# @bot.command(name='alpha')
+# async def alpha(ctx):
+#     message = 'Starting Alpha Fuse!'
+#     # AlphaFuse.__init__(bot)
+#     await ctx.send(message)
 
 @bot.command(name='quit')
 async def quit(ctx):
     message = 'Quitting!'
     await ctx.send(message)
     await bot.logout()
-
-
 
 @bot.command()
 async def load(ctx, extension):
@@ -45,8 +45,9 @@ async def unload(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
 
 for filename in os.listdir('./cogs'):
-    if filename.endswith('py'):
-        client.load_extension(f'cogs.{filename[:-3]}')
+    if filename in __COGS__ :
+        # bot.load_extension(f'cogs.alphafuse.py'[:-3])
+        bot.load_extension(f'cogs.{filename[:-3]}')
 
 # @bot.event
 # async def on_message(message):
