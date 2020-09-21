@@ -26,9 +26,10 @@ class AlphaFuse(commands.Cog):
 
     @commands.command()
     async def alpha(self, ctx):
-        game_start()
+        await game_start()
         await ctx.send('Starting Alpha Fuse!')
-    
+
+    @commands.command()
     async def game_start(self, ctx):
         await ctx.send('test')
 
