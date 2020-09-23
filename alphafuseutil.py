@@ -1,4 +1,4 @@
-import time, random, re
+import time, random
 import numpy as np
 
 f = open("words_lower.txt", "r")
@@ -74,13 +74,13 @@ cumulative_letter_frequency = [0,
 def check_valid(first, second):
     """
     Given two strings first and second:
-    Returns true if second is in the wordlist, len(first) >= 3 
-    and all characters in first are found in second. 
+    Returns true if second is in the wordlist, and 
+    all characters in first are found in second. 
     """
-    if second not in wordlist or len(first) < 3: 
+
+    if second not in wordlist: 
         return False
 
-    # initial check passed
     fst = {}
     snd = {}
     for x in first: 
