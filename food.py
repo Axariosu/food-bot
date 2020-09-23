@@ -1,6 +1,7 @@
 import os
 import uuid
 import discord
+import alphafuseutil
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -30,6 +31,20 @@ async def on_ready():
 #     # AlphaFuse.__init__(bot)
 #     await ctx.send(message)
 
+# @bot.command()
+# async def alphastart(ctx):
+#     if alphafuseutil.alphaFuse:
+#         alphafuseutil.alphaFuse = True
+#         await ctx.send("Starting Alpha Fuse!")
+
+#     alphafuseutil.alphaFuse = True
+#     await ctx.send()
+
+# @bot.event()
+# async def on_message(ctx):
+#     if 
+
+
 @bot.command()
 async def quit(ctx):
     message = 'Quitting!'
@@ -42,6 +57,11 @@ async def load(ctx, extension):
 
 @bot.command()
 async def unload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
+
+@bot.command()
+async def reload(ctx, extension):
+    bot.unload_extension(f'cogs.{extension}')
     bot.load_extension(f'cogs.{extension}')
 
 for filename in os.listdir('./cogs'):
