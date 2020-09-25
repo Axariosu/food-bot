@@ -74,10 +74,10 @@ cumulative_letter_frequency = [0,
 def check_valid(first, second):
     """
     Given two strings first and second:
-    Returns true if second is in the wordlist, len(first) >= 3 
+    Returns true if second is in the wordlist, len(second) >= 3 
     and all characters in first are found in second. 
     """
-    if second not in wordlist or len(first) < 3: 
+    if second not in wordlist or len(second) < 3: 
         return False
 
     # initial check passed
@@ -217,6 +217,22 @@ def get_first_possibility(l):
     for word in wordlist:
         if check_valid_combinations(l, word):
             return word
+
+def get_many_possibilities(l):
+    """
+    Given a string or list l:
+    Returns up to 200 valid possibilities.
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations(l, word):
+            combinations.append(word)
+        # if len(combinations) > 500:
+        #     break
+    if len(combinations) > 25:
+        return random.choice(combinations, 25) if combinations is not [] else None
+    else:
+        return combinations if combinations is not [] else None
 
 def in_wordlist(l):
     """
