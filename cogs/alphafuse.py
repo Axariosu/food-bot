@@ -42,6 +42,9 @@ __WINNER__ = []
 
 with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
     data = json.load(json_file)
+f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
+    
+
 
 # class AlphaFuseLogic(commands.Cog):
 #     def __init__(self, bot):
@@ -64,7 +67,7 @@ class AlphaFuse(commands.Cog):
         self.bot = bot
         self.game = False
         self.round = 0
-        self.channel = self.bot.get_channel(755970868219346984)
+        # self.channel = self.bot.get_channel(755970868219346984)
         # self.round_timer.start()
         self.index = 0
         self.timer = 10e22
@@ -92,6 +95,7 @@ class AlphaFuse(commands.Cog):
         
     @commands.command()
     async def start_alpha(self, ctx):
+        # if arg1 == 'alpha':
         res = discord.Embed(title="Starting Alpha Fuse!", color=self.generate_random_color())
         res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that contains the displayed letters. ")
         await ctx.send(embed=res)
@@ -106,6 +110,7 @@ class AlphaFuse(commands.Cog):
 
     @commands.command()
     async def stop_alpha(self, ctx):
+        # if arg1 == 'alpha':
         res = discord.Embed(title="Stopping Alpha Fuse!", color=self.generate_random_color())
         await ctx.send(embed=res)
         __WINNER__ = []
@@ -233,7 +238,7 @@ class AlphaFuse(commands.Cog):
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
                 res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s): **" + ", ".join([x.upper() for x in __CURRENTLETTERS__]) + "**")
                 res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + __COMBINATIONS__ + "**")
-                res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else " life" for (x,y) in __TRACKEDPLAYERS__.items() if str(x) not in __ELIMINATEDPLAYERS__])))
+                res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else "**" + str(x) + "**" + ": " + str(y[0]) + " life" for (x,y) in __TRACKEDPLAYERS__.items() if str(x) not in __ELIMINATEDPLAYERS__])))
                 # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x for x in __CURRENTLETTERS__]) + "\nValid combinations: " + __COMBINATIONS__ + "\nRemaining players: " + ", ".join(list([str(x) + ": " + str(y[0]) + " lives" for (x,y) in __TRACKEDPLAYERS__.items()]))
             
             # await asyncio.sleep(2)
@@ -317,8 +322,11 @@ class AlphaFuse(commands.Cog):
         #     if alphafuseutil.check_valid(__CURRENTLETTERS__, message.content):
 
         #         await channel.send("Valid submission, " + message.author.name + "!")
-        
+        # FOR LOGGING PURPOSES
+        # f.write(f"{int(time.time())} {message.author} {message.content}\n")
+
         if not message.author.bot and self.game and message.channel.id in __VALIDCHANNELS__:
+            
             # if self.game:
                 # channel = message.channel
                 # if not message.author.bot:
@@ -343,58 +351,63 @@ class AlphaFuse(commands.Cog):
                         # __TRACKEDPLAYERS__.setdefault(message.author, 3)
                         # __USEDWORDS__.setdefault(message.content, (message.author.name, self.round))
                     # if 0 < self.round < 3: 
-            if alphafuseutil.check_valid(__CURRENTLETTERS__, word):
-                # if __USEDWORDS__ is not {}:
-                keys = __USEDWORDS__.keys()
-                # values = __USEDWORDS__.values()
-                # if the word is already used
-                
-                # register player. 
-                # if the player joins on round 1, they have three lives. 
-                # if the player joins on round 2, they have two lives. 
-                # if the player joins on round 3, they have one life. 
-                # if message.author.name not in __TRACKEDPLAYERS__.keys():
-                #     if 0 < self.round < 4:
-                        
-                #         __TRACKEDPLAYERS__.setdefault(message.author.name, __DEFAULTLIFECOUNT__ + 1 - self.round)
-                # else:
-                #     __TRACKEDPLAYERS__[message.author.name] -= 1
+            # only accept words if: 
+            # 1) they are not eliminated
+            # 2) have not submitted a valid word already
+            # if message.author.name not in __ELIMINATEDPLAYERS__ and __TRACKEDPLAYERS__[message.author.name][1] == False:
+            if message.author.name not in __ELIMINATEDPLAYERS__:
+                if alphafuseutil.check_valid(__CURRENTLETTERS__, word):
+                    # if __USEDWORDS__ is not {}:
+                    keys = __USEDWORDS__.keys()
+                    # values = __USEDWORDS__.values()
+                    # if the word is already used
+                    
+                    # register player. 
+                    # if the player joins on round 1, they have three lives. 
+                    # if the player joins on round 2, they have two lives. 
+                    # if the player joins on round 3, they have one life. 
+                    # if message.author.name not in __TRACKEDPLAYERS__.keys():
+                    #     if 0 < self.round < 4:
+                            
+                    #         __TRACKEDPLAYERS__.setdefault(message.author.name, __DEFAULTLIFECOUNT__ + 1 - self.round)
+                    # else:
+                    #     __TRACKEDPLAYERS__[message.author.name] -= 1
 
-                if word in keys:
-                    # u\U0001F187 : http://www.fileformat.info/info/unicode/char/1f187/index.htm
-                    # Unicode Character 'NEGATIVE SQUARED LATIN CAPITAL LETTER X' (U+1F187)
-                    await message.add_reaction("\u274C")
-                    user, rnd = __USEDWORDS__[word]
-                    if message.author.name == user:
-                        await channel.send("What " + user + "? You already used this word in round " + str(rnd) + "! Use another word! (no penalty)")
-                    else:
-                        if message.author.name not in __TRACKEDPLAYERS__: 
-                            __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ - self.round, True])
-                        __USEDWORDS__.setdefault(word, (message.author.name, self.round))
-                        __TRACKEDPLAYERS__[message.author.name][0] -= 1 if __TRACKEDPLAYERS__[message.author.name][0] > 0 else 0
-                        __TRACKEDPLAYERS__[message.author.name][1] = True
-                        await channel.send("Unlucky, \"" + word + "\" was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
-                
-                else: 
-                    # if 0 < self.round < 4:
-                    if message.author.name not in __TRACKEDPLAYERS__.keys():
-                        __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ + 1 - self.round, True])
-                        __USEDWORDS__.setdefault(word, (message.author.name, self.round))
-                    # \u2705 : https://www.fileformat.info/info/unicode/char/2705/index.htm
-                    # Unicode Character 'WHITE HEAVY CHECK MARK' (U+2705)
-                        await message.add_reaction("\u2705")
-                        # await channel.send("Valid submission, " + message.author.name + "!")
+                    if word in keys:
+                        # u\U0001F187 : http://www.fileformat.info/info/unicode/char/1f187/index.htm
+                        # Unicode Character 'NEGATIVE SQUARED LATIN CAPITAL LETTER X' (U+1F187)
+                        await message.add_reaction("\u274C")
+                        user, rnd = __USEDWORDS__[word]
+                        if message.author.name == user:
+                            await channel.send("What " + user + "? You already used this word in round " + str(rnd) + "! Use another word! (no penalty)")
+                        else:
+                            if message.author.name not in __TRACKEDPLAYERS__: 
+                                __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ - self.round, True])
+                            __USEDWORDS__.setdefault(word, (message.author.name, self.round))
+                            __TRACKEDPLAYERS__[message.author.name][0] -= 1 if __TRACKEDPLAYERS__[message.author.name][0] > 0 else 0
+                            __TRACKEDPLAYERS__[message.author.name][1] = True
+                            await channel.send("Unlucky, **" + word + "** was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
+                    
                     else: 
-                        # __TRACKEDPLAYERS__.setdefault(message.author.name, __DEFAULTLIFECOUNT__ + 1 - self.round)
-                        # (names, rnd) = __USEDWORDS__.values()
-                        # if (message.author.name, self.round) in __USEDWORDS__.values():
-                        #     __TRACKEDPLAYERS__[message.author.name] -= 1
-                        #     await message.add_reaction("\u274C")
-                        #     await channel.send("Hey! You already submitted a word this round! (-1 life)")
-                        # else:
-                        __USEDWORDS__.setdefault(word, (message.author.name, self.round))
-                        __TRACKEDPLAYERS__[message.author.name][1] = True
-                        await message.add_reaction("\u2705")
+                        # if 0 < self.round < 4:
+                        if message.author.name not in __TRACKEDPLAYERS__.keys():
+                            __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ + 1 - self.round, True])
+                            __USEDWORDS__.setdefault(word, (message.author.name, self.round))
+                        # \u2705 : https://www.fileformat.info/info/unicode/char/2705/index.htm
+                        # Unicode Character 'WHITE HEAVY CHECK MARK' (U+2705)
+                            await message.add_reaction("\u2705")
+                            # await channel.send("Valid submission, " + message.author.name + "!")
+                        else: 
+                            # __TRACKEDPLAYERS__.setdefault(message.author.name, __DEFAULTLIFECOUNT__ + 1 - self.round)
+                            # (names, rnd) = __USEDWORDS__.values()
+                            # if (message.author.name, self.round) in __USEDWORDS__.values():
+                            #     __TRACKEDPLAYERS__[message.author.name] -= 1
+                            #     await message.add_reaction("\u274C")
+                            #     await channel.send("Hey! You already submitted a word this round! (-1 life)")
+                            # else:
+                            __USEDWORDS__.setdefault(word, (message.author.name, self.round))
+                            __TRACKEDPLAYERS__[message.author.name][1] = True
+                            await message.add_reaction("\u2705")
 
 
 
