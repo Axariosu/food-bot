@@ -8,4 +8,9 @@ import os
 
 # print(data)
 
-print(", ".join([x for x in list({"Axarious": "Word"}.keys())]))
+# print(", ".join([x for x in list({"Axarious": "Word"}.keys())]))
+
+
+# ll = input().strip("[]").split(", ")
+# print(ll)
+

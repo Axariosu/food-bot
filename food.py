@@ -1,7 +1,6 @@
 import os, re, asyncio
 import uuid
 import discord
-import alphafuseutil
 from dotenv import load_dotenv
 from discord.ext import commands
 
@@ -18,6 +17,24 @@ GUILD = os.getenv('DISCORD_GUILD')
 
 bot = commands.Bot(command_prefix="!")
 
+"""
+Two dictionaries to start and stop games.
+startdict
+stopdict
+"""
+td = {
+    'alpha': 'start_alpha', 
+    'udder': 'start_udder', 
+}
+pd = {
+    'alpha': 'stop_alpha', 
+    'udder': 'stop_udder', 
+}
+ext = {
+    'alpha': 'alphafuse',
+    'udder': 'uddercode',
+}
+
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -33,20 +50,34 @@ async def quit(ctx):
 
 @bot.command()
 async def load(ctx, extension):
-    bot.load_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{ext[extension]}')
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'cogs.{extension}')
+    bot.unload_extension(f'cogs.{ext[extension]}')
 
 @bot.command()
 async def reload(ctx, extension):
-    bot.unload_extension(f'cogs.{extension}')
-    bot.load_extension(f'cogs.{extension}')
+    bot.unload_extension(f'cogs.{ext[extension]}')
+    bot.load_extension(f'cogs.{ext[extension]}')
+
+@bot.command()
+async def avatar(ctx, *, avamember : discord.Member=None):
+    userAvatarUrl = avamember.avatar_url
+    await ctx.send(userAvatarUrl)
+
+@bot.command()
+async def start(ctx, arg1):
+    await ctx.invoke(bot.get_command(td[arg1]))
+
+@bot.command()
+async def stop(ctx, arg1):
+    await ctx.invoke(bot.get_command(pd[arg1]))
 
 for filename in os.listdir('./cogs'):
-    if filename in __COGS__:
-        # bot.load_extension(f'cogs.alphafuse.py'[:-3])
+    # if filename in __COGS__:
+    #     bot.load_extension(f'cogs.alphafuse.py'[:-3])
+    if filename != "__pycache__":
         bot.load_extension(f'cogs.{filename[:-3]}')
 
 # _mentions_transforms = {

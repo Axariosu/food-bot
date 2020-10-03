@@ -230,7 +230,7 @@ def get_many_possibilities(l):
         # if len(combinations) > 500:
         #     break
     if len(combinations) > 25:
-        return random.choice(combinations, 25) if combinations is not [] else None
+        return random.choices(combinations, 25) if combinations is not [] else None
     else:
         return combinations if combinations is not [] else None
 
