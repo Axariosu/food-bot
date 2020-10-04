@@ -1,7 +1,7 @@
 import random
 
 # http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.99.4112&rep=rep1&type=pdf
-
+# https://stackoverflow.com/questions/4308610/how-to-ignore-certain-files-in-git
 """
 This file is an interpretation of the 1970 "Mastermind." 
 """
@@ -9,9 +9,8 @@ This file is an interpretation of the 1970 "Mastermind."
 def generateRandomCode(n):
     """
     Given an integer n: 
-    Returns a string of random length.
+    Returns a numeric string of length n.
     """
-
     return "".join(random.choices("0123456789", k=n))
 
 def calculateDistance(n, c):

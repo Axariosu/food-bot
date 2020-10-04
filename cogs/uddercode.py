@@ -9,12 +9,12 @@ from discord.ext import commands
 from discord import abc
 
 
-__CODELENGTH__ = 4
-__READYUP__ = 30
-__ROUNDTIMER__ = 20
-__TRACKEDPLAYERS__ = {}
-__CREATEDCHANNELS__ = []
-__CREATEDROLES__ = []
+# __CODELENGTH__ = 4
+# __READYUP__ = 30
+# __ROUNDTIMER__ = 15
+# self.tracked_players = {}
+# self.created_channels = []
+# self.created_roles = []
 
 
 class UdderCode(commands.Cog):
@@ -23,9 +23,15 @@ class UdderCode(commands.Cog):
         self.game = False
         self.round = 0
         self.code = ""
-        self.timer = 10e22
+        self.timer = 0
         self.msgid = 0
         self.context = None
+        self.created_channels = []
+        self.created_roles = []
+        self.tracked_players = {}
+        self.code_length = 4
+        self.ready_up = 25
+        self.round_timer = 15
         # self.codelength = 4
 
     @commands.Cog.listener()
@@ -34,12 +40,12 @@ class UdderCode(commands.Cog):
     
     @commands.command()
     async def start_udder(self, ctx):
-        global __CREATEDCHANNELS__
-        global __TRACKEDPLAYERS__
+        # global self.created_channels
+        # global self.tracked_players
         self.context = ctx
         res = discord.Embed(title="Starting UdderCode!", color=self.generate_random_color())
-        res.add_field(name="Rules", inline=False, value="You have **" + str(__READYUP__) + "** seconds to join! React to this message to play!")
-        res.add_field(name="\u200b", inline=False, value="I have a code of length **" + str(__CODELENGTH__) + "**, you're meant to guess it!")
+        res.add_field(name="Rules", inline=False, value="You have **" + str(self.ready_up) + "** seconds to join! React to this message to play!")
+        res.add_field(name="\u200b", inline=False, value="I have a code of length **" + str(self.code_length) + "**, you're meant to guess it!")
         res.add_field(name="\u200b", inline=False, value="Each round is **20** seconds, I'll tell you how many Bulls and Cows you have.")
         res.add_field(name="\u200b", inline=False, value="A **Bull** is a **correct number and in correct place.**\nA **Cow** is a **correct number but in an incorrect place.**\nFor example, if my code is **5688** and you guess **1234**, I'll tell you you have **0** Bulls and **0** Cows!\nIf you guess **6518**, I'll tell you you have **1** Bull and **2** Cows!")
         res.add_field(name="\u200b", inline=False, value="To minimize peeking, I'll make a channel just for you! (and sneaky admins)\nI will only respond to messages in that channel, so enter your submissions there!")
@@ -47,13 +53,13 @@ class UdderCode(commands.Cog):
         self.msgid = msg.id
         self.round = 0
         self.game = True
-        self.timer = 10e22
+        self.timer = 0
         
-        __CREATEDCHANNELS__ = []
-        __TRACKEDPLAYERS__ = {}
+        self.created_channels = []
+        self.tracked_players = {}
 
         await msg.add_reaction("\u2705")
-        await asyncio.sleep(__READYUP__)
+        await asyncio.sleep(self.ready_up)
 
         # for reactor in msg.reactions:
         #     await ctx.send(reactor.name)
@@ -71,14 +77,16 @@ class UdderCode(commands.Cog):
         # users = msg.reactions
         # print(users)
 
-        # await ctx.send("These players are playing!\n" + ", ".join([user.name for user in __TRACKEDPLAYERS__]))
+        # await ctx.send("These players are playing!\n" + ", ".join([user.name for user in self.tracked_players]))
         guild = ctx.guild
         
-        if len(__TRACKEDPLAYERS__) == 0: 
+        if len(self.tracked_players) == 0: 
             await ctx.send("No one joined!")
             await self.stop_udder(ctx)
             return
-        for player in __TRACKEDPLAYERS__:
+        print(self.tracked_players)
+        
+        for player in self.tracked_players:
             uuid_short = str(uuid.uuid4())[:8]    
 
             role = await guild.create_role(name=uuid_short)
@@ -92,33 +100,40 @@ class UdderCode(commands.Cog):
 
             channel = await guild.create_text_channel(uuid_short, overwrites=overwrites, topic="Secret channel just for you! (and sneaky, sneaky admins)")
             
-            __CREATEDCHANNELS__.append(channel)
-            __CREATEDROLES__.append(role)
+            self.created_channels.append(channel)
+            self.created_roles.append(role)
 
             await player.add_roles(uuid_role)
+            await channel.send(player.mention)
+
+            
+
+            # for channel in self.created_channels:
+            #     await channel.send(channel.mention())
             
             # print(player, guild, channel)
-        self.code = uddercodeutil.generateRandomCode(__CODELENGTH__)
+        self.code = uddercodeutil.generateRandomCode(self.code_length)
+        print(self.code)
         # print(self.code)
         await self.udder_on(ctx)
 
     @commands.command()
     async def stop_udder(self, ctx):
         # if self.game:
-        global __CREATEDCHANNELS__
-        global __CREATEDROLES__
+        # global self.created_channels
+        # global self.created_roles
         res = discord.Embed(title="UdderCode over!", color=self.generate_random_color())
         await ctx.send(embed=res)
 
         # TODO: delete made roles + channels
         # guild = ctx.guild
-        for channel in __CREATEDCHANNELS__:
+        for channel in self.created_channels:
             await channel.delete()
-        for role in __CREATEDROLES__:
+        for role in self.created_roles:
             await role.delete()
-        __TRACKEDPLAYERS__ = {}
-        __CREATEDCHANNELS__ = []
-        __CREATEDROLES__ = []
+        self.created_channels = []
+        self.created_roles = []
+        self.tracked_players = {}
         self.round = 0
         self.timer = 10e22
         self.game = False
@@ -138,40 +153,34 @@ class UdderCode(commands.Cog):
 
         if self.game:
             self.round += 1
-            global __ROUNDTIMER__
+            # global __ROUNDTIMER__
 
             res = discord.Embed(title="Round " + str(self.round), color=self.generate_random_color())
             
             # if self.round == 1:
-            for player in __TRACKEDPLAYERS__:
-                __TRACKEDPLAYERS__[player] = False
-            res.add_field(name='\u200b', inline=False, value="You have **" + str(__ROUNDTIMER__) + " seconds** to submit an entry!")
+            for player in self.tracked_players:
+                self.tracked_players[player] = False
             
-                # res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
-                # res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s): **" + ", ".join([x.upper() for x in __CURRENTLETTERS__]) + "**")
-                # res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + __COMBINATIONS__ + "**")
-                # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x.upper() for x in __CURRENTLETTERS__]) + "\nValid combinations: " + __COMBINATIONS__
-            # else: 
-            #     res.add_field(name='\u200b', inline=False, value="Round Over!")
-                # res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
-                # res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s): **" + ", ".join([x.upper() for x in __CURRENTLETTERS__]) + "**")
-                # res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + __COMBINATIONS__ + "**")
-                # res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else "**" + str(x) + "**" + ": " + str(y[0]) + " life" for (x,y) in __TRACKEDPLAYERS__.items() if str(x) not in __ELIMINATEDPLAYERS__])))
-                # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x for x in __CURRENTLETTERS__]) + "\nValid combinations: " + __COMBINATIONS__ + "\nRemaining players: " + ", ".join(list([str(x) + ": " + str(y[0]) + " lives" for (x,y) in __TRACKEDPLAYERS__.items()]))
-            
-            # await asyncio.sleep(2)
-            for channel in __CREATEDCHANNELS__:
+            res.add_field(name='\u200b', inline=False, value="You have **" + str(self.round_timer) + " seconds** to submit an entry!")
+
+            # print(self.created_channels)
+            for channel in self.created_channels:
+                # print("inner loop")
                 await channel.send(embed=res)
 
             """
             Logic for timer that recursively calls this function.
             Important for advancing rounds and resetting timer! 
             """
-            self.timer = loop.time() + __ROUNDTIMER__
-            while True:
-                if (loop.time()) >= self.timer and self.game:
+            self.timer = loop.time() + self.round_timer
+            
+            # await asyncio.sleep(1)
+            
+            while self.game:
+                # print(self.timer, loop.time())
+                if (loop.time()) >= self.timer:
                     res = discord.Embed(title="Round over!", color=self.generate_random_color())
-                    for channel in __CREATEDCHANNELS__:
+                    for channel in self.created_channels:
                         await channel.send(embed=res)
                     await asyncio.sleep(1)
                     await self.udder_on(ctx)
@@ -183,33 +192,33 @@ class UdderCode(commands.Cog):
     
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
-        if reaction.message.id == self.msgid and not user.bot:
-            __TRACKEDPLAYERS__.setdefault(user, False)
+        if reaction.message.id == self.msgid and not user.bot and user not in self.tracked_players:
+            self.tracked_players.setdefault(user, False)
 
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         if reaction.message.id == self.msgid and not user.bot:
-           del __TRACKEDPLAYERS__[user]
+           del self.tracked_players[user]
 
     @commands.Cog.listener()
     async def on_message(self, message):
-        if not message.author.bot and self.game and message.channel in __CREATEDCHANNELS__ and not __TRACKEDPLAYERS__[message.author] and message.content.isnumeric() and len(message.content) == __CODELENGTH__:
+        if not message.author.bot and self.game and message.channel in self.created_channels and not self.tracked_players[message.author] and message.content.isnumeric() and len(message.content) == self.code_length:
             b, c = uddercodeutil.calculateDistance(message.content, self.code)
-            __TRACKEDPLAYERS__[message.author] = True
-            if b == __CODELENGTH__:
+            self.tracked_players[message.author] = True
+            if b == self.code_length:
                 self.game = False
                 # Winner
-                for channel in __CREATEDCHANNELS__:
+                for channel in self.created_channels:
                     # Disallow further guesses
-                    for player in __TRACKEDPLAYERS__:
-                        __TRACKEDPLAYERS__[player] = True
+                    for player in self.tracked_players:
+                        self.tracked_players[player] = True
                     res = discord.Embed(title="Someone guessed my code!", color=self.generate_random_color())
                     res.add_field(name='\u200b', inline=False, value="**" + message.author.name + "** found the code to be **" + str(self.code) + "**!")
-                    res.add_field(name='\u200b', inline=False, value="The game will end in **" + str(__ROUNDTIMER__) + "** seconds.")
+                    res.add_field(name='\u200b', inline=False, value="The game will end in **" + str(self.round_timer) + "** seconds.")
                     # await message.channel.send(embed=res)
                     await channel.send(embed=res)
                     await self.context.send(embed=res)
-                    await asyncio.sleep(__ROUNDTIMER__)
+                    await asyncio.sleep(self.round_timer)
                     await self.stop_udder(self.context)
             else: 
                 res = discord.Embed(title="You have **" + str(b) + "** bulls and **" + str(c) + " **cows!", color=self.generate_random_color())
