@@ -255,13 +255,13 @@ class AlphaFuse(commands.Cog):
             Logic for timer that recursively calls this function.
             Important for advancing rounds and resetting timer! 
             """
-            while True:
+            while self.game:
                 # await asyncio.sleep(int(round_timer))
                 # await alpha_on(ctx)
                 # break
                 # await ctx.send(loop.time())
                 # if (loop.time() + 1) >= self.timer and self.game:
-                if (loop.time()) >= self.timer and self.game:
+                if (loop.time()) >= self.timer:
                     res = discord.Embed(title="Round over!", color=self.generate_random_color())
                     await ctx.send(embed=res)
                     await self.alpha_on(ctx)
