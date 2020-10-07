@@ -4,6 +4,8 @@ import uuid
 import discord
 import asyncio
 import random
+import queue
+import threading
 from discord.ext import tasks
 from discord.ext import commands
 from discord import abc
@@ -106,14 +108,11 @@ class UdderCode(commands.Cog):
             await player.add_roles(uuid_role)
             await channel.send(player.mention)
 
-            
-
             # for channel in self.created_channels:
             #     await channel.send(channel.mention())
             
             # print(player, guild, channel)
         self.code = uddercodeutil.generateRandomCode(self.code_length)
-        print(self.code)
         # print(self.code)
         await self.udder_on(ctx)
 
@@ -143,6 +142,28 @@ class UdderCode(commands.Cog):
         Returns a value between 0 and 16777215, the max value for int(rgb).
         """
         return random.randint(0, 256**3-1)
+
+    @commands.command(aliases=['fs'])
+    async def findsolution(self, ctx, arg1, arg2, brief="Usage: !findsolution <code1> <code2>, alias='fs'", description="Usage: !findsolution <code1> <code2>, alias='fs'. Returns a solution path between code1 and code2."):
+        """
+        Returns a solution path between code1 and code2. 
+        """
+        # print(arg1, arg2)
+        if len(arg1) == len(arg2) == 4:
+            stack = queue.deque()
+            solutionList = [str(x).zfill(len(arg1)) for x in range(len(uddercodeutil.numeric)**len(arg1))]
+            uddercodeutil.TPOA(10, 2, 1, uddercodeutil.TPOANode(arg1), arg2, solutionList, stack)
+            uddercodeutil.reverseStack(stack)
+            res = discord.Embed(title="UdderCode here!", color=self.generate_random_color())
+            stringBuild, guess = "", 1
+            while stack:
+                a = stack.pop()
+                stringBuild += "Guess " + str(guess) + ": **"+ str(a[0].code) + "**, " + str(a[1]) + (" Bull, " if a[1] == 1 else " Bulls, ") + str(a[2]) + (" Cow\n" if a[2] == 1 else " Cows\n")
+                guess += 1
+            res.add_field(name='\u200b', inline=False, value=stringBuild)
+            await ctx.send(embed=res)
+        else: 
+            res = discord.Embed(title="No solution, arguments are not valid (same length, length <= 5)!", color=self.generate_random_color())
 
     async def udder_on(self, ctx):
         # await ctx.send("Testing: " + str(self.round))
