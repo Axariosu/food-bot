@@ -111,20 +111,11 @@ class UdderCode(commands.Cog):
             await player.add_roles(uuid_role)
             await channel.send(player.mention)
 
-<<<<<<< HEAD
-=======
-            
-
->>>>>>> f02717d9793932320b864d40a8d70c4af8486424
             # for channel in self.created_channels:
             #     await channel.send(channel.mention())
             
             # print(player, guild, channel)
         self.code = uddercodeutil.generateRandomCode(self.code_length)
-<<<<<<< HEAD
-=======
-        print(self.code)
->>>>>>> f02717d9793932320b864d40a8d70c4af8486424
         # print(self.code)
         await self.udder_on(ctx)
 
