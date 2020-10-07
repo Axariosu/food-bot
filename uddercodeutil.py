@@ -1,4 +1,5 @@
 import random
+<<<<<<< HEAD
 import math
 import time
 import random
@@ -103,12 +104,25 @@ def TPOA(k, d, b, c, t, solutionList, path):
         TPOA(k, d, b, newChoice, t, value, path)
     return c
     
+=======
+
+# http://citeseerx.ist.psu.edu/viewdoc/download?doi=10.1.1.99.4112&rep=rep1&type=pdf
+# https://stackoverflow.com/questions/4308610/how-to-ignore-certain-files-in-git
+"""
+This file is an interpretation of the 1970 "Mastermind." 
+"""
+
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
 def generateRandomCode(n):
     """
     Given an integer n: 
     Returns a numeric string of length n.
     """
+<<<<<<< HEAD
     return "".join(random.choices(numeric, k=n))
+=======
+    return "".join(random.choices("0123456789", k=n))
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
 
 def calculateDistance(n, c):
     """
@@ -116,7 +130,11 @@ def calculateDistance(n, c):
     Returns a tuple (# of correct numbers, # correct numbers and correct places)
     based on how far away n is away from c.
     """
+<<<<<<< HEAD
     code = {}
+=======
+    code = dict()
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
     same, good = 0, 0
     checklater = []
     for i in range(len(n)):
@@ -132,11 +150,16 @@ def calculateDistance(n, c):
 
     for num in checklater:
         if n[num] in code and code[n[num]] != 0:
+<<<<<<< HEAD
+=======
+            # if code[n[num]] != 0:
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
             good += 1
             code[n[num]] -= 1
     
     return same, good
 
+<<<<<<< HEAD
 def calculatePartition(n, s, g, h, v):
     """
     Given integers n, s, g, string h, and list v:
@@ -227,3 +250,19 @@ def reverseStack(s):
 #     print(stack.pop()[0].code)
 
 # print(stop - start)
+=======
+# print(generateRandomCode(5))
+# def optimalpath(same, good, guess, code, path):
+#     if good == len(code):
+#         return path
+#     s, g = calculateDistance(guess, code)
+#     print(same, good, guess, code, path)
+#     pass
+
+
+
+# print 
+# print(calculateDistance("5123", "5123"))
+
+    
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424

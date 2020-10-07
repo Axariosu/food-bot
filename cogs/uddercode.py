@@ -4,8 +4,11 @@ import uuid
 import discord
 import asyncio
 import random
+<<<<<<< HEAD
 import queue
 import threading
+=======
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
 from discord.ext import tasks
 from discord.ext import commands
 from discord import abc
@@ -108,11 +111,20 @@ class UdderCode(commands.Cog):
             await player.add_roles(uuid_role)
             await channel.send(player.mention)
 
+<<<<<<< HEAD
+=======
+            
+
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
             # for channel in self.created_channels:
             #     await channel.send(channel.mention())
             
             # print(player, guild, channel)
         self.code = uddercodeutil.generateRandomCode(self.code_length)
+<<<<<<< HEAD
+=======
+        print(self.code)
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
         # print(self.code)
         await self.udder_on(ctx)
 
@@ -143,6 +155,7 @@ class UdderCode(commands.Cog):
         """
         return random.randint(0, 256**3-1)
 
+<<<<<<< HEAD
     @commands.command(aliases=['fs'])
     async def findsolution(self, ctx, arg1, arg2, brief="Usage: !findsolution <code1> <code2>, alias='fs'", description="Usage: !findsolution <code1> <code2>, alias='fs'. Returns a solution path between code1 and code2."):
         """
@@ -165,6 +178,8 @@ class UdderCode(commands.Cog):
         else: 
             res = discord.Embed(title="No solution, arguments are not valid (same length, length <= 5)!", color=self.generate_random_color())
 
+=======
+>>>>>>> f02717d9793932320b864d40a8d70c4af8486424
     async def udder_on(self, ctx):
         # await ctx.send("Testing: " + str(self.round))
         # loop = asyncio.get_running_loop()
