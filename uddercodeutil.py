@@ -16,10 +16,10 @@ digs = string.digits + string.ascii_letters
 This is a helper file for an implementation of the 1970 game "Mastermind," also called "Bulls and Cows."
 """
 
-code_length = 5
+code_length = 4
 numeric = "0123456789"
 smallNumeric = "012345"
-target = "51635"
+target = "9999"
 stack = queue.deque()
 
 # solutionRank = {}
@@ -55,7 +55,7 @@ def TPOA(k, d, b, c, t, solutionList, path):
     # c.rank = solutionRank[(same, good)]
 
     # Check if the code is a complete solution
-    if (same, good) == (code_length, 0):
+    if (same, good) == (len(c.code), 0):
         return True
     # TPOA+ (exploration)
     if l < d: 
@@ -70,7 +70,7 @@ def TPOA(k, d, b, c, t, solutionList, path):
     # possibleSet is a dictionary containing the n hashing-collision groups.
     # We rearrange them based on the value length, for a higher possibility
     # to get a solution through a guided dfs. (optional)
-    possibleSet = hashw(calculatePartition(code_length, same, good, c.code, solutionList))
+    possibleSet = hashw(calculatePartition(len(c.code), same, good, c.code, solutionList))
     
     sortedPossibleSet = {}
     for x in sorted(possibleSet, key = lambda x: len(possibleSet[x]), reverse=True):
@@ -79,6 +79,10 @@ def TPOA(k, d, b, c, t, solutionList, path):
     # If we've reached a leaf node (where there are no more continuations of the node),
     # pop everything from the stack until we reach the parent node. 
     if len(possibleSet) == 0:
+        # a = stack.pop()
+        # path.append(a)
+        # if a[0].parent != None:
+            # a = path.pop()
         for i in range(c.depth):
             path.pop()
     nextChoices = {}
@@ -115,7 +119,6 @@ def generateRandomCode(n):
     Returns a numeric string of length n.
     """
     return "".join(random.choices(numeric, k=n))
-    return "".join(random.choices("0123456789", k=n))
 
 def calculateDistance(n, c):
     """
@@ -230,7 +233,8 @@ def reverseStack(s):
         s.append(item)
 
 # start = time.time()
-# TPOA(10, 2, 1, TPOANode("01234"), target, [str(x).zfill(code_length) for x in range(len(numeric)**code_length)], stack)
+# a = TPOANode("0123")
+# TPOA(10, 2, 1, a, target, [str(x).zfill(len(a.code)) for x in range(len(numeric)**len(a.code))], stack)
 # while stack:
 #     print(stack.pop()[0].code)
 # stop = time.time()

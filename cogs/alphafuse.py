@@ -30,12 +30,13 @@ __DEFAULTLIFECOUNT__ = 3
 # self.round = 0
 # __SECONDS__ = [30, 30, 26, 22, 19, 17, 15, 13, 11, 10]
 # __SECONDS__ = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
-__SECONDS__ = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
-__MINTIME__ = 15
+# __SECONDS__ = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
+__SECONDS__ = [25, 25, 25]
+__MINTIME__ = 25
 # __SECONDS__ = [10, 10]
-# __LETTERS__ = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
-__LETTERS__ = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]
-__MAXLETTERS__ = 5
+__LETTERS__ = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
+# __LETTERS__ = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]
+__MAXLETTERS__ = 8
 __CURRENTLETTERS__ = []
 __THREADFLAG__ = False
 __WINNER__ = []
@@ -82,7 +83,6 @@ class AlphaFuse(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        # self.game = True
         print('cog.alphafuse successfully loaded!')
 
     @commands.command()
@@ -223,7 +223,7 @@ class AlphaFuse(commands.Cog):
                 # else:
                 #     __TRACKEDPLAYERS__ = trackedPlayersCopy
 
-            __CURRENTLETTERS__ = alphafuseutil.generate_random_string_of_length_biased(__LETTERS__[self.round] if self.round < len(__LETTERS__) - 1 else __MAXLETTERS__)
+            __CURRENTLETTERS__ = alphafuseutil.generate_random_string_of_length_unbiased(__LETTERS__[self.round] if self.round < len(__LETTERS__) - 1 else __MAXLETTERS__)
             __COMBINATIONS__ = str(alphafuseutil.combinations(__CURRENTLETTERS__))
             # currentPlayers = ", ".join([x[0] for x in __TRACKEDPLAYERS__])
             round_timer = str(__SECONDS__[self.round]) if self.round < len(__SECONDS__) - 1 else str(__MINTIME__)
@@ -248,7 +248,7 @@ class AlphaFuse(commands.Cog):
             if self.round < len(__SECONDS__) - 1:
                 self.timer = loop.time() + __SECONDS__[self.round]
             else:
-                self.timer = loop.time() + 10
+                self.timer = loop.time() + __MINTIME__
             # self.timer = loop.time() + __SECONDS__[self.round] if self.round < len(__SECONDS__) - 1 else 10
             
             """
@@ -289,7 +289,17 @@ class AlphaFuse(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=self.generate_random_color())
+        res = discord.Embed(title='\u200b', color=self.generate_random_color())
+        res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
+        await ctx.send(embed=res)
+
+    @commands.command()
+    async def check(self, ctx, arg1):
+        """
+        Returns "valid" or "invalid" based on the submission. 
+        """
+        c = "Valid" if alphafuseutil.in_wordlist(arg1) else "Invalid"
+        res = discord.Embed(title=c, color=self.generate_random_color())
         await ctx.send(embed=res)
 
     def generate_random_color(self):
@@ -325,7 +335,7 @@ class AlphaFuse(commands.Cog):
         # FOR LOGGING PURPOSES
         # f.write(f"{int(time.time())} {message.author} {message.content}\n")
 
-        if not message.author.bot and self.game and message.channel.id in __VALIDCHANNELS__:
+        if not message.author.bot and self.game:
             
             # if self.game:
                 # channel = message.channel
@@ -391,11 +401,12 @@ class AlphaFuse(commands.Cog):
                     else: 
                         # if 0 < self.round < 4:
                         if message.author.name not in __TRACKEDPLAYERS__.keys():
-                            __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ + 1 - self.round, True])
-                            __USEDWORDS__.setdefault(word, (message.author.name, self.round))
+                            if self.round <= 3:
+                                __TRACKEDPLAYERS__.setdefault(message.author.name, [__DEFAULTLIFECOUNT__ + 1 - self.round, True])
+                                __USEDWORDS__.setdefault(word, (message.author.name, self.round))
                         # \u2705 : https://www.fileformat.info/info/unicode/char/2705/index.htm
                         # Unicode Character 'WHITE HEAVY CHECK MARK' (U+2705)
-                            await message.add_reaction("\u2705")
+                                await message.add_reaction("\u2705")
                             # await channel.send("Valid submission, " + message.author.name + "!")
                         else: 
                             # __TRACKEDPLAYERS__.setdefault(message.author.name, __DEFAULTLIFECOUNT__ + 1 - self.round)
