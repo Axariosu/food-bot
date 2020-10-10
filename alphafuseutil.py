@@ -35,6 +35,37 @@ letter_frequency = [0.08458060175046897,
 0.0040689736614754795]
 
 """
+for i in range(26):
+    print("(" + str(letter_frequency[i]) + ", '" + chr(int(ord('a')) + i) + "'),")
+"""
+letter_frequency_tuples = [(0.08458060175046897, 'a'),
+(0.018870222161450043, 'b'),
+(0.04197147712997857, 'c'),
+(0.03526743096890421, 'd'),
+(0.10983719731598748, 'e'),
+(0.012519759590782241, 'f'),
+(0.0243180797464511, 'g'),
+(0.027399735687058266, 'h'),
+(0.08641504682335299, 'i'),
+(0.0017957718676833115, 'j'),
+(0.008946861865065964, 'k'),
+(0.05737814544946437, 'l'),
+(0.029181925893391324, 'm'),
+(0.07148741981352609, 'n'),
+(0.07085483667131436, 'o'),
+(0.031015450175675335, 'p'),
+(0.0018636801744345713, 'q'),
+(0.0704308126000065, 'r'),
+(0.0704545229579569, 's'),
+(0.06473779451775089, 't'),
+(0.03625106552737246, 'u'),
+(0.009874097999283165, 'v'),
+(0.008463676997707002, 'w'),
+(0.0028482355235028346, 'x'),
+(0.01916717712995555, 'y'),
+(0.0040689736614754795, 'z')]
+
+"""
 [0].append previous total + current, created with 
 cumulative_letter_frequency = np.zeros(26)
 for i in range(len(letter_frequency)):
@@ -102,19 +133,18 @@ def check_valid(first, second):
         if fst[key] > snd[key]:
             return False
     return True
-
-    # n^2 solution
-    # print(fst, snd)
-    # for c in fst: 
-    #     for i in range(len(snd) - count):
-    #         print(c, snd[i], i, count)
-    #         if c == snd[i]: 
-    #             print(fst, snd)
-    #             count += 1
-    #             snd[i], snd[len(snd) - count] = snd[len(snd) - count], snd[i]
-    #             break
-
-    # return True if count >= len(fst) else False
+def check_valid_inverted(first, second):
+    """
+    Given two strings first and second:
+    Returns true if second is in the wordlist, len(second) >= 3 
+    and all characters in first are not in second. 
+    """
+    if second not in wordlist or len(second) < 3: 
+        return False
+    for char in first:
+        if char in second:
+            return False
+    return True
 
 def check_valid_combinations(first, second):
     """
@@ -143,6 +173,16 @@ def check_valid_combinations(first, second):
             return False
     return True
 
+def check_valid_combinations_inverted(first, second): 
+    """
+    Given two lists first and second:
+    Returns true if all characters in first are not found in second. 
+    """
+    for x in first:
+        if x in second:
+            return False
+    return True
+
 def generate_random_string_of_length_biased(n):
     """
     Given an integer n: 
@@ -153,9 +193,22 @@ def generate_random_string_of_length_biased(n):
     for i in range(n):
         res.append(chr(int(ord('a') + binary_search(cumulative_letter_frequency, 0, len(cumulative_letter_frequency), random.random()))))
     if combinations(res) == 0:
-        print(res)
         return generate_random_string_of_length_biased(n)
     return res
+
+def generate_random_string_of_length_biased_unique(n):
+    """
+    Given an integer n: 
+    Returns a list of unique random n letters, biased from cumulative_letter_frequency.
+    Guarantees combinations >= 1.
+    """ 
+    # res = random.sample([chr(int(ord('a') + x)) for x in range(26)], k=n)
+    res = sorted((random.random() * x[0], x[1]) for x in letter_frequency_tuples)
+    res = [x[1] for x in res][-n:]
+    if combinations_inverted(res) == 0:
+        return generate_random_string_of_length_biased_unique(n)
+    return res
+    
 
 def generate_random_string_of_length_unbiased(n):
     """
@@ -169,6 +222,17 @@ def generate_random_string_of_length_unbiased(n):
     if combinations(res) == 0:
         print(res)
         return generate_random_string_of_length_unbiased(n)
+    return res
+
+def generate_random_string_of_length_unbiased_unique(n):
+    """
+    Given an integer n: 
+    Returns a list of unique random n letters.
+    Guarantees combinations >= 1.
+    """ 
+    res = random.sample([chr(int(ord('a') + x)) for x in range(26)], k=n)
+    if combinations(res) == 0:
+        return generate_random_string_of_length_unbiased_unique(n)
     return res
 
 def binary_search(l, start, end, target): 
@@ -197,6 +261,17 @@ def combinations(l):
         count += 1 if check_valid_combinations(l, word) else 0
     return count
 
+def combinations_inverted(l):
+    """
+    Given a string or list l: 
+    Returns count of valid possibilities in the wordlist not containing those letters. 
+    """
+    count = 0
+    for word in wordlist:
+        # print(l, word, check_valid_combinations(l, word))
+        count += 1 if check_valid_combinations_inverted(l, word) else 0
+    return count
+
 def get_random_possibility(l):
     """
     Given a string or list l:
@@ -205,6 +280,17 @@ def get_random_possibility(l):
     combinations = []
     for word in wordlist:
         if check_valid_combinations(l, word):
+            combinations.append(word)
+    return random.choice(combinations) if combinations is not [] else None
+
+def get_random_possibility_inverted(l):
+    """
+    Given a string or list l:
+    Returns a random valid possibility.
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_inverted(l, word):
             combinations.append(word)
     return random.choice(combinations) if combinations is not [] else None
 
@@ -218,10 +304,20 @@ def get_first_possibility(l):
         if check_valid_combinations(l, word):
             return word
 
+def get_first_possibility_inverted(l):
+    """
+    Given a string or list l:
+    Returns first valid possibility (runs much faster than get_random_possibility(), takes no space)
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_inverted(l, word):
+            return word
+
 def get_many_possibilities(l):
     """
     Given a string or list l:
-    Returns up to 200 valid possibilities.
+    Returns up to 25 valid possibilities.
     """
     combinations = []
     for word in wordlist:
@@ -229,6 +325,20 @@ def get_many_possibilities(l):
             combinations.append(word)
         # if len(combinations) > 500:
         #     break
+    if len(combinations) > 25:
+        return random.sample(combinations, k=25) if combinations != [] else None
+    else:
+        return combinations if combinations != [] else None
+
+def get_many_possibilities_inverted(l):
+    """
+    Given a string or list l:
+    Returns up to 25 valid possibilities.
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_inverted(l, word):
+            combinations.append(word)
     if len(combinations) > 25:
         return random.sample(combinations, k=25) if combinations != [] else None
     else:
@@ -257,6 +367,7 @@ def benchmark_unbiased():
 
 # benchmark()
 
+# print(generate_random_string_of_length_biased_unique(26))
 
 
 # print(generate_random(1000))

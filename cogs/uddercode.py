@@ -196,7 +196,7 @@ class UdderCode(commands.Cog):
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         if reaction.message.id == self.msgid and not user.bot:
-           del self.tracked_players[user]
+            del self.tracked_players[user]
 
     @commands.Cog.listener()
     async def on_message(self, message):

@@ -19,20 +19,24 @@ bot = commands.Bot(command_prefix="!")
 
 """
 Two dictionaries to start and stop games.
-startdict
-stopdict
+startdict (sd)
+stopdict (pd)
+extension 
 """
 td = {
-    'alpha': 'start_alpha', 
+    'alpha': 'alpha', 
     'udder': 'start_udder', 
+    'c4': 'start_connect',
 }
 pd = {
     'alpha': 'stop_alpha', 
     'udder': 'stop_udder', 
+    'c4': 'stop_connect',
 }
 ext = {
     'alpha': 'alphafuse',
     'udder': 'uddercode',
+    'c4': 'connectfour',
 }
 
 @bot.event
@@ -68,6 +72,7 @@ async def avatar(ctx, *, avamember : discord.Member=None):
 
 @bot.command()
 async def start(ctx, arg1):
+    # print(bot.get_command(td[arg1])
     await ctx.invoke(bot.get_command(td[arg1]))
 
 @bot.command()

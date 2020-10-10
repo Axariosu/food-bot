@@ -4,40 +4,59 @@ class Board:
     def __init__(self):
         self.rows, self.cols = (6, 7)
         self.board = [[None for x in range(self.cols)] for y in range(self.rows)]
-        self.players = []
         self.turn = 1
+        self.gameEnd = False
+        self.player1 = None
+        self.player2 = None
+        self.timer = 0
     
-    def placePiece(self, c):
+    def placePiece(self, c, p):
         # temporary check
-        if 0 <= c <= 6:
-            if self.turn == 1:
+        if 0 <= c <= 6 and not self.gameEnd:
+            if self.turn == 1 and self.player1 == p:
                 # for col in range(len(self.board[0])):
                 # for row in range(len(self.board)):
                 # for col in range(len(self.board[0])):
-                check = 1
-                while self.board[len(self.board) - check][c] != None and check < len(self.board):
+                check = 0
+                while self.board[len(self.board) - 1 - check][c] != None and check < len(self.board):
                     check += 1
-                self.board[len(self.board)-check][c] = 1
-                self.turn = 2
-            else: 
+                if check == len(self.board):
+                    return False
+                else:
+                    self.board[len(self.board) - 1 - check][c] = 1
+                    self.turn = 2
+                    return True
+            if self.turn == 2 and self.player2 == p: 
                 # for row in range(len(self.board)):
-                check = 1
-                while self.board[len(self.board) - check][c] != None and check < len(self.board):
+                check = 0
+                while self.board[len(self.board) - 1 - check][c] != None and check < len(self.board):
                     check += 1
-                self.board[len(self.board)-check][c] = 1
-                self.turn = 1
-
+                if check > len(self.board) - 1:
+                    return False
+                else: 
+                    self.board[len(self.board) - 1 - check][c] = 2
+                    self.turn = 1
+                    return True
 
     def generateRandomBoard(self):
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 self.board[row][col] = random.choice([1, 2])
 
-    def printBoard(self):
+    def getBoard(self):
+        res = ""
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
-                print(self.board[row][col], end=" ")
-            print()
+                if self.board[row][col] == None:
+                    res += '⚫'
+                if self.board[row][col] == 1:
+                    res += '🔴' 
+                if self.board[row][col] == 2:
+                    res += '🟡'
+                # res += str(self.board[row][col])
+            res += "\n"
+        res += '1️⃣2️⃣3️⃣4️⃣5️⃣6️⃣7️⃣'
+        return res
 
     def initBoard(self):
         for row in range(len(self.board)):
@@ -48,7 +67,7 @@ class Board:
         winFlag = (False, False)
         # counta = 0
         # countb = 0
-        print(len(self.board), len(self.board[0]))
+        # print(len(self.board), len(self.board[0]))
         for row in range(len(self.board)):
             for col in range(len(self.board[row])):
                 # horizontal
@@ -84,14 +103,26 @@ class Board:
                         winFlag = (False, True)
                         # countb += 1
         # print(counta, countb)
+        if winFlag != (False, False):
+            self.gameEnd = True
         return winFlag
 
-b = Board()
-b.initBoard()
-# b.generateRandomBoard()
-for i in random
-b.placePiece(2)
-b.printBoard()
-print(b.checkWin())
+
+
+# def sampleWin():
+#     b = Board()
+#     b.initBoard()
+#     # b.generateRandomBoard()
+#     b.placePiece(2)
+#     b.placePiece(2)
+#     b.placePiece(1)
+#     b.placePiece(2)
+#     b.placePiece(3)
+#     b.placePiece(2)
+#     b.placePiece(4)
+#     b.printBoard()
+#     print(b.checkWin())
+
+# a()
 
 # print(board)
