@@ -30,11 +30,12 @@ td = {
 }
 pd = {
     'alpha': 'stop_alpha', 
-    'udder': 'stop_udder', 
+    'udder': 'stop_udder',
     'c4': 'stop_connect',
 }
 ext = {
     'alpha': 'alphafuse',
+    'omega': 'omegafuse',
     'udder': 'uddercode',
     'c4': 'connectfour',
 }

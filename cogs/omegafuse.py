@@ -17,49 +17,10 @@ from discord.ext import tasks
 # https://stackoverflow.com/questions/49947814/python-threading-error-must-be-an-iterable-not-int
 # http://www.fileformat.info/info/unicode/char/search.htm
 
-
-# from player import Player
-
-# GLOBAL VARIABLES
-# __VALIDCHANNELS__= [755970868219346984, 515125639406419980, 659284289468366858, 617800636297117829]
-# self.trackedPlayers = {}
-# self.eliminatedPlayers = []
-# self.usedWords = {}
-# self.combinations = ""
-# self.defaultLifeCount = 3
-# self.round = 0
-# self.seconds = [30, 30, 26, 22, 19, 17, 15, 13, 11, 10]
-# self.seconds = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
-# self.seconds = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
-# self.seconds = [25, 25, 25]
-# self.seconds = [20, 20]
-# self.minTime = 20
-# self.seconds = [10, 10]
-# self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
-# self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]
-# self.maxLetters = 8
-# self.winner = []
-
-with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
-    data = json.load(json_file)
-f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
+# with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
+#     data = json.load(json_file)
+# f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
     
-
-
-# class omegaFuseLogic(commands.Cog):
-#     def __init__(self, bot):
-#         self.bot = bot
-#         self.round = self.round
-
-#     async def advance_round(self, number):
-#         self.round += 1
-#         print(self.round)
-
-# class Player(commands.Cog):
-#     def __init__(self, id=''): 
-#         self.id = id
-#         self.lives = 3
-
 
 class OmegaFuse(commands.Cog):
     
@@ -72,14 +33,14 @@ class OmegaFuse(commands.Cog):
         self.context = None        
         self.gameMode = 0
         self.currentLetters = []
-        self.seconds = [20]
-        self.minTime = 20
-        self.letters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15]
+        self.seconds = [10]
+        self.minTime = 10
+        self.letters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19]
         self.trackedPlayers = {}
         self.winner = []
         self.eliminatedPlayers = []
         self.combinations = ""
-        self.maxLetters = 16
+        self.maxLetters = 20
         self.defaultLifeCount = 3
 
 
@@ -94,7 +55,7 @@ class OmegaFuse(commands.Cog):
         res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that **doesn't** contain the displayed letters.\nIf you repeat a word someone else used, you lose a life!\nIf you repeat your own word, there's no penalty.")
         await ctx.send(embed=res)
         self.round = 0
-        self.gameMode = args[0] if len(args) > 0 else 0
+        self.gameMode = int(args[0]) if len(args) > 0 else 0
         self.game = True
         self.timer = 10e22
         self.context = ctx

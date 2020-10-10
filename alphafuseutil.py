@@ -1,7 +1,7 @@
 import time, random, re
 import numpy as np
 
-f = open("words_lower.txt", "r")
+f = open("words_lower_alpha.txt", "r")
 
 # word[:-1] to get rid of \n character
 wordlist = [word[:-1] for word in f]
@@ -231,7 +231,7 @@ def generate_random_string_of_length_unbiased_unique(n):
     Guarantees combinations >= 1.
     """ 
     res = random.sample([chr(int(ord('a') + x)) for x in range(26)], k=n)
-    if combinations(res) == 0:
+    if combinations_inverted(res) == 0:
         return generate_random_string_of_length_unbiased_unique(n)
     return res
 
