@@ -110,8 +110,6 @@ def check_valid(first, second):
     """
     if second not in wordlist or len(second) < 3: 
         return False
-
-    # initial check passed
     fst = {}
     snd = {}
     for x in first: 
@@ -124,15 +122,13 @@ def check_valid(first, second):
             snd.setdefault(x, 1)
         else: 
             snd[x] += 1
-    
-    # return True if fst and snd == fst else False
     for key in fst: 
-        # print(snd[key], fst[key])
         if key not in snd: 
             return False
         if fst[key] > snd[key]:
             return False
     return True
+
 def check_valid_inverted(first, second):
     """
     Given two strings first and second:
@@ -145,6 +141,19 @@ def check_valid_inverted(first, second):
         if char in second:
             return False
     return True
+
+def check_valid_in_order(first, second):
+    """
+    Given two strings first and second:
+    Returns true if second is in the wordlist, len(second) >= 3 
+    and all characters in first appear in-order in second. 
+    """
+    if second not in wordlist or len(second) < 3: 
+        return False
+    pattern = re.compile(list_to_regex(first))
+    if pattern.match(second) != None:
+        return True
+    return False
 
 def check_valid_combinations(first, second):
     """
@@ -163,10 +172,7 @@ def check_valid_combinations(first, second):
             snd.setdefault(x, 1)
         else: 
             snd[x] += 1
-    
-    # return True if fst and snd == fst else False
     for key in fst: 
-        # print(snd[key], fst[key])
         if key not in snd: 
             return False
         if fst[key] > snd[key]:
@@ -182,6 +188,16 @@ def check_valid_combinations_inverted(first, second):
         if x in second:
             return False
     return True
+
+def check_valid_combinations_in_order(first, second):
+    """
+    Given two strings first and second:
+    Returns true if all characters in first appear in-order in second. 
+    """
+    pattern = re.compile(list_to_regex(first))
+    if pattern.match(second) != None:
+        return True
+    return False
 
 def generate_random_string_of_length_biased(n):
     """
@@ -202,14 +218,12 @@ def generate_random_string_of_length_biased_unique(n):
     Returns a list of unique random n letters, biased from cumulative_letter_frequency.
     Guarantees combinations >= 1.
     """ 
-    # res = random.sample([chr(int(ord('a') + x)) for x in range(26)], k=n)
     res = sorted((random.random() * x[0], x[1]) for x in letter_frequency_tuples)
     res = [x[1] for x in res][-n:]
     if combinations_inverted(res) == 0:
         return generate_random_string_of_length_biased_unique(n)
     return res
     
-
 def generate_random_string_of_length_unbiased(n):
     """
     Given an integer n: 
@@ -242,13 +256,25 @@ def binary_search(l, start, end, target):
     In this case, target is not in l, so we don't check l[p] or l[q] == target.
     """
     p, q = start, end
-    # print(p, q, l[int((p + q) / 2)], target)
     if p + 1 == q: 
         return p
     if target <= l[int((p + q) / 2)]:
         return binary_search(l, p, int((p + q) / 2), target)
     else: 
         return binary_search(l, int((p + q) / 2), q, target)
+
+def list_to_regex(l):
+    """
+    Given a string or list l:
+    Returns a regex-able string which will describe strings with the characters in order. 
+    """
+    res = ""
+    for c in l: 
+        res += "[a-z]*"
+        res += c
+        res += "+"
+    res += "[a-z]*"
+    return res
 
 def combinations(l): 
     """
@@ -257,7 +283,6 @@ def combinations(l):
     """
     count = 0
     for word in wordlist:
-        # print(l, word, check_valid_combinations(l, word))
         count += 1 if check_valid_combinations(l, word) else 0
     return count
 
@@ -268,8 +293,17 @@ def combinations_inverted(l):
     """
     count = 0
     for word in wordlist:
-        # print(l, word, check_valid_combinations(l, word))
         count += 1 if check_valid_combinations_inverted(l, word) else 0
+    return count
+
+def combinations_in_order(l):
+    """
+    Given a string or list l: 
+    Returns count of valid possibilities in the wordlist containing letters in l in order.
+    """
+    count = 0
+    for word in wordlist:
+        count += 1 if check_valid_combinations_in_order(l, word) else 0
     return count
 
 def get_random_possibility(l):
@@ -294,6 +328,17 @@ def get_random_possibility_inverted(l):
             combinations.append(word)
     return random.choice(combinations) if combinations is not [] else None
 
+def get_random_possibility_in_order(l):
+    """
+    Given a string or list l:
+    Returns a random valid possibility.
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_in_order(l, word):
+            combinations.append(word)
+    return random.choice(combinations) if combinations is not [] else None
+
 def get_first_possibility(l):
     """
     Given a string or list l:
@@ -314,6 +359,16 @@ def get_first_possibility_inverted(l):
         if check_valid_combinations_inverted(l, word):
             return word
 
+def get_first_possibility_in_order(l):
+    """
+    Given a string or list l:
+    Returns first valid possibility (runs much faster than get_random_possibility(), takes no space)
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_in_order(l, word):
+            return word
+
 def get_many_possibilities(l):
     """
     Given a string or list l:
@@ -323,8 +378,6 @@ def get_many_possibilities(l):
     for word in wordlist:
         if check_valid_combinations(l, word):
             combinations.append(word)
-        # if len(combinations) > 500:
-        #     break
     if len(combinations) > 25:
         return random.sample(combinations, k=25) if combinations != [] else None
     else:
@@ -338,6 +391,20 @@ def get_many_possibilities_inverted(l):
     combinations = []
     for word in wordlist:
         if check_valid_combinations_inverted(l, word):
+            combinations.append(word)
+    if len(combinations) > 25:
+        return random.sample(combinations, k=25) if combinations != [] else None
+    else:
+        return combinations if combinations != [] else None
+
+def get_many_possibilities_in_order(l):
+    """
+    Given a string or list l:
+    Returns up to 25 valid possibilities.
+    """
+    combinations = []
+    for word in wordlist:
+        if check_valid_combinations_in_order(l, word):
             combinations.append(word)
     if len(combinations) > 25:
         return random.sample(combinations, k=25) if combinations != [] else None
@@ -366,17 +433,13 @@ def benchmark_unbiased():
 #     bot.add_cog(alphafuseutil(bot))
 
 # benchmark()
-
-# print(generate_random_string_of_length_biased_unique(26))
-
-
+start = time.time()
+print(get_many_possibilities("mmok"))
+stop = time.time()
+print(stop - start)
 # print(generate_random(1000))
 
 # print(binary_search(cumulative_letter_frequency, 0, len(cumulative_letter_frequency), 0))
-
-
-
-
 
 
 
@@ -390,9 +453,6 @@ def benchmark_unbiased():
 # print(a)
 
 # print([100 * x for x in letter_frequency])
-
-
-
 
 
 # total = 0
