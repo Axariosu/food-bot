@@ -25,17 +25,22 @@ extension
 """
 td = {
     'alpha': 'alpha', 
+    'omega': 'omega',
+    'sigma': 'sigma',
     'udder': 'start_udder', 
     'c4': 'start_connect',
 }
 pd = {
     'alpha': 'stop_alpha', 
     'udder': 'stop_udder',
+    'sigma': 'stop_sigma',
+    'omega': 'stop_omega',
     'c4': 'stop_connect',
 }
 ext = {
     'alpha': 'alphafuse',
     'omega': 'omegafuse',
+    'sigma': 'sigmafuse',
     'udder': 'uddercode',
     'c4': 'connectfour',
 }

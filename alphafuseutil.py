@@ -223,7 +223,20 @@ def generate_random_string_of_length_biased_unique(n):
     if combinations_inverted(res) == 0:
         return generate_random_string_of_length_biased_unique(n)
     return res
-    
+
+def generate_random_string_of_length_biased_in_order(n):
+    """
+    Given an integer n: 
+    Returns a list of random n letters, biased from cumulative_letter_frequency. 
+    Guarantees combinations >= 1.
+    """ 
+    res = []
+    for i in range(n):
+        res.append(chr(int(ord('a') + binary_search(cumulative_letter_frequency, 0, len(cumulative_letter_frequency), random.random()))))
+    if combinations_in_order(res) == 0:
+        return generate_random_string_of_length_biased_in_order(n)
+    return res
+
 def generate_random_string_of_length_unbiased(n):
     """
     Given an integer n: 
@@ -247,6 +260,20 @@ def generate_random_string_of_length_unbiased_unique(n):
     res = random.sample([chr(int(ord('a') + x)) for x in range(26)], k=n)
     if combinations_inverted(res) == 0:
         return generate_random_string_of_length_unbiased_unique(n)
+    return res
+
+def generate_random_string_of_length_unbiased_in_order(n):
+    """
+    Given an integer n: 
+    Returns a list of random n letters. 
+    Guarantees combinations >= 1.
+    """ 
+    res = []
+    for i in range(n):
+        res.append(chr(int(ord('a') + 26 * random.random())))
+    if combinations_in_order(res) == 0:
+        print(res)
+        return generate_random_string_of_length_unbiased_in_order(n)
     return res
 
 def binary_search(l, start, end, target): 
@@ -433,10 +460,10 @@ def benchmark_unbiased():
 #     bot.add_cog(alphafuseutil(bot))
 
 # benchmark()
-start = time.time()
-print(get_many_possibilities("mmok"))
-stop = time.time()
-print(stop - start)
+# start = time.time()
+# print(get_many_possibilities("mmok"))
+# stop = time.time()
+# print(stop - start)
 # print(generate_random(1000))
 
 # print(binary_search(cumulative_letter_frequency, 0, len(cumulative_letter_frequency), 0))

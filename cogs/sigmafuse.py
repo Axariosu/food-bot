@@ -22,7 +22,7 @@ from discord.ext import tasks
 # f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
     
 
-class OmegaFuse(commands.Cog):
+class SigmaFuse(commands.Cog):
     
     def __init__(self, bot):
         self.bot = bot
@@ -33,26 +33,25 @@ class OmegaFuse(commands.Cog):
         self.context = None        
         self.gameMode = 0
         self.currentLetters = []
-        self.seconds = [10]
-        self.minTime = 10
-        self.letters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19]
+        self.seconds = [20]
+        self.minTime = 20
+        self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
         self.trackedPlayers = {}
         self.winner = []
         self.eliminatedPlayers = []
         self.combinations = ""
-        self.maxLetters = 20
+        self.maxLetters = 8
         self.defaultLifeCount = 3
 
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('cog.omegafuse successfully loaded!')
-
+        print('cog.sigmafuse successfully loaded!')
         
-    @commands.command(aliases=['omega'])
-    async def start_omega(self, ctx, *args):
-        res = discord.Embed(title="Starting Omega Fuse!", color=self.generate_random_color())
-        res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that **doesn't** contain the displayed letters.\nIf you repeat a word someone else used, you lose a life!\nIf you repeat your own word, there's no penalty.")
+    @commands.command(aliases=['sigma'])
+    async def start_sigma(self, ctx, *args):
+        res = discord.Embed(title="Starting Sigma Fuse!", color=self.generate_random_color())
+        res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that contains the displayed letters **in order**.\nIf you repeat a word someone else used, you lose a life!\nIf you repeat your own word, there's no penalty.")
         await ctx.send(embed=res)
         self.round = 0
         self.gameMode = int(args[0]) if len(args) > 0 else 0
@@ -62,11 +61,11 @@ class OmegaFuse(commands.Cog):
         self.usedWords = {}
         self.eliminatedPlayers = []
         self.trackedPlayers = {}
-        await self.omega_on(ctx)
+        await self.sigma_on(ctx)
 
     @commands.command()
-    async def stop_omega(self, ctx):
-        res = discord.Embed(title="Stopping Omega Fuse!", color=self.generate_random_color())
+    async def stop_sigma(self, ctx):
+        res = discord.Embed(title="Stopping Sigma Fuse!", color=self.generate_random_color())
         await ctx.send(embed=res)
         self.winner = []
         self.usedWords = {}
@@ -76,7 +75,7 @@ class OmegaFuse(commands.Cog):
         self.timer = 10e22
         self.game = False
 
-    async def omega_on(self, ctx):
+    async def sigma_on(self, ctx):
 
         loop = asyncio.get_running_loop()
 
@@ -85,9 +84,9 @@ class OmegaFuse(commands.Cog):
             # need a submission every round, so we can check that here: 
 
             if self.round >= 2:
-                if self.round == 4 and len(self.trackedPlayers) == 0: 
+                if self.round >= 4 and len(self.trackedPlayers) == 0: 
                     await self.context.send("No one joined!")
-                    await self.stop_omega(ctx)
+                    await self.stop_sigma(ctx)
                 for key, value in self.trackedPlayers.items():
                     if value[0] > 0:
                         self.winner.append(key)
@@ -105,28 +104,28 @@ class OmegaFuse(commands.Cog):
                         winner_res = discord.Embed(title="Winner(s)!", color=self.generate_random_color())
                         winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
                         await ctx.send(embed=winner_res)
-                        await self.stop_omega(ctx)
+                        await self.stop_sigma(ctx)
 
                     self.trackedPlayers[key][1] = False
                     self.winner = []
 
             if self.gameMode == 0:
-                self.currentLetters = alphafuseutil.generate_random_string_of_length_unbiased_unique(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
+                self.currentLetters = alphafuseutil.generate_random_string_of_length_unbiased_in_order(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
             else: 
-                self.currentLetters = alphafuseutil.generate_random_string_of_length_biased_unique(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
-            self.combinations = str(alphafuseutil.combinations_inverted(self.currentLetters))
+                self.currentLetters = alphafuseutil.generate_random_string_of_length_biased_in_order(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
+            self.combinations = str(alphafuseutil.combinations_in_order(self.currentLetters))
             # currentPlayers = ", ".join([x[0] for x in self.trackedPlayers])
             round_timer = str(self.seconds[self.round]) if self.round < len(self.seconds) - 1 else str(self.minTime)
             
             res = discord.Embed(title="Round " + str(self.round), color=self.generate_random_color())
             if self.round == 1:
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
-                res.add_field(name='\u200b', inline=False, value="\nEnter a word **not** containing the letter(s): **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
+                res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s) in order: **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
                 res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + self.combinations + "**")
                 # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x.upper() for x in self.currentLetters]) + "\nValid combinations: " + self.combinations
             else: 
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
-                res.add_field(name='\u200b', inline=False, value="\nEnter a word **not** containing the letter(s): **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
+                res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s) in order: **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
                 res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + self.combinations + "**")
                 res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else "**" + str(x) + "**" + ": " + str(y[0]) + " life" for (x,y) in self.trackedPlayers.items() if str(x) not in self.eliminatedPlayers])))
                 # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x for x in self.currentLetters]) + "\nValid combinations: " + self.combinations + "\nRemaining players: " + ", ".join(list([str(x) + ": " + str(y[0]) + " lives" for (x,y) in self.trackedPlayers.items()]))
@@ -148,31 +147,31 @@ class OmegaFuse(commands.Cog):
                 if (loop.time()) >= self.timer:
                     res = discord.Embed(title="Round over!", color=self.generate_random_color())
                     await ctx.send(embed=res)
-                    await self.omega_on(ctx)
+                    await self.sigma_on(ctx)
                     break
                 await asyncio.sleep(1)
         else:
             self.timer = 10e22
 
     @commands.command()
-    async def omega_random(self, ctx, arg1, brief="Usage: !omega_random <string>", description="Usage: !omega_random <string>, returns a single valid possibility if there exists one at random for the given character combination."):
+    async def sigma_random(self, ctx, arg1, brief="Usage: !sigma_random <string>", description="Usage: !sigma_random <string>, returns a single valid possibility if there exists one at random for the given character combination."):
         """
         Returns one valid word at random that satisfies the given letter combination. 
         """
-        res = discord.Embed(title=alphafuseutil.get_random_possibility(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.get_random_possibility_in_order(arg1), color=self.generate_random_color())
         await ctx.send(embed=res)
 
-    @commands.command(aliases=['o25'])
-    async def omega_25(self, ctx, arg1, brief="Usage: !omega_25 <string>", description="Usage: !omega_25 <string>, returns a list of at most 25 possible combinations for the given character combination."):
+    @commands.command(aliases=['s25'])
+    async def sigma_25(self, ctx, arg1, brief="Usage: !sigma_25 <string>", description="Usage: !sigma_25 <string>, returns a list of at most 25 possible combinations for the given character combination."):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=self.generate_random_color())
-        # res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=self.generate_random_color())
+        # res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)))
         await ctx.send(embed=res)
 
-    # @commands.command(aliases=['ocheck'])
-    # async def omega_check(self, ctx, arg1):
+    # @commands.command(aliases=['scheck'])
+    # async def sigma_check(self, ctx, arg1):
     #     """
     #     Returns "valid" or "invalid" based on the submission. 
     #     """
@@ -187,11 +186,11 @@ class OmegaFuse(commands.Cog):
         return random.randint(0, 256**3-1)
 
     @commands.command()
-    async def omega_poss(self, ctx, arg1, brief="Usage: !omega_poss <string>", description="Usage: !omega_poss <strings>, returns the number of valid possibilities for the given character combination."):
+    async def sigma_poss(self, ctx, arg1, brief="Usage: !sigma_poss <string>", description="Usage: !sigma_poss <strings>, returns the number of valid possibilities for the given character combination."):
         """
         Returns the number of valid combinations for the given letter combination.
         """
-        res = discord.Embed(title=alphafuseutil.combinations(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.combinations_in_order(arg1), color=self.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.Cog.listener()
@@ -200,7 +199,7 @@ class OmegaFuse(commands.Cog):
         This method tracks messages sent by users, specific to certain games. 
         We must add valid attempts 
         """
-        # if omegaFuse is on, the game is already started. 
+        # if sigmaFuse is on, the game is already started. 
         # Precondition: 
         # self.currentLetters is a nonempty list of characters. 
         # We add the message sender to self.trackedPlayers
@@ -218,7 +217,7 @@ class OmegaFuse(commands.Cog):
             # 2) have not submitted a valid word already
             # if message.author.name not in self.eliminatedPlayers and self.trackedPlayers[message.author.name][1] == False:
             if message.author.name not in self.eliminatedPlayers:
-                if alphafuseutil.check_valid_inverted(self.currentLetters, word):
+                if alphafuseutil.check_valid_in_order(self.currentLetters, word):
                     keys = self.usedWords.keys()
 
                     if word in keys:
@@ -250,4 +249,4 @@ class OmegaFuse(commands.Cog):
 
 
 def setup(bot): 
-    bot.add_cog(OmegaFuse(bot))
+    bot.add_cog(SigmaFuse(bot))

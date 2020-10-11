@@ -142,6 +142,9 @@ class AlphaFuse(commands.Cog):
             # need a submission every round, so we can check that here: 
             
             if self.round >= 2:
+                if self.round >= 4 and len(self.trackedPlayers) == 0: 
+                    await self.context.send("No one joined!")
+                    await self.stop_alpha(ctx)
                 # flag = False
                 # trackedPlayersCopy = copy.copy(x=self.trackedPlayers)
                 #  = self.trackedPlayers
@@ -237,11 +240,11 @@ class AlphaFuse(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, color=self.generate_random_color())
-        res.add_field(name=discord.Embed.Empty, inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=self.generate_random_color())
+        # res.add_field(name=discord.Embed.Empty, inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
         await ctx.send(embed=res)
 
-    @commands.command(aliases=['acheck'])
+    @commands.command(aliases=['check'])
     async def alpha_check(self, ctx, arg1):
         """
         Returns "valid" or "invalid" based on the submission. 
