@@ -27,8 +27,9 @@ td = {
     'alpha': 'alpha', 
     'omega': 'omega',
     'sigma': 'sigma',
-    'udder': 'start_udder', 
-    'c4': 'start_connect',
+    'udder': 'udder', 
+    'c4': 'connect',
+    'chain': 'chain',
 }
 pd = {
     'alpha': 'stop_alpha', 
@@ -36,6 +37,7 @@ pd = {
     'sigma': 'stop_sigma',
     'omega': 'stop_omega',
     'c4': 'stop_connect',
+    'chain': 'stop_chain',
 }
 ext = {
     'alpha': 'alphafuse',
@@ -43,6 +45,7 @@ ext = {
     'sigma': 'sigmafuse',
     'udder': 'uddercode',
     'c4': 'connectfour',
+    'chain': 'chainage',
 }
 
 @bot.event

@@ -83,7 +83,7 @@ class ConnectFour(commands.Cog):
         # else: 
         #     self.timer = 10e22
 
-    @commands.command()
+    @commands.command(aliases=['c4', 'connect'])
     async def start_connect(self, ctx):
         self.context = ctx
         res = discord.Embed(title="Starting Connect 4!", color=self.generate_random_color())
