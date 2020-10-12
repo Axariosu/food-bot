@@ -8,8 +8,16 @@ for line in open("words_lower.txt", "r"):
 
 f.close()
 
+a = {"a": 1, "b": 2, "c": 3}
+b = a.copy()
+for k, v in list(a.items()):
+    if v == 1:
+        del a[k]
+print(a)
+print(b)
 
-print(random.sample([x for x in range(20)], k=25))
+
+# print(random.sample([x for x in range(20)], k=25))
 
 # print(os.path.abspath(os.path.join(os.path.dirname(__file__), '../food-bot/storage/tracking.json')))
 # with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../food-bot/storage/tracking.json'))) as json_file:

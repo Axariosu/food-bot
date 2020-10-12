@@ -165,7 +165,7 @@ class ConnectFour(commands.Cog):
             if not board.placePiece(self.emojiMap[reaction.emoji], user):
                 await reaction.message.channel.send("Try again!")
             else: 
-                res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name, color=self.generate_random_color())
+                res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name)
                 res.add_field(name='\u200b', inline=False, value=board.getBoard())
                 await reaction.message.edit(embed=res)
                 (p1, p2) = board.checkWin()

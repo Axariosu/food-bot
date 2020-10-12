@@ -4,7 +4,6 @@ import numpy as np
 
 f = open("words_lower_alpha.txt", "r")
 
-# wordlist = set([word[:-1] for word in f])
 wordlist = set([word[:-1] for word in f])
 # sets, checking member is O(log n)
 # lists, checking member is O(n)

@@ -21,7 +21,6 @@ from discord.ext import tasks
 # with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
 #     data = json.load(json_file)
 # f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
-    
 
 class Chainage(commands.Cog):
     def __init__(self, bot):
@@ -29,25 +28,13 @@ class Chainage(commands.Cog):
         self.game = False
         self.round = 0
         self.maxRound = 10
-        # self.index = 0
         self.timer = 10e22
         self.roundTimer = 10
         self.context = None        
-        # self.gameMode = 0
-        # self.currentLetters = []
-        # self.seconds = [30, 20, 16, 13, 10]
-        # self.minTime = 10
-        # self.letters = [0, 1, 2, 3, 4, 5, 6, 7, 8, 8, 9, 9, 10, 10, 11, 11, 11, 12, 12, 12, 13, 13, 13, 14, 14, 14, 15, 15, 15, 16, 16, 16, 16, 17, 17, 17, 17, 18, 18, 18, 18, 19, 19, 19, 19]
         self.trackedPlayers = {}
-        # self.winner = []
-        # self.eliminatedPlayers = []
         self.currentWord = ""
         self.combinations = ""
         self.usedWords = set()
-        
-        # self.maxLetters = 20
-        # self.defaultLifeCount = 3
-
 
     @commands.Cog.listener()
     async def on_ready(self):
@@ -76,7 +63,7 @@ class Chainage(commands.Cog):
         self.game = False
 
     async def chainage_on(self, ctx):
-
+        
         loop = asyncio.get_running_loop()
         if self.game:
             if self.round == self.maxRound:
@@ -115,7 +102,6 @@ class Chainage(commands.Cog):
         Returns a list of up to 25 neighboring words of the given word.
         """
         res = discord.Embed(title=discord.Embed.Empty, description=", ".join(chainageutil.get_levenshtein_neighbors_possibility(arg1)), color=self.generate_random_color())
-        # res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
         await ctx.send(embed=res)
 
     def generate_random_color(self):
@@ -123,14 +109,6 @@ class Chainage(commands.Cog):
         Returns a value between 0 and 16777215, the max value for int(rgb).
         """
         return random.randint(0, 256**3-1)
-
-    # @commands.command()
-    # async def omega_poss(self, ctx, arg1, brief="Usage: !omega_poss <string>", description="Usage: !omega_poss <strings>, returns the number of valid possibilities for the given character combination."):
-    #     """
-    #     Returns the number of valid combinations for the given letter combination.
-    #     """
-    #     res = discord.Embed(title=alphafuseutil.combinations(arg1), color=self.generate_random_color())
-    #     await ctx.send(embed=res)
 
     @commands.Cog.listener()
     async def on_message(self, message):
