@@ -96,8 +96,9 @@ class Wop(commands.Cog):
             #     return
             self.round += 1
 
-            spaceInsertedWord, self.currentWord[::-1] = powutil.generate_random_word(self.minL, self.maxL)
-            res = discord.Embed(title="woP! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=self.generate_random_color())
+            spaceInsertedWord, self.currentWord = powutil.generate_random_word(self.minL, self.maxL)
+            self.currentWord = self.currentWord[::-1]
+            res = discord.Embed(title="woP! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter **backwards**: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=self.generate_random_color())
             await ctx.send(embed=res)
             
             # start the timer ONLY when all of the above are complete
@@ -147,10 +148,14 @@ class Wop(commands.Cog):
             if self.round == 1:
                 if word == self.currentWord: 
                     self.trackedPlayers[message.author.name] = True
+                # await message.delete()
+                # await channel.send(message.author.name + " you got it!")
             else: 
                 if word == self.currentWord and message.author.name in self.trackedPlayers: 
                     self.trackedPlayers[message.author.name] = True
-            #     await message.add_reaction("✅")
+                # await message.add_reaction("✅")
+                # await message.delete()
+                # await channel.send(message.author.name + " you got it!")
 
 def setup(bot): 
     bot.add_cog(Wop(bot))
