@@ -29,7 +29,7 @@ td = {
     'sigma': 'sigma',
     'udder': 'udder', 
     'c4': 'connect',
-    'chain': 'chain',
+    'chain': 'chainage',
 }
 pd = {
     'alpha': 'stop_alpha', 
@@ -37,7 +37,7 @@ pd = {
     'sigma': 'stop_sigma',
     'omega': 'stop_omega',
     'c4': 'stop_connect',
-    'chain': 'stop_chain',
+    'chain': 'stop_chainage',
 }
 ext = {
     'alpha': 'alphafuse',

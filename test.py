@@ -1,6 +1,6 @@
 import json
 import os
-
+import random
 f = open("words_lower_alpha.txt", "w+")
 for line in open("words_lower.txt", "r"):
     if line.strip().isalpha():
@@ -8,6 +8,8 @@ for line in open("words_lower.txt", "r"):
 
 f.close()
 
+
+print(random.sample([x for x in range(20)], k=25))
 
 # print(os.path.abspath(os.path.join(os.path.dirname(__file__), '../food-bot/storage/tracking.json')))
 # with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../food-bot/storage/tracking.json'))) as json_file:

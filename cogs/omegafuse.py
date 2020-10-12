@@ -43,11 +43,9 @@ class OmegaFuse(commands.Cog):
         self.maxLetters = 20
         self.defaultLifeCount = 3
 
-
     @commands.Cog.listener()
     async def on_ready(self):
         print('cog.omegafuse successfully loaded!')
-
         
     @commands.command(aliases=['omega'])
     async def start_omega(self, ctx, *args):

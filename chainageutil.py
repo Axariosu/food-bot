@@ -77,6 +77,21 @@ def levenshtein_neighbors(s):
         count += 1 if levenshtein_1(s, word) else 0
     return count
 
+def get_levenshtein_neighbors_possibility(s):
+    """
+    Given a string s: 
+    Returns at most 25 neighboring words inside the wordlist with 
+    levenshtein distance 1. 
+    """
+    res = []
+    for word in wordlist:
+        if levenshtein_1(s, word):
+            res.append(word)
+    if len(res) > 25:
+        return random.sample(res, k=25) if res != [] else []
+    else:
+        return res
+
 def generate_random_start():
     """
     Returns a random word in the wordlist such that it has at least 1 neighbor. 

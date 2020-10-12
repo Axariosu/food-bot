@@ -68,8 +68,16 @@ class Board:
         # counta = 0
         # countb = 0
         # print(len(self.board), len(self.board[0]))
-        for row in range(len(self.board)):
-            for col in range(len(self.board[row])):
+        # [
+        # [@ @ @ @ @ @ @]
+        # [@ @ @ @ @ @ @]
+        # [@ @ @ @ @ @ @]
+        # [@ @ @ @ @ @ @]
+        # [@ @ @ @ @ @ @]
+        # [@ @ @ @ @ @ @]
+        #               ]
+        for row in range(len(self.board)): # 0-5
+            for col in range(len(self.board[row])): # 0-6
                 # horizontal
                 if col < self.cols - 3:
                     if (self.board[row][col], self.board[row][col+1], self.board[row][col+2], self.board[row][col+3]) == (1, 1, 1, 1):
@@ -87,19 +95,19 @@ class Board:
                         winFlag = (False, True)
                         # countb += 1
                 # diagonally down
-                if col < self.cols - 3 and row < self.rows - 3:
-                    if (self.board[row][col], self.board[row][col+1], self.board[row][col+2], self.board[row][col+3]) == (1, 1, 1, 1):
+                if row < self.rows - 3 and col < self.cols - 3:
+                    if (self.board[row][col], self.board[row+1][col+1], self.board[row+2][col+2], self.board[row+3][col+3]) == (1, 1, 1, 1):
                         winFlag = (True, False)
                         # counta += 1
-                    if (self.board[row][col], self.board[row][col+1], self.board[row][col+2], self.board[row][col+3]) == (2, 2, 2, 2):
+                    if (self.board[row][col], self.board[row+1][col+1], self.board[row+2][col+2], self.board[row+3][col+3]) == (2, 2, 2, 2):
                         winFlag = (False, True)
                         # countb += 1
                 # diagonally up
-                if col < self.cols - 3 and row < self.rows - 3:
-                    if (self.board[row][col], self.board[row][col-1], self.board[row][col-2], self.board[row][col-3]) == (1, 1, 1, 1):
+                if row >= 3 and col < self.cols - 3:
+                    if (self.board[row][col], self.board[row-1][col+1], self.board[row-2][col+2], self.board[row-3][col+3]) == (1, 1, 1, 1):
                         winFlag = (True, False)
                         # counta += 1
-                    if (self.board[row][col], self.board[row][col-1], self.board[row][col-2], self.board[row][col-3]) == (2, 2, 2, 2):
+                    if (self.board[row][col], self.board[row-1][col+1], self.board[row-2][col+2], self.board[row-3][col+3]) == (2, 2, 2, 2):
                         winFlag = (False, True)
                         # countb += 1
         # print(counta, countb)

@@ -21,7 +21,7 @@ class ConnectFour(commands.Cog):
         self.created_roles = []
         self.tracked_players = []
         self.round_timer = 25
-        self.ready_up = 10
+        self.ready_up = 30
         self.timer = 10e22
         self.emojiMap = {'1️⃣': 0, '2️⃣': 1, '3️⃣': 2, '4️⃣': 3, '5️⃣': 4, '6️⃣': 5, '7️⃣': 6}
 
@@ -170,9 +170,11 @@ class ConnectFour(commands.Cog):
                 await reaction.message.edit(embed=res)
                 (p1, p2) = board.checkWin()
                 if p1:
-                    await reaction.message.channel.send("Player 1 wins!")
+                    res = discord.Embed(name=board.player1.name + " Wins!")
+                    await reaction.message.channel.send(embed=res)
                 if p2: 
-                    await reaction.message.channel.send("Player 2 wins!")
+                    res = discord.Embed(name=board.player2.name + " Wins!")
+                    await reaction.message.channel.send(embed=res)
             
 
     @commands.Cog.listener()
