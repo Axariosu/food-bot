@@ -108,4 +108,4 @@ def benchmark():
 
     return(stop-start)
 
-print(benchmark())
+# print(benchmark())

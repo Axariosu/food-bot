@@ -23,7 +23,7 @@ from discord.ext import tasks
 #     data = json.load(json_file)
 # f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
 
-class Pow(commands.Cog):
+class Wop(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = False
@@ -42,12 +42,12 @@ class Pow(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('cog.pow successfully loaded!')
+        print('cog.wop successfully loaded!')
         
-    @commands.command(aliases=['pow'])
-    async def start_pow(self, ctx, *args):
-        res = discord.Embed(title="Starting Pow!", color=self.generate_random_color())
-        res.add_field(name="Rules", inline=False, value="Players have some time per round to type the word I display!\n")
+    @commands.command(aliases=['wop'])
+    async def start_wop(self, ctx, *args):
+        res = discord.Embed(title="Starting woP!", color=self.generate_random_color())
+        res.add_field(name="Rules", inline=False, value="Players have some time per round to type the word I display **backwards**!\n")
         await ctx.send(embed=res)
         
         # self.maxRound = int(args[0]) if (len(args) > 0 and (1 <= int(args[0]) <= 20)) else 10
@@ -58,18 +58,18 @@ class Pow(commands.Cog):
         self.timer = 10e22
         self.context = ctx
         self.trackedPlayers = {}
-        await self.pow_on(ctx)
+        await self.wop_on(ctx)
 
     @commands.command()
-    async def stop_pow(self, ctx):
-        res = discord.Embed(title="Pow! Over!", color=self.generate_random_color())
+    async def stop_wop(self, ctx):
+        res = discord.Embed(title="woP! Over!", color=self.generate_random_color())
         await ctx.send(embed=res)
         self.trackedPlayers = {}
         self.round = 0
         self.timer = 10e22
         self.game = False
 
-    async def pow_on(self, ctx):
+    async def wop_on(self, ctx):
         self.game = True
         loop = asyncio.get_running_loop()
         if self.game:
@@ -86,7 +86,7 @@ class Pow(commands.Cog):
             if self.round >= 2 and len(self.trackedPlayers) == 0:
                 res = discord.Embed(title="Winners", description="\n".join([x for x in self.trackedPlayersPrevious.keys()]), color=self.generate_random_color())
                 await ctx.send(embed=res)
-                await self.stop_pow(ctx)
+                await self.stop_wop(ctx)
                 return
             # if self.round == self.maxRound:
             #     sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
@@ -96,8 +96,8 @@ class Pow(commands.Cog):
             #     return
             self.round += 1
 
-            spaceInsertedWord, self.currentWord = powutil.generate_random_word(self.minL, self.maxL)
-            res = discord.Embed(title="Pow! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=self.generate_random_color())
+            spaceInsertedWord, self.currentWord[::-1] = powutil.generate_random_word(self.minL, self.maxL)
+            res = discord.Embed(title="woP! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=self.generate_random_color())
             await ctx.send(embed=res)
             
             # start the timer ONLY when all of the above are complete
@@ -112,11 +112,11 @@ class Pow(commands.Cog):
                     res = discord.Embed(title="Round over!", color=self.generate_random_color())
                     self.game = False
                     await ctx.send(embed=res)
-                    await self.pow_on(ctx)
+                    await self.wop_on(ctx)
                     # self.timer = 10e22
                     break
                 await asyncio.sleep(0.5)
-            await asyncio.sleep(2)
+            await asyncio.sleep(3)
         else:
             self.timer = 10e22
 
@@ -153,4 +153,4 @@ class Pow(commands.Cog):
             #     await message.add_reaction("✅")
 
 def setup(bot): 
-    bot.add_cog(Pow(bot))
+    bot.add_cog(Wop(bot))

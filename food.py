@@ -30,6 +30,8 @@ td = {
     'udder': 'udder', 
     'c4': 'connect',
     'chain': 'chainage',
+    'pow': 'pow',
+    'wop': 'wop',
 }
 pd = {
     'alpha': 'stop_alpha', 
@@ -38,6 +40,8 @@ pd = {
     'omega': 'stop_omega',
     'c4': 'stop_connect',
     'chain': 'stop_chainage',
+    'pow': 'stop_pow',
+    'wop': 'stop_wop',
 }
 ext = {
     'alpha': 'alphafuse',
@@ -46,6 +50,8 @@ ext = {
     'udder': 'uddercode',
     'c4': 'connectfour',
     'chain': 'chainage',
+    'pow': 'pow', 
+    'wop': 'wop',
 }
 
 @bot.event
@@ -63,16 +69,26 @@ async def quit(ctx):
 
 @bot.command()
 async def load(ctx, extension):
-    bot.load_extension(f'cogs.{ext[extension]}')
+    if extension in ext:
+        bot.load_extension(f'cogs.{ext[extension]}')
+    else:
+        bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
 async def unload(ctx, extension):
-    bot.unload_extension(f'cogs.{ext[extension]}')
+    if extension in ext:
+        bot.unload_extension(f'cogs.{ext[extension]}')
+    else:
+        bot.unload_extension(f'cogs.{extension}')
 
 @bot.command()
 async def reload(ctx, extension):
-    bot.unload_extension(f'cogs.{ext[extension]}')
-    bot.load_extension(f'cogs.{ext[extension]}')
+    if extension in ext:
+        bot.unload_extension(f'cogs.{ext[extension]}')
+        bot.load_extension(f'cogs.{ext[extension]}')
+    else:
+        bot.unload_extension(f'cogs.{extension}')
+        bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
 async def avatar(ctx, *, avamember : discord.Member=None):
