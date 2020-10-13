@@ -147,14 +147,14 @@ class Pow(commands.Cog):
             if self.round == 1:
                 if word == self.currentWord: 
                     self.trackedPlayers[message.author.name] = True
-                await message.delete()
-                await channel.send(message.author.name + " you got it!")
+                # await message.delete()
+                # await channel.send(message.author.name + " you got it!")
             else: 
                 if word == self.currentWord and message.author.name in self.trackedPlayers: 
                     self.trackedPlayers[message.author.name] = True
-            # await message.add_reaction("✅")
-                await message.delete()
-                await channel.send(message.author.name + " you got it!")
+                # await message.add_reaction("✅")
+                # await message.delete()
+                # await channel.send(message.author.name + " you got it!")
 
 def setup(bot): 
     bot.add_cog(Pow(bot))

@@ -32,7 +32,7 @@ class Wop(commands.Cog):
         self.timer = 10e22
         self.roundTimer = [0, 21, 18, 15, 13, 11, 10, 9, 8, 7, 6, 6, 5, 5, 5, 4, 4, 4, 4, 3, 3, 3, 3, 3, 2, 2, 2, 2, 2]
         self.minTime = 2
-        self.context = None        
+        self.context = None
         self.trackedPlayers = {}
         self.trackedPlayersPrevious = {}
         self.currentWord = ""

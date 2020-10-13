@@ -21,7 +21,7 @@ bot = commands.Bot(command_prefix="!")
 Two dictionaries to start and stop games.
 startdict (sd)
 stopdict (pd)
-extension 
+extension (ext)
 """
 td = {
     'alpha': 'alpha', 
@@ -30,8 +30,10 @@ td = {
     'udder': 'udder', 
     'c4': 'connect',
     'chain': 'chainage',
+    'chainage': 'chainage',
     'pow': 'pow',
     'wop': 'wop',
+    'unscramble': 'unscramble',
 }
 pd = {
     'alpha': 'stop_alpha', 
@@ -40,8 +42,10 @@ pd = {
     'omega': 'stop_omega',
     'c4': 'stop_connect',
     'chain': 'stop_chainage',
+    'chainage': 'stop_chainage',
     'pow': 'stop_pow',
     'wop': 'stop_wop',
+    'unscramble': 'stop_unscramble',
 }
 ext = {
     'alpha': 'alphafuse',
@@ -50,8 +54,10 @@ ext = {
     'udder': 'uddercode',
     'c4': 'connectfour',
     'chain': 'chainage',
+    'chainage': 'chainage',
     'pow': 'pow', 
     'wop': 'wop',
+    'unscramble': 'unscramble',
 }
 
 @bot.event
