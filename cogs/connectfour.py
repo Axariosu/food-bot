@@ -163,17 +163,17 @@ class ConnectFour(commands.Cog):
         if reaction.message.channel in self.created_channels and not user.bot:
             board = self.created_channels[reaction.message.channel]
             if not board.placePiece(self.emojiMap[reaction.emoji], user):
-                await reaction.message.channel.send("Try again!")
+                pass
             else: 
                 res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name)
                 res.add_field(name='\u200b', inline=False, value=board.getBoard())
                 await reaction.message.edit(embed=res)
                 (p1, p2) = board.checkWin()
                 if p1:
-                    res = discord.Embed(name=board.player1.name + " Wins!")
+                    res = discord.Embed(name=board.player1.name + " Wins!", color=self.generate_random_color())
                     await reaction.message.channel.send(embed=res)
                 if p2: 
-                    res = discord.Embed(name=board.player2.name + " Wins!")
+                    res = discord.Embed(name=board.player2.name + " Wins!", color=self.generate_random_color())
                     await reaction.message.channel.send(embed=res)
             
 
