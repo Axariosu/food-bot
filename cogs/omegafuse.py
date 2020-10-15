@@ -24,7 +24,6 @@ from discord.ext import tasks
     
 
 class OmegaFuse(commands.Cog):
-    
     def __init__(self, bot):
         self.bot = bot
         self.game = False

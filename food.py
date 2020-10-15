@@ -112,6 +112,12 @@ async def commandlist(ctx):
     helptext+="```"
     await ctx.send(helptext)
 
+for filename in os.listdir('./cogs'):
+    # if filename in __COGS__:
+    #     bot.load_extension(f'cogs.alphafuse.py'[:-3])
+    if filename != "__pycache__":
+        bot.load_extension(f'cogs.{filename[:-3]}')
+
 # @bot.command()
 # async def gamequeue(ctx, *args):
     
@@ -123,11 +129,7 @@ async def commandlist(ctx):
 #         # for c in cog:
 #             # print(c.commands)
 
-for filename in os.listdir('./cogs'):
-    # if filename in __COGS__:
-    #     bot.load_extension(f'cogs.alphafuse.py'[:-3])
-    if filename != "__pycache__":
-        bot.load_extension(f'cogs.{filename[:-3]}')
+
 
 # _mentions_transforms = {
 #     '@everyone': '@\u200beveryone',

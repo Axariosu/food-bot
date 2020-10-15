@@ -38,11 +38,13 @@ class AlphaFuse(commands.Cog):
         self.minTime = 20
         self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
         self.trackedPlayers = {}
+        self.trackedPlayersPrevious = {}
         self.winner = []
         self.eliminatedPlayers = []
         self.combinations = ""
         self.maxLetters = 8
         self.defaultLifeCount = 3
+        self.sleep = 1
         # self.server = server
         # self.round = 0
         # self.ingame = []
@@ -110,28 +112,54 @@ class AlphaFuse(commands.Cog):
                 # flag = False
                 # trackedPlayersCopy = copy.copy(x=self.trackedPlayers)
                 #  = self.trackedPlayers
-                for key, value in self.trackedPlayers.items():
-                    if value[0] > 0:
-                        self.winner.append(key)
-                    # if they didn't submit a word in the previous round, remove a life
-                    # if they have 0 lives, pop the key from the backup. 
-                    # We check the backup to see if it's empty-- if it is, then we return 
-                    if self.trackedPlayers[key][1] == False:
-                        self.trackedPlayers[key][0] -= 1 if self.trackedPlayers[key][0] > 0 else 0
-                    
-                    if self.trackedPlayers[key][0] == 0 and key not in self.eliminatedPlayers:
-                        self.eliminatedPlayers.append(key)
-                            # trackedPlayersCopy.pop(key)
-                    # Reset the submitted flag to false, reset self.winner.
-                    if len(self.trackedPlayers) == len(self.eliminatedPlayers):
-                        
-                        winner_res = discord.Embed(title="Winner(s)!", color=util.generate_random_color())
-                        winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
-                        await ctx.send(embed=winner_res)
-                        await self.stop_alpha(ctx)
 
-                    self.trackedPlayers[key][1] = False
-                    self.winner = []
+
+                self.trackedPlayersPrevious = self.trackedPlayers.copy()
+                for k, v in list(self.trackedPlayers.items()):
+                    # v is a tuple of (lives, submitted_previous)
+                    lives, submitted_previous = v
+                    if not submitted_previous:
+                        lives -= 1
+                    else: 
+                        submitted_previous = False
+                    
+                    if lives == 0:
+                        del self.trackedPlayers[k]
+                
+                if self.round >= 2 and len(self.trackedPlayers) == 0:
+                    res = discord.Embed(title="Winners", description="\n".join([x for x in self.trackedPlayersPrevious.keys()]), color=util.generate_random_color())
+                    await ctx.send(embed=res)
+                    await asyncio.sleep(self.sleep)
+                    await self.stop_alpha(ctx)
+                    return
+
+                    # if not submitted:
+                    #     del self.trackedPlayers[player]
+                    # else: 
+                    #     self.trackedPlayers[player] = False
+
+                # for key, value in self.trackedPlayers.items():
+                #     if value[0] > 0:
+                #         self.winner.append(key)
+                #     # if they didn't submit a word in the previous round, remove a life
+                #     # if they have 0 lives, pop the key from the backup. 
+                #     # We check the backup to see if it's empty-- if it is, then we return 
+                #     if self.trackedPlayers[key][1] == False:
+                #         self.trackedPlayers[key][0] -= 1 if self.trackedPlayers[key][0] > 0 else 0
+                    
+                #     if self.trackedPlayers[key][0] == 0 and key not in self.eliminatedPlayers:
+                #         self.eliminatedPlayers.append(key)
+                #             # trackedPlayersCopy.pop(key)
+                #     # Reset the submitted flag to false, reset self.winner.
+                #     if len(self.trackedPlayers) == len(self.eliminatedPlayers):
+                        
+                #         winner_res = discord.Embed(title="Winner(s)!", color=util.generate_random_color())
+                #         winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
+                #         await ctx.send(embed=winner_res)
+                #         await self.stop_alpha(ctx)
+
+                #     self.trackedPlayers[key][1] = False
+                #     self.winner = []
 
             if self.gameMode == 0:
                 self.currentLetters = alphafuseutil.generate_random_string_of_length_unbiased(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
@@ -318,8 +346,6 @@ class AlphaFuse(commands.Cog):
                             if self.round <= 3:
                                 self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount + 1 - self.round, True])
                                 self.usedWords.setdefault(word, (message.author.name, self.round))
-                        # \u2705 : https://www.fileformat.info/info/unicode/char/2705/index.htm
-                        # Unicode Character 'WHITE HEAVY CHECK MARK' (U+2705)
                                 await message.add_reaction("\u2705")
                             # await channel.send("Valid submission, " + message.author.name + "!")
                         else: 

@@ -14,62 +14,47 @@ from discord.ext import commands
 from discord.ext import tasks
 
 
-class GameQueue(commands.Cog):
+class Gamerizer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.queue = queue.deque()
-        self.current_game_is_running = False
         self.current_game = None
         self.context = None
         self.game = False
-        self.timer = 1e22
-        self.check_every = 5
         self.sleep = 3
+        self.round = 0
+        self.games = 0
     
     @commands.command()
     async def gamerizer_on(self, ctx):
-        # loop = asyncio.get_running_loop()
-        # print(queue.deque())
-        
-        if not self.queue: # if queue is empty
+        if not self.queue: 
             await self.stop_gamerizer(ctx)
             return
         else: 
             self.current_game = self.queue.popleft() 
-            
-            res = discord.Embed(title="Next Game: ", description=self.current_game, color=util.generate_random_color())
+            self.round += 1
+            res = discord.Embed(title="Game " + str(self.round) + " of " + str(self.games) + ": " + str(self.current_game), color=util.generate_random_color())
             await ctx.send(embed=res)
+            await asyncio.sleep(self.sleep)
 
             current_cog = self.bot.get_cog(self.current_game)
-            
             command_to_invoke = [x.name for x in current_cog.get_commands() if x.name.startswith("start_")][0]
+
             await ctx.invoke(self.bot.get_command(command_to_invoke))
             await self.gamerizer_on(ctx)
-        # self.timer = loop.time() + self.check_every # checks whether previous game is still running, every check_every seconds
-        # print("here3")
-        # while self.game:
-        #     if loop.time() >= self.timer:
-        #         print("here4")
-        #         # res = discord.Embed(title="Round over!", color=util.generate_random_color())
-        #         self.game = False
-        #         # await ctx.send(embed=res)
-        #         # self.timer = 10e22
-        #         break
-        #     await asyncio.sleep(1)
-        # await asyncio.sleep(3)
 
     @commands.command(aliases=['gamerizer', 'gamer'])
     async def start_gamerizer(self, ctx, *args): 
         self.game = True
         self.context = ctx
-        # cogs = list(self.bot.cogs)
-        cogs = ["Pow", "Wop"]
-        # cogs.remove("GameQueue") # don't include self
+        cogs = list(self.bot.cogs)
+        self.games = 5 if len(args) == 0 else int(args[0])
+        cogs.remove("Gamerizer") # don't include self
 
         for item in cogs: 
             self.queue.append(item)
 
-        res = discord.Embed(title="Gamerizer Started!", description="Loaded " + str(args[0]) + " games!", color=util.generate_random_color())
+        res = discord.Embed(title="Gamerizer Started!", description=util.bold("Loaded " + str(self.games) + " games!"), color=util.generate_random_color())
         await ctx.send(embed=res)
         await asyncio.sleep(self.sleep)
         await self.gamerizer_on(ctx)
@@ -79,13 +64,16 @@ class GameQueue(commands.Cog):
         # else: 
         #     await ctx.send("Too many arguments, expected 1")
 
-    @commands.command()
-    async def add_game(self, ctx, arg1):
+    @commands.command(aliases=['q'])
+    async def queue(self, ctx, arg1):
         if self.game:
             if arg1 in self.bot.cogs:
                 self.queue.append(arg1)
+            self.games += 1
+            await ctx.message.add_reaction('✅')
         else: 
-            res = discord.Embed(title="Gamerizer not currently active, sorry!", color=util.generate_random_color())
+            res = discord.Embed(title="Gamerizer not currently active, I can't queue games!", color=util.generate_random_color())
+            await ctx.send(embed=res)
 
     @commands.command()
     async def stop_gamerizer(self, ctx):
@@ -105,4 +93,4 @@ class GameQueue(commands.Cog):
     
 
 def setup(bot): 
-    bot.add_cog(GameQueue(bot))
+    bot.add_cog(Gamerizer(bot))
