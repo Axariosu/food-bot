@@ -39,8 +39,6 @@ class AlphaFuse(commands.Cog):
         self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
         self.trackedPlayers = {}
         self.trackedPlayersPrevious = {}
-        self.winner = []
-        self.eliminatedPlayers = []
         self.combinations = ""
         self.maxLetters = 8
         self.defaultLifeCount = 3
@@ -77,7 +75,6 @@ class AlphaFuse(commands.Cog):
         self.timer = 10e22
         self.context = ctx
         self.usedWords = {}
-        self.eliminatedPlayers = []
         self.trackedPlayers = {}
         self.gameMode = args[0] if len(args) > 0 else 0
         await self.alpha_on(ctx)
@@ -86,9 +83,7 @@ class AlphaFuse(commands.Cog):
     async def stop_alpha(self, ctx):
         res = discord.Embed(title="Stopping Alpha Fuse!", color=util.generate_random_color())
         await ctx.send(embed=res)
-        self.winner = []
         self.usedWords = {}
-        self.eliminatedPlayers = []
         self.trackedPlayers = {}
         self.round = 0
         self.timer = 10e22
@@ -109,21 +104,15 @@ class AlphaFuse(commands.Cog):
                 if self.round >= 4 and len(self.trackedPlayers) == 0: 
                     await self.context.send("No one joined!")
                     await self.stop_alpha(ctx)
-                # flag = False
-                # trackedPlayersCopy = copy.copy(x=self.trackedPlayers)
-                #  = self.trackedPlayers
-
 
                 self.trackedPlayersPrevious = self.trackedPlayers.copy()
                 for k, v in list(self.trackedPlayers.items()):
                     # v is a tuple of (lives, submitted_previous)
                     lives, submitted_previous = v
                     if not submitted_previous:
-                        lives -= 1
-                    else: 
-                        submitted_previous = False
-                    
-                    if lives == 0:
+                        self.trackedPlayers[k][0] -= 1
+                    self.trackedPlayers[k][1] = False
+                    if self.trackedPlayers[k][0] == 0:
                         del self.trackedPlayers[k]
                 
                 if self.round >= 2 and len(self.trackedPlayers) == 0:
@@ -132,34 +121,6 @@ class AlphaFuse(commands.Cog):
                     await asyncio.sleep(self.sleep)
                     await self.stop_alpha(ctx)
                     return
-
-                    # if not submitted:
-                    #     del self.trackedPlayers[player]
-                    # else: 
-                    #     self.trackedPlayers[player] = False
-
-                # for key, value in self.trackedPlayers.items():
-                #     if value[0] > 0:
-                #         self.winner.append(key)
-                #     # if they didn't submit a word in the previous round, remove a life
-                #     # if they have 0 lives, pop the key from the backup. 
-                #     # We check the backup to see if it's empty-- if it is, then we return 
-                #     if self.trackedPlayers[key][1] == False:
-                #         self.trackedPlayers[key][0] -= 1 if self.trackedPlayers[key][0] > 0 else 0
-                    
-                #     if self.trackedPlayers[key][0] == 0 and key not in self.eliminatedPlayers:
-                #         self.eliminatedPlayers.append(key)
-                #             # trackedPlayersCopy.pop(key)
-                #     # Reset the submitted flag to false, reset self.winner.
-                #     if len(self.trackedPlayers) == len(self.eliminatedPlayers):
-                        
-                #         winner_res = discord.Embed(title="Winner(s)!", color=util.generate_random_color())
-                #         winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
-                #         await ctx.send(embed=winner_res)
-                #         await self.stop_alpha(ctx)
-
-                #     self.trackedPlayers[key][1] = False
-                #     self.winner = []
 
             if self.gameMode == 0:
                 self.currentLetters = alphafuseutil.generate_random_string_of_length_unbiased(self.letters[self.round] if self.round < len(self.letters) - 1 else self.maxLetters)
@@ -179,7 +140,7 @@ class AlphaFuse(commands.Cog):
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
                 res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s): **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
                 res.add_field(name='\u200b', inline=False, value="\nValid combinations: **" + self.combinations + "**")
-                res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else "**" + str(x) + "**" + ": " + str(y[0]) + " life" for (x,y) in self.trackedPlayers.items() if str(x) not in self.eliminatedPlayers])))
+                res.add_field(name='\u200b', inline=False, value="\nRemaining players: " + ", ".join(list(["**" + str(x) + "**" + ": " + str(y[0]) + " lives" if y[0] > 1 else "**" + str(x) + "**" + ": " + str(y[0]) + " life" for (x,y) in self.trackedPlayers.items()])))
                 # res = "Round " + str(self.round) + "\nYou have " + round_timer + " second(s) to find a word! Good luck!" + "\nEnter a word containing the letter(s): " + ", ".join([x for x in self.currentLetters]) + "\nValid combinations: " + self.combinations + "\nRemaining players: " + ", ".join(list([str(x) + ": " + str(y[0]) + " lives" for (x,y) in self.trackedPlayers.items()]))
             
             # await asyncio.sleep(2)
@@ -306,59 +267,57 @@ class AlphaFuse(commands.Cog):
             # 1) they are not eliminated
             # 2) have not submitted a valid word already
             # if message.author.name not in self.eliminatedPlayers and self.trackedPlayers[message.author.name][1] == False:
-            if message.author.name not in self.eliminatedPlayers:
-                if alphafuseutil.check_valid(self.currentLetters, word):
-                    # if self.usedWords is not {}:
-                    keys = self.usedWords.keys()
-                    # values = self.usedWords.values()
-                    # if the word is already used
-                    
-                    # register player. 
-                    # if the player joins on round 1, they have three lives. 
-                    # if the player joins on round 2, they have two lives. 
-                    # if the player joins on round 3, they have one life. 
-                    # if message.author.name not in self.trackedPlayers.keys():
-                    #     if 0 < self.round < 4:
-                            
-                    #         self.trackedPlayers.setdefault(message.author.name, self.defaultLifeCount + 1 - self.round)
-                    # else:
-                    #     self.trackedPlayers[message.author.name] -= 1
+            # if message.author.name not in self.eliminatedPlayers:
+            if alphafuseutil.check_valid(self.currentLetters, word):
+                # if self.usedWords is not {}:
+                keys = self.usedWords.keys()
+                # values = self.usedWords.values()
+                # if the word is already used
+                
+                # register player. 
+                # if the player joins on round 1, they have three lives. 
+                # if the player joins on round 2, they have two lives. 
+                # if the player joins on round 3, they have one life. 
+                # if message.author.name not in self.trackedPlayers.keys():
+                #     if 0 < self.round < 4:
+                        
+                #         self.trackedPlayers.setdefault(message.author.name, self.defaultLifeCount + 1 - self.round)
+                # else:
+                #     self.trackedPlayers[message.author.name] -= 1
 
-                    if word in keys:
-                        # u\U0001F187 : http://www.fileformat.info/info/unicode/char/1f187/index.htm
-                        # Unicode Character 'NEGATIVE SQUARED LATIN CAPITAL LETTER X' (U+1F187)
-                        await message.add_reaction("\u274C")
-                        user, rnd = self.usedWords[word]
-                        if message.author.name == user:
-                            await channel.send("What " + user + "? You already used this word in round " + str(rnd) + "! Use another word! (no penalty)")
-                        else:
-                            if self.round <= 3:
-                                if message.author.name not in self.trackedPlayers:
-                                    self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount - self.round, True])
-                                self.usedWords.setdefault(word, (message.author.name, self.round))
-                                self.trackedPlayers[message.author.name][0] -= 1 if self.trackedPlayers[message.author.name][0] > 0 else 0
-                                self.trackedPlayers[message.author.name][1] = True
-                                await channel.send("Unlucky, **" + word + "** was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
-                    
-                    else: 
-                        # if 0 < self.round < 4:
-                        if message.author.name not in self.trackedPlayers:
-                            if self.round <= 3:
-                                self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount + 1 - self.round, True])
-                                self.usedWords.setdefault(word, (message.author.name, self.round))
-                                await message.add_reaction("\u2705")
-                            # await channel.send("Valid submission, " + message.author.name + "!")
-                        else: 
-                            # self.trackedPlayers.setdefault(message.author.name, self.defaultLifeCount + 1 - self.round)
-                            # (names, rnd) = self.usedWords.values()
-                            # if (message.author.name, self.round) in self.usedWords.values():
-                            #     self.trackedPlayers[message.author.name] -= 1
-                            #     await message.add_reaction("\u274C")
-                            #     await channel.send("Hey! You already submitted a word this round! (-1 life)")
-                            # else:
-                            self.usedWords.setdefault(word, (message.author.name, self.round))
+                if word in keys:
+                    await message.add_reaction('❌')
+                    user, rnd = self.usedWords[word]
+                    if message.author.name == user:
+                        await channel.send("What " + user + "? You already used this word in round " + str(rnd) + "! Use another word! (no penalty)")
+                    else:
+                        if self.round <= 3:
+                            if message.author.name not in self.trackedPlayers:
+                                self.trackedPlayers[message.author.name] = (self.defaultLifeCount - self.round, True)
+                            self.usedWords[word] = (message.author.name, self.round)
+                            self.trackedPlayers[message.author.name][0] -= 1 if self.trackedPlayers[message.author.name][0] > 0 else 0
                             self.trackedPlayers[message.author.name][1] = True
-                            await message.add_reaction("\u2705")
+                            await channel.send("Unlucky, **" + word + "** was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
+                
+                else: 
+                    # if 0 < self.round < 4:
+                    if message.author.name not in self.trackedPlayers:
+                        if self.round <= 3:
+                            self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount + 1 - self.round, True])
+                            self.usedWords.setdefault(word, (message.author.name, self.round))
+                            await message.add_reaction('✅')
+                        # await channel.send("Valid submission, " + message.author.name + "!")
+                    else: 
+                        # self.trackedPlayers.setdefault(message.author.name, self.defaultLifeCount + 1 - self.round)
+                        # (names, rnd) = self.usedWords.values()
+                        # if (message.author.name, self.round) in self.usedWords.values():
+                        #     self.trackedPlayers[message.author.name] -= 1
+                        #     await message.add_reaction("\u274C")
+                        #     await channel.send("Hey! You already submitted a word this round! (-1 life)")
+                        # else: 
+                        self.usedWords[word] = (message.author.name, self.round)
+                        self.trackedPlayers[message.author.name][1] = True
+                        await message.add_reaction('✅')
 
 
 

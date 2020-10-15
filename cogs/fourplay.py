@@ -1,5 +1,5 @@
 
-import util.connectfourutil as connectfourutil
+import util.fourplayutil as fourplayutil
 import util.util as util
 import uuid
 import discord
@@ -11,7 +11,7 @@ from discord.ext import commands
 
 # https://emojipedia.org/
 
-class ConnectFour(commands.Cog):
+class Fourplay(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = False
@@ -84,10 +84,10 @@ class ConnectFour(commands.Cog):
         # else: 
         #     self.timer = 10e22
 
-    @commands.command(aliases=['c4', 'connect'])
-    async def start_connect(self, ctx):
+    @commands.command(aliases=['4p', 'c4', 'connect'])
+    async def start_fourplay(self, ctx):
         self.context = ctx
-        res = discord.Embed(title="Starting Connect 4!", color=util.generate_random_color())
+        res = discord.Embed(title="Starting Fourplay!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="You have **" + str(self.ready_up) + "** seconds to join! React to this message to play!\nIf there are an odd number of players, one of you won't have an opponent. That one person will play me instead!")
         res.add_field(name="How to Win", inline=False, value="Line up **4** chips against your opponent, and you win!")
         res.add_field(name="Time Control", inline=False, value="If your opponent doesn't respond within **15** seconds, I will make a move for them!")
@@ -127,7 +127,7 @@ class ConnectFour(commands.Cog):
 
             channel = await guild.create_text_channel(uuid_short, overwrites=overwrites, topic="Secret channel just for and your opponent! (and admins)")
             
-            b = connectfourutil.Board()
+            b = fourplayutil.Board()
             b.player1 = self.tracked_players[i]
             b.player2 = self.tracked_players[i+1]
 
@@ -140,7 +140,7 @@ class ConnectFour(commands.Cog):
 
     @commands.command()
     async def stop_connect(self, ctx):
-        res = discord.Embed(title="Connect Four over!", color=util.generate_random_color())
+        res = discord.Embed(title="Fourplay over!", color=util.generate_random_color())
         await ctx.send(embed=res)
 
         for channel in self.created_channels:
@@ -152,7 +152,6 @@ class ConnectFour(commands.Cog):
         self.tracked_players = []
         self.timer = 1e22
         self.game = False
-        
 
     @commands.Cog.listener()
     async def on_reaction_add(self, reaction, user):
@@ -177,7 +176,6 @@ class ConnectFour(commands.Cog):
                     res = discord.Embed(name=board.player2.name + " Wins!", color=util.generate_random_color())
                     await reaction.message.channel.send(embed=res)
             
-
     @commands.Cog.listener()
     async def on_reaction_remove(self, reaction, user):
         if reaction.message.id == self.msgid and not user.bot:
@@ -197,11 +195,6 @@ class ConnectFour(commands.Cog):
                 await message.channel.send(board.getBoard())
 
 
-    def generate_random_color(self):
-        """
-        Returns a value between 0 and 16777215, the max value for int(rgb).
-        """
-        return random.randint(0, 256**3-1)
 
 def setup(bot): 
-    bot.add_cog(ConnectFour(bot))
+    bot.add_cog(Fourplay(bot))
