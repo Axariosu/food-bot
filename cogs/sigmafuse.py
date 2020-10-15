@@ -1,6 +1,6 @@
 import discord
 import asyncio
-import alphafuseutil
+import util.alphafuseutil
 import time
 import queue
 import json

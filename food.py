@@ -110,6 +110,14 @@ async def start(ctx, arg1):
 async def stop(ctx, arg1):
     await ctx.invoke(bot.get_command(pd[arg1]))
 
+@bot.command(description="Returns all commands available")
+async def commandlist(ctx):
+    helptext = "```"
+    for command in bot.commands:
+        helptext+=f"{command}\n"
+    helptext+="```"
+    await ctx.send(helptext)
+
 for filename in os.listdir('./cogs'):
     # if filename in __COGS__:
     #     bot.load_extension(f'cogs.alphafuse.py'[:-3])

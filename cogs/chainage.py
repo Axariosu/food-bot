@@ -1,6 +1,6 @@
 import discord
 import asyncio
-import chainageutil
+import util.chainageutil
 import time
 import queue
 import json

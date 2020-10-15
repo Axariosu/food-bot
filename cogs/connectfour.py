@@ -1,5 +1,5 @@
 
-import connectfourutil
+import util.connectfourutil
 import uuid
 import discord
 import asyncio

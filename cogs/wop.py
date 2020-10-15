@@ -1,6 +1,6 @@
 import discord
 import asyncio
-import powutil
+import util.powutil
 import time
 import queue
 import json
@@ -10,7 +10,7 @@ import copy
 import random
 import math
 # import player
-from player import Player
+# from player import Player
 from discord.ext import commands
 from discord.ext import tasks
 

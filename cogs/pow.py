@@ -1,6 +1,6 @@
 import discord
 import asyncio
-import powutil
+import util.powutil
 import time
 import queue
 import json

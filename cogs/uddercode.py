@@ -1,5 +1,5 @@
 
-import uddercodeutil
+import util.uddercodeutil
 import uuid
 import discord
 import asyncio
