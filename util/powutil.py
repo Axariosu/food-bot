@@ -8,20 +8,33 @@ wordlist = set([word[:-1] for word in f])
 def generate_random_word(minL, maxL):
     """
     Given two integers minL, maxL:
-    Returns a tuple of (space_inserted word, original_word) at random 
+    Returns a tuple of (word, original_word) at random 
     with at least minL characters and at most maxL characters.
     """
     res = random.sample(wordlist, k=1)[0]
     return (insert_zero_width_space(res), res) if minL <= len(res) <= maxL else generate_random_word(minL, maxL)
 
-# def generate_random_word_reversed(minL, maxL):
-#     """
-#     Given two integers minL, maxL:
-#     Returns a tuple of (reversed_word, original_word) at random 
-#     with at least minL characters and at most maxL characters.
-#     """
-#     res = random.sample(wordlist, k=1)[0]
-#     return res[::-1] if 3 <= len(res) <= 20 else generate_random_word_reversed()
+def generate_random_word_alphabetized(minL, maxL):
+    """
+    Given two integers minL, maxL:
+    Returns a tuple of (alphabetised_word, original_word) at random 
+    with at least minL characters and at most maxL characters.
+    """
+    res = random.sample(wordlist, k=1)[0]
+    original_word = "".join(res)
+    res = sorted(res)
+    return (insert_zero_width_space("".join(res)), original_word) if minL <= len(res) <= maxL else generate_random_word_alphabetized(minL, maxL)
+
+def generate_random_word_alphabetized_reversed(minL, maxL):
+    """
+    Given two integers minL, maxL:
+    Returns a tuple of (reversed_alphabetised_word, original_word) at random 
+    with at least minL characters and at most maxL characters.
+    """
+    res = random.sample(wordlist, k=1)[0]
+    original_word = "".join(res)
+    res = sorted(res)
+    return (insert_zero_width_space("".join(res))[::-1], original_word) if minL <= len(res) <= maxL else generate_random_word_alphabetized_reversed(minL, maxL)
 
 def generate_random_word_scrambled(minL, maxL):
     """
@@ -36,6 +49,8 @@ def generate_random_word_scrambled(minL, maxL):
 
 def insert_zero_width_space(word):
     return '\u200b'.join([x for x in word])
+
+# print(generate_random_word_alphabetized_reversed(5, 20))
 
 # print(insert_zero_width_space("teste"))
 # def benchmark():
