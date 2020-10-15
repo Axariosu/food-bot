@@ -1,6 +1,7 @@
 import discord
 import asyncio
-import util.chainageutil
+import util.wooshutil as wooshutil
+import util.util as util
 import time
 import queue
 import json
@@ -22,7 +23,7 @@ from discord.ext import tasks
 #     data = json.load(json_file)
 # f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
 
-class Chainage(commands.Cog):
+class Schwootsh(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
         self.game = False
@@ -38,11 +39,11 @@ class Chainage(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('cog.chainage successfully loaded!')
+        print('cog.schwootsh successfully loaded!')
         
-    @commands.command(aliases=['chainage', 'chain'])
-    async def start_chainage(self, ctx, *args):
-        res = discord.Embed(title="Starting Chainage!", color=self.generate_random_color())
+    @commands.command(aliases=['schwootsh', 'sch'])
+    async def start_schwootsh(self, ctx, *args):
+        res = discord.Embed(title="Starting Schwootsh!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that **neighbors** the current word.\nA neighboring word differs by at most 1 character, or has one more or less character than the previous word.\nIf no one can find a word which chains off the previous, I'll end the round and start a new one!")
         await ctx.send(embed=res)
         
@@ -51,31 +52,31 @@ class Chainage(commands.Cog):
         self.timer = 10e22
         self.context = ctx
         self.trackedPlayers = {}
-        await self.chainage_on(ctx)
+        await self.schwootsh_on(ctx)
 
     @commands.command()
-    async def stop_chainage(self, ctx):
-        res = discord.Embed(title="Chainage Over!", color=self.generate_random_color())
+    async def stop_schwootsh(self, ctx):
+        res = discord.Embed(title="Schwootsh Over!", color=util.generate_random_color())
         await ctx.send(embed=res)
         self.trackedPlayers = {}
         self.round = 0
         self.timer = 10e22
         self.game = False
 
-    async def chainage_on(self, ctx):
+    async def schwootsh_on(self, ctx):
         
         loop = asyncio.get_running_loop()
         if self.game:
             if self.round == self.maxRound:
                 sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
-                res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=self.generate_random_color())
+                res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
                 await ctx.send(embed=res)
-                await self.stop_chainage(ctx)
+                await self.stop_schwootsh(ctx)
                 return
             self.round += 1
 
-            self.currentWord = chainageutil.generate_random_start()
-            res = discord.Embed(title="Chainage Round " + str(self.round) + "/" + str(self.maxRound), description="Type in neighboring words to my word: **" + self.currentWord.upper() + "**", color=self.generate_random_color())
+            self.currentWord = wooshutil.generate_random_start()
+            res = discord.Embed(title="Schwootsh Round " + str(self.round) + "/" + str(self.maxRound), description="Type in neighboring words to my word: **" + self.currentWord.upper() + "**", color=util.generate_random_color())
             await ctx.send(embed=res)
             self.usedWords = set()
             self.usedWords.add(self.currentWord)
@@ -87,21 +88,21 @@ class Chainage(commands.Cog):
             """
             while self.game:
                 if (loop.time()) >= self.timer:
-                    res = discord.Embed(title="Round over!", color=self.generate_random_color())
+                    res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     await ctx.send(embed=res)
-                    await self.chainage_on(ctx)
+                    await self.schwootsh_on(ctx)
                     break
                 await asyncio.sleep(1)
         else:
             self.timer = 10e22
 
 
-    @commands.command(aliases=['c25'])
-    async def chainage_25(self, ctx, arg1, brief="Usage: !chainage_25 <string>", description="Usage: !chainage_25 <string>, returns a list of up to 25 neighboring words of the given word."):
+    @commands.command(aliases=['sch25'])
+    async def schwootsh_25(self, ctx, arg1, brief="Usage: !schwootsh_25 <string>", description="Usage: !schwootsh_25 <string>, returns a list of up to 25 neighboring words of the given word."):
         """
         Returns a list of up to 25 neighboring words of the given word.
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(chainageutil.get_levenshtein_neighbors_possibility(arg1)), color=self.generate_random_color())
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(wooshutil.get_levenshtein_neighbors_possibility(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     def generate_random_color(self):
@@ -118,7 +119,7 @@ class Chainage(commands.Cog):
         if not message.author.bot and self.game:
             channel = message.channel
             word = message.content
-            if chainageutil.levenshtein_1(self.currentWord, word) and word not in self.usedWords:
+            if wooshutil.levenshtein_1(self.currentWord, word) and word not in self.usedWords:
                 loop = asyncio.get_running_loop()
                 self.timer = loop.time() + self.roundTimer
                 # keeps track of score
@@ -133,4 +134,4 @@ class Chainage(commands.Cog):
                 await message.add_reaction("✅")
 
 def setup(bot): 
-    bot.add_cog(Chainage(bot))
+    bot.add_cog(Schwootsh(bot))

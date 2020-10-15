@@ -1,6 +1,7 @@
 import discord
 import asyncio
-import util.alphafuseutil
+import util.alphafuseutil as alphafuseutil
+import util.util as util
 import time
 import queue
 import json
@@ -17,49 +18,10 @@ from discord.ext import tasks
 # https://stackoverflow.com/questions/49947814/python-threading-error-must-be-an-iterable-not-int
 # http://www.fileformat.info/info/unicode/char/search.htm
 
-
-# from player import Player
-
-# GLOBAL VARIABLES
-# __VALIDCHANNELS__= [755970868219346984, 515125639406419980, 659284289468366858, 617800636297117829]
-# self.trackedPlayers = {}
-# self.eliminatedPlayers = []
-# self.usedWords = {}
-# self.combinations = ""
-# self.defaultLifeCount = 3
-# self.round = 0
-# self.seconds = [30, 30, 26, 22, 19, 17, 15, 13, 11, 10]
-# self.seconds = [10, 10, 10, 10, 10, 10, 10, 10, 10, 10]
-# self.seconds = [15, 15, 15, 15, 15, 15, 15, 15, 15, 15]
-# self.seconds = [25, 25, 25]
-# self.seconds = [20, 20]
-# self.minTime = 20
-# self.seconds = [10, 10]
-# self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5, 6, 6, 6, 6, 6, 6, 7, 7, 7, 7, 7, 7, 7]
-# self.letters = [0, 1, 2, 2, 3, 3, 3, 4, 4, 4, 4, 5, 5, 5, 5, 5]
-# self.maxLetters = 8
-# self.winner = []
-
 with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
     data = json.load(json_file)
 f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
     
-
-
-# class AlphaFuseLogic(commands.Cog):
-#     def __init__(self, bot):
-#         self.bot = bot
-#         self.round = self.round
-
-#     async def advance_round(self, number):
-#         self.round += 1
-#         print(self.round)
-
-# class Player(commands.Cog):
-#     def __init__(self, id=''): 
-#         self.id = id
-#         self.lives = 3
-
 
 class AlphaFuse(commands.Cog):
     
@@ -104,7 +66,7 @@ class AlphaFuse(commands.Cog):
     @commands.command(aliases=['alpha'])
     async def start_alpha(self, ctx, *args):
         #
-        res = discord.Embed(title="Starting Alpha Fuse!", color=self.generate_random_color())
+        res = discord.Embed(title="Starting Alpha Fuse!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that contains the displayed letters.\nIf you repeat a word someone else used, you lose a life!\nIf you repeat your own word, there's no penalty.")
         await ctx.send(embed=res)
         self.round = 0
@@ -120,7 +82,7 @@ class AlphaFuse(commands.Cog):
 
     @commands.command()
     async def stop_alpha(self, ctx):
-        res = discord.Embed(title="Stopping Alpha Fuse!", color=self.generate_random_color())
+        res = discord.Embed(title="Stopping Alpha Fuse!", color=util.generate_random_color())
         await ctx.send(embed=res)
         self.winner = []
         self.usedWords = {}
@@ -163,7 +125,7 @@ class AlphaFuse(commands.Cog):
                     # Reset the submitted flag to false, reset self.winner.
                     if len(self.trackedPlayers) == len(self.eliminatedPlayers):
                         
-                        winner_res = discord.Embed(title="Winner(s)!", color=self.generate_random_color())
+                        winner_res = discord.Embed(title="Winner(s)!", color=util.generate_random_color())
                         winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
                         await ctx.send(embed=winner_res)
                         await self.stop_alpha(ctx)
@@ -179,7 +141,7 @@ class AlphaFuse(commands.Cog):
             # currentPlayers = ", ".join([x[0] for x in self.trackedPlayers])
             round_timer = str(self.seconds[self.round]) if self.round < len(self.seconds) - 1 else str(self.minTime)
             
-            res = discord.Embed(title="Round " + str(self.round), color=self.generate_random_color())
+            res = discord.Embed(title="Round " + str(self.round), color=util.generate_random_color())
             if self.round == 1:
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
                 res.add_field(name='\u200b', inline=False, value="\nEnter a word containing the letter(s): **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
@@ -213,7 +175,7 @@ class AlphaFuse(commands.Cog):
                 # await ctx.send(loop.time())
                 # if (loop.time() + 1) >= self.timer and self.game:
                 if (loop.time()) >= self.timer:
-                    res = discord.Embed(title="Round over!", color=self.generate_random_color())
+                    res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     await ctx.send(embed=res)
                     await self.alpha_on(ctx)
                     break
@@ -227,20 +189,20 @@ class AlphaFuse(commands.Cog):
     # async def alpha_one(self, ctx, arg1):
     #     await ctx.send(alphafuseutil.get_first_possibility(arg1))
 
-    @commands.command()
+    @commands.command(hidden=True)
     async def alpha_random(self, ctx, arg1, brief="Usage: !alpha_random <string>", description="Usage: !alpha_random <string>, returns a single valid possibility if there exists one at random for the given character combination."):
         """
         Returns one valid word at random that satisfies the given letter combination. 
         """
-        res = discord.Embed(title=alphafuseutil.get_random_possibility(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.get_random_possibility(arg1), color=util.generate_random_color())
         await ctx.send(embed=res)
 
-    @commands.command(aliases=['a25'])
+    @commands.command(aliases=['a25'], hidden=True)
     async def alpha_25(self, ctx, arg1, brief="Usage: !alpha_25 <string>", description="Usage: !alpha_25 <string>, returns a list of at most 25 possible combinations for the given character combination."):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=self.generate_random_color())
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
         # res.add_field(name=discord.Embed.Empty, inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
         await ctx.send(embed=res)
 
@@ -250,7 +212,7 @@ class AlphaFuse(commands.Cog):
         Returns "valid" or "invalid" based on the submission. 
         """
         c = "Valid" if alphafuseutil.in_wordlist(arg1) else "Invalid"
-        res = discord.Embed(title=c, color=self.generate_random_color())
+        res = discord.Embed(title=c, color=util.generate_random_color())
         await ctx.send(embed=res)
 
     def generate_random_color(self):
@@ -264,7 +226,7 @@ class AlphaFuse(commands.Cog):
         """
         Returns the number of valid combinations for the given letter combination.
         """
-        res = discord.Embed(title=alphafuseutil.combinations(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.combinations(arg1), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.Cog.listener()

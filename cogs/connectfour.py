@@ -1,5 +1,6 @@
 
-import util.connectfourutil
+import util.connectfourutil as connectfourutil
+import util.util as util
 import uuid
 import discord
 import asyncio
@@ -53,7 +54,7 @@ class ConnectFour(commands.Cog):
         for channel in self.created_channels:
             board = self.created_channels[channel]
             # boardString = board.getBoard()
-            res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name, color=self.generate_random_color())
+            res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name, color=util.generate_random_color())
             res.add_field(name='\u200b', inline=False, value=board.getBoard())
             msg = await channel.send(embed=res)
             # add reactions 1-7, a one-time operation per board (might be heavy but executes one at a time)
@@ -73,7 +74,7 @@ class ConnectFour(commands.Cog):
         #     while self.game:
         #         # print(self.timer, loop.time())
         #         if (loop.time()) >= self.timer:
-        #             res = discord.Embed(title="Round over!", color=self.generate_random_color())
+        #             res = discord.Embed(title="Round over!", color=util.generate_random_color())
         #             for channel in self.created_channels:
         #                 await channel.send(embed=res)
         #             await asyncio.sleep(1)
@@ -86,7 +87,7 @@ class ConnectFour(commands.Cog):
     @commands.command(aliases=['c4', 'connect'])
     async def start_connect(self, ctx):
         self.context = ctx
-        res = discord.Embed(title="Starting Connect 4!", color=self.generate_random_color())
+        res = discord.Embed(title="Starting Connect 4!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="You have **" + str(self.ready_up) + "** seconds to join! React to this message to play!\nIf there are an odd number of players, one of you won't have an opponent. That one person will play me instead!")
         res.add_field(name="How to Win", inline=False, value="Line up **4** chips against your opponent, and you win!")
         res.add_field(name="Time Control", inline=False, value="If your opponent doesn't respond within **15** seconds, I will make a move for them!")
@@ -139,7 +140,7 @@ class ConnectFour(commands.Cog):
 
     @commands.command()
     async def stop_connect(self, ctx):
-        res = discord.Embed(title="Connect Four over!", color=self.generate_random_color())
+        res = discord.Embed(title="Connect Four over!", color=util.generate_random_color())
         await ctx.send(embed=res)
 
         for channel in self.created_channels:
@@ -170,10 +171,10 @@ class ConnectFour(commands.Cog):
                 await reaction.message.edit(embed=res)
                 (p1, p2) = board.checkWin()
                 if p1:
-                    res = discord.Embed(name=board.player1.name + " Wins!", color=self.generate_random_color())
+                    res = discord.Embed(name=board.player1.name + " Wins!", color=util.generate_random_color())
                     await reaction.message.channel.send(embed=res)
                 if p2: 
-                    res = discord.Embed(name=board.player2.name + " Wins!", color=self.generate_random_color())
+                    res = discord.Embed(name=board.player2.name + " Wins!", color=util.generate_random_color())
                     await reaction.message.channel.send(embed=res)
             
 

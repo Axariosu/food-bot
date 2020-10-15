@@ -273,6 +273,9 @@ def compute_utility(boardObject):
         else:
             return count - 22
 
+# 42 (6X7) 22 - 21 (your last piece) that board state = 1
+# opponent wins? their piece count - 22 
+
 def is_terminal(boardObject):
     if boardObject.gameEnd:
         return True
@@ -303,7 +306,7 @@ def alpha_beta_search(boardObject, maxDepth):
     # player = game.to_move(state)
     # Functions used by alpha_beta
     def max_value(boardObject, alpha, beta, depth):
-        # print(boardObject.getBoardText(), depth)
+        print(boardObject.getBoardText(), depth)
         if is_terminal(boardObject) or depth > maxDepth:
             # print(boardObject.getBoardText(), depth)
             return compute_utility(boardObject)
@@ -316,7 +319,7 @@ def alpha_beta_search(boardObject, maxDepth):
         return v
 
     def min_value(boardObject, alpha, beta, depth):
-        # print(boardObject.getBoardText(), depth)
+        print(boardObject.getBoardText(), depth)
         if is_terminal(boardObject) or depth > maxDepth:
             return compute_utility(boardObject)
         v = 1e10
@@ -354,6 +357,19 @@ def alpha_beta_search(boardObject, maxDepth):
     # # print(best_action)
     # return best_action if best_action != None else random.choice(possibleNextActions)
 
+# board a > board b
+# board a -> dfs (alpha pruning) -> if you already lost or depth > maxDepth : iddfs 
+
+# ~ ~ ~ ~ ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~
+# ~ ~ ~ ~ ~ ~ ~
+# 1 ~ ~ 1 1 1 ~
+# 2 ~ ~ 2 2 2 ~
+# 2 ~ ~ 1 1 2 ~
+# [[6]*7] -> "b'42'"
+# -> stockfish -> ab pruning "depth 32" -> 
+# alphazero -> "monte carlo simulation?"
+
 # class Player(object):
 #     def __init__(self, name):
 #         self.name = name
@@ -362,8 +378,8 @@ def alpha_beta_search(boardObject, maxDepth):
 # maxPlayer = Player("max")
 # minPlayer = Player("min")
 # b = Board()
-# # b.generateBoardFromString("334455")
-# b.generateBoardFromString("33344443110")
+# b.generateBoardFromString("334455")
+# # b.generateBoardFromString("33344443110")
 # b.player1 = maxPlayer
 # b.player2 = minPlayer
 
@@ -374,7 +390,14 @@ def alpha_beta_search(boardObject, maxDepth):
 # for x in get_possible_next_boards(b):
     
 #     print(x.getBoardText())
-# print(alpha_beta_search(b, 5))
+# print(alpha_beta_search(b, 4))
+
+# -> bot's perspective minimax does: 
+# the bot wants to maximize its utility (it wants to win!)
+# the bot assumes the opponent will also maximize (hence minimize) 
+# how can we effectively calculate how a board position is? 
+# -> if there's a winning board, at some certain depth
+# -> winning board has a path ? -> take first move towards winning board
 
 # print(get_possible_next_moves(b))
 # print(None > 5)

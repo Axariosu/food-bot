@@ -1,5 +1,6 @@
 
-import util.uddercodeutil
+import util.uddercodeutil as uddercodeutil
+import util.util as util
 import uuid
 import discord
 import asyncio
@@ -32,7 +33,7 @@ class UdderCode(commands.Cog):
     @commands.command()
     async def start_udder(self, ctx):
         self.context = ctx
-        res = discord.Embed(title="Starting UdderCode!", color=self.generate_random_color())
+        res = discord.Embed(title="Starting UdderCode!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="You have **" + str(self.ready_up) + "** seconds to join! React to this message to play!")
         res.add_field(name="\u200b", inline=False, value="I have a code of length **" + str(self.code_length) + "**, you're meant to guess it!")
         res.add_field(name="\u200b", inline=False, value="Each round is **20** seconds, I'll tell you how many Bulls and Cows you have.")
@@ -92,7 +93,7 @@ class UdderCode(commands.Cog):
         # if self.game:
         # global self.created_channels
         # global self.created_roles
-        res = discord.Embed(title="UdderCode over!", color=self.generate_random_color())
+        res = discord.Embed(title="UdderCode over!", color=util.generate_random_color())
         await ctx.send(embed=res)
 
         # TODO: delete made roles + channels
@@ -129,7 +130,7 @@ class UdderCode(commands.Cog):
             uddercodeutil.TPOA(10, 2, 1, uddercodeutil.TPOANode(arg1), arg2, solutionList, stack)
             stop = time.time()
             uddercodeutil.reverseStack(stack)
-            res = discord.Embed(title="UdderCode found!", color=self.generate_random_color())
+            res = discord.Embed(title="UdderCode found!", color=util.generate_random_color())
             stringBuild, guess = "", 0
             while stack:
                 a = stack.pop()
@@ -140,7 +141,7 @@ class UdderCode(commands.Cog):
             res.add_field(name="Time elapsed", inline=False, value=str(stop-start))
             await ctx.send(embed=res)
         # else: 
-        #     res = discord.Embed(title="No solution, arguments are not valid (same length, length <= 6)!", color=self.generate_random_color())
+        #     res = discord.Embed(title="No solution, arguments are not valid (same length, length <= 6)!", color=util.generate_random_color())
 
     async def udder_on(self, ctx):
         # await ctx.send("Testing: " + str(self.round))
@@ -153,7 +154,7 @@ class UdderCode(commands.Cog):
             self.round += 1
             # global __ROUNDTIMER__
 
-            res = discord.Embed(title="Round " + str(self.round), color=self.generate_random_color())
+            res = discord.Embed(title="Round " + str(self.round), color=util.generate_random_color())
             
             # if self.round == 1:
             for player in self.tracked_players:
@@ -177,7 +178,7 @@ class UdderCode(commands.Cog):
             while self.game:
                 # print(self.timer, loop.time())
                 if (loop.time()) >= self.timer:
-                    res = discord.Embed(title="Round over!", color=self.generate_random_color())
+                    res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     for channel in self.created_channels:
                         await channel.send(embed=res)
                     await asyncio.sleep(1)
@@ -210,7 +211,7 @@ class UdderCode(commands.Cog):
                     # Disallow further guesses
                     for player in self.tracked_players:
                         self.tracked_players[player] = True
-                    res = discord.Embed(title="Someone guessed my code!", color=self.generate_random_color())
+                    res = discord.Embed(title="Someone guessed my code!", color=util.generate_random_color())
                     res.add_field(name='\u200b', inline=False, value="**" + message.author.name + "** found the code to be **" + str(self.code) + "**!")
                     res.add_field(name='\u200b', inline=False, value="The game will end in **" + str(self.round_timer) + "** seconds.")
                     # await message.channel.send(embed=res)
@@ -219,7 +220,7 @@ class UdderCode(commands.Cog):
                     await asyncio.sleep(self.round_timer)
                     await self.stop_udder(self.context)
             else: 
-                res = discord.Embed(title="You have **" + str(b) + ("** Bull and **" if b == 1 else "** Bulls and **") + str(c) + (" **Cow! " if c == 1 else " **Cows!"), color=self.generate_random_color())
+                res = discord.Embed(title="You have **" + str(b) + ("** Bull and **" if b == 1 else "** Bulls and **") + str(c) + (" **Cow! " if c == 1 else " **Cows!"), color=util.generate_random_color())
                 await message.channel.send(embed=res)
             # pass
 

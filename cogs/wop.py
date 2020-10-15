@@ -1,6 +1,7 @@
 import discord
 import asyncio
-import util.powutil
+import util.powutil as powutil
+import util.util as util
 import time
 import queue
 import json
@@ -43,10 +44,14 @@ class Wop(commands.Cog):
     @commands.Cog.listener()
     async def on_ready(self):
         print('cog.wop successfully loaded!')
-        
+    
+    def is_running(self):
+        return self.running
+
     @commands.command(aliases=['wop'])
     async def start_wop(self, ctx, *args):
-        res = discord.Embed(title="Starting woP!", color=self.generate_random_color())
+        self.running = True
+        res = discord.Embed(title="Starting woP!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="Players have some time per round to type the word I display **backwards**!\n")
         await ctx.send(embed=res)
         
@@ -62,7 +67,7 @@ class Wop(commands.Cog):
 
     @commands.command()
     async def stop_wop(self, ctx):
-        res = discord.Embed(title="woP! Over!", color=self.generate_random_color())
+        res = discord.Embed(title="woP! Over!", color=util.generate_random_color())
         await ctx.send(embed=res)
         self.trackedPlayers = {}
         self.round = 0
@@ -71,6 +76,7 @@ class Wop(commands.Cog):
 
     async def wop_on(self, ctx):
         self.game = True
+        
         loop = asyncio.get_running_loop()
         if self.game:
             # every round, reset this flag, eliminate players that failed to type the word 
@@ -84,13 +90,13 @@ class Wop(commands.Cog):
                     self.trackedPlayers[player] = False
                 
             if self.round >= 2 and len(self.trackedPlayers) == 0:
-                res = discord.Embed(title="Winners", description="\n".join([x for x in self.trackedPlayersPrevious.keys()]), color=self.generate_random_color())
+                res = discord.Embed(title="Winners", description="\n".join([x for x in self.trackedPlayersPrevious.keys()]), color=util.generate_random_color())
                 await ctx.send(embed=res)
                 await self.stop_wop(ctx)
                 return
             # if self.round == self.maxRound:
             #     sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
-            #     res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=self.generate_random_color())
+            #     res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
             #     await ctx.send(embed=res)
             #     await self.stop_chainage(ctx)
             #     return
@@ -98,7 +104,7 @@ class Wop(commands.Cog):
 
             spaceInsertedWord, self.currentWord = powutil.generate_random_word(self.minL, self.maxL)
             self.currentWord = self.currentWord[::-1]
-            res = discord.Embed(title="woP! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter **backwards**: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=self.generate_random_color())
+            res = discord.Embed(title="woP! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter **backwards**: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=util.generate_random_color())
             await ctx.send(embed=res)
             
             # start the timer ONLY when all of the above are complete
@@ -110,14 +116,14 @@ class Wop(commands.Cog):
             """
             while self.game:
                 if (loop.time()) >= self.timer:
-                    res = discord.Embed(title="Round over!", color=self.generate_random_color())
+                    res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     self.game = False
                     await ctx.send(embed=res)
+                    await asyncio.sleep(1)
                     await self.wop_on(ctx)
                     # self.timer = 10e22
                     break
-                await asyncio.sleep(0.5)
-            await asyncio.sleep(3)
+                await asyncio.sleep(1)
         else:
             self.timer = 10e22
 
@@ -127,7 +133,7 @@ class Wop(commands.Cog):
     #     """
     #     Returns a list of up to 25 neighboring words of the given word.
     #     """
-    #     res = discord.Embed(title=discord.Embed.Empty, description=", ".join(chainageutil.get_levenshtein_neighbors_possibility(arg1)), color=self.generate_random_color())
+    #     res = discord.Embed(title=discord.Embed.Empty, description=", ".join(chainageutil.get_levenshtein_neighbors_possibility(arg1)), color=util.generate_random_color())
     #     await ctx.send(embed=res)
 
     def generate_random_color(self):

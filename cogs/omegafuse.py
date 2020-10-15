@@ -1,6 +1,7 @@
 import discord
 import asyncio
-import util.alphafuseutil
+import util.alphafuseutil as alphafuseutil
+import util.util as util
 import time
 import queue
 import json
@@ -49,7 +50,7 @@ class OmegaFuse(commands.Cog):
         
     @commands.command(aliases=['omega'])
     async def start_omega(self, ctx, *args):
-        res = discord.Embed(title="Starting Omega Fuse!", color=self.generate_random_color())
+        res = discord.Embed(title="Starting Omega Fuse!", color=util.generate_random_color())
         res.add_field(name="Rules", inline=False, value="Players have some time per round to find a word that **doesn't** contain the displayed letters.\nIf you repeat a word someone else used, you lose a life!\nIf you repeat your own word, there's no penalty.")
         await ctx.send(embed=res)
         self.round = 0
@@ -64,7 +65,7 @@ class OmegaFuse(commands.Cog):
 
     @commands.command()
     async def stop_omega(self, ctx):
-        res = discord.Embed(title="Stopping Omega Fuse!", color=self.generate_random_color())
+        res = discord.Embed(title="Stopping Omega Fuse!", color=util.generate_random_color())
         await ctx.send(embed=res)
         self.winner = []
         self.usedWords = {}
@@ -100,7 +101,7 @@ class OmegaFuse(commands.Cog):
                     # Reset the submitted flag to false, reset self.winner.
                     if len(self.trackedPlayers) == len(self.eliminatedPlayers):
                         
-                        winner_res = discord.Embed(title="Winner(s)!", color=self.generate_random_color())
+                        winner_res = discord.Embed(title="Winner(s)!", color=util.generate_random_color())
                         winner_res.add_field(name="\u200b", inline=False, value=", ".join(["**" + x + "**" for x in self.winner]))
                         await ctx.send(embed=winner_res)
                         await self.stop_omega(ctx)
@@ -116,7 +117,7 @@ class OmegaFuse(commands.Cog):
             # currentPlayers = ", ".join([x[0] for x in self.trackedPlayers])
             round_timer = str(self.seconds[self.round]) if self.round < len(self.seconds) - 1 else str(self.minTime)
             
-            res = discord.Embed(title="Round " + str(self.round), color=self.generate_random_color())
+            res = discord.Embed(title="Round " + str(self.round), color=util.generate_random_color())
             if self.round == 1:
                 res.add_field(name='\u200b', inline=False, value="You have **" + round_timer + "** second(s) to find a word! Good luck!")
                 res.add_field(name='\u200b', inline=False, value="\nEnter a word **not** containing the letter(s): **" + ", ".join([x.upper() for x in self.currentLetters]) + "**")
@@ -144,7 +145,7 @@ class OmegaFuse(commands.Cog):
             """
             while self.game:
                 if (loop.time()) >= self.timer:
-                    res = discord.Embed(title="Round over!", color=self.generate_random_color())
+                    res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     await ctx.send(embed=res)
                     await self.omega_on(ctx)
                     break
@@ -157,7 +158,7 @@ class OmegaFuse(commands.Cog):
         """
         Returns one valid word at random that satisfies the given letter combination. 
         """
-        res = discord.Embed(title=alphafuseutil.get_random_possibility(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.get_random_possibility(arg1), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.command(aliases=['o25'])
@@ -165,7 +166,7 @@ class OmegaFuse(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=self.generate_random_color())
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
         # res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
         await ctx.send(embed=res)
 
@@ -175,7 +176,7 @@ class OmegaFuse(commands.Cog):
     #     Returns "valid" or "invalid" based on the submission. 
     #     """
     #     c = "Valid" if alphafuseutil.in_wordlist(arg1) else "Invalid"
-    #     res = discord.Embed(title=c, color=self.generate_random_color())
+    #     res = discord.Embed(title=c, color=util.generate_random_color())
     #     await ctx.send(embed=res)
 
     def generate_random_color(self):
@@ -189,7 +190,7 @@ class OmegaFuse(commands.Cog):
         """
         Returns the number of valid combinations for the given letter combination.
         """
-        res = discord.Embed(title=alphafuseutil.combinations(arg1), color=self.generate_random_color())
+        res = discord.Embed(title=alphafuseutil.combinations(arg1), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.Cog.listener()

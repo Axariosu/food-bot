@@ -4,9 +4,6 @@ import discord
 from dotenv import load_dotenv
 from discord.ext import commands
 
-# from alphafuse import AlphaFuse
-from player import Player
-
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
@@ -18,7 +15,7 @@ GUILD = os.getenv('DISCORD_GUILD')
 bot = commands.Bot(command_prefix="!")
 
 """
-Two dictionaries to start and stop games.
+Two dictionaries to start and stop games -- definitely a better way to manage this
 startdict (sd)
 stopdict (pd)
 extension (ext)
@@ -29,8 +26,7 @@ td = {
     'sigma': 'sigma',
     'udder': 'udder', 
     'c4': 'connect',
-    'chain': 'chainage',
-    'chainage': 'chainage',
+    'schwootsh': 'stop_schwootsh',
     'pow': 'pow',
     'wop': 'wop',
     'unscramble': 'unscramble',
@@ -41,8 +37,7 @@ pd = {
     'sigma': 'stop_sigma',
     'omega': 'stop_omega',
     'c4': 'stop_connect',
-    'chain': 'stop_chainage',
-    'chainage': 'stop_chainage',
+    'schwootsh': 'stop_schwootsh',
     'pow': 'stop_pow',
     'wop': 'stop_wop',
     'unscramble': 'stop_unscramble',
@@ -53,8 +48,7 @@ ext = {
     'sigma': 'sigmafuse',
     'udder': 'uddercode',
     'c4': 'connectfour',
-    'chain': 'chainage',
-    'chainage': 'chainage',
+    'schwootsh': 'schwootsh',
     'pow': 'pow', 
     'wop': 'wop',
     'unscramble': 'unscramble',
@@ -110,13 +104,24 @@ async def start(ctx, arg1):
 async def stop(ctx, arg1):
     await ctx.invoke(bot.get_command(pd[arg1]))
 
-@bot.command(description="Returns all commands available")
+@bot.command()
 async def commandlist(ctx):
     helptext = "```"
     for command in bot.commands:
         helptext+=f"{command}\n"
     helptext+="```"
     await ctx.send(helptext)
+
+# @bot.command()
+# async def gamequeue(ctx, *args):
+    
+#     for cog in bot.cogs:
+#         for command in bot.get_cog(f'{cog}').get_commands():
+#             print(command.name)
+    
+#     print(bot.get_cog('Wop').is_running())
+#         # for c in cog:
+#             # print(c.commands)
 
 for filename in os.listdir('./cogs'):
     # if filename in __COGS__:
