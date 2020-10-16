@@ -17,7 +17,7 @@ class Fourplay(commands.Cog):
         self.game = False
         self.context = None
         self.msgid = 0
-        
+        self.finished_games = 0
         self.created_channels = {}
         self.created_roles = []
         self.tracked_players = []
@@ -41,10 +41,28 @@ class Fourplay(commands.Cog):
 
     @commands.Cog.listener()
     async def on_ready(self):
-        print('cog.connectfour successfully loaded!')
+        print('cog.fourplay successfully loaded!')
+
+    @commands.command(hidden=True)
+    async def check_games(self, ctx):
+        loop = asyncio.get_running_loop()
+        self.timer = loop.time() + 5
+        while self.game:
+            # print(self.timer, loop.time())
+            if (loop.time()) >= self.timer:
+                # res = discord.Embed(title="Round over!", color=util.generate_random_color())
+                # for channel in self.created_channels:
+                    # await channel.send(embed=res)
+                if self.finished_games >= len(self.created_channels):
+                    for channel in self.created_channels:
+                        await channel.send("All games are finished! Fourplay will end in 15 seconds.")
+                    await asyncio.sleep(15)
+                    await self.stop_fourplay(ctx)
+                await self.check_games(ctx)
+                break
 
     @commands.command()
-    async def connect_on(self, ctx):
+    async def fourplay_on(self, ctx):
         # create channel -> post board 
         # assign players 1, 2
         # wait for player 1's move 
@@ -67,24 +85,10 @@ class Fourplay(commands.Cog):
             await msg.add_reaction('6️⃣')
             await msg.add_reaction('7️⃣')
             # await channel.send("Player 1:" + board.player1.name + "\nPlayer 2:" + board.player2.name)
+        await self.check_games(ctx)
 
-        # loop = asyncio.get_running_loop()
-        # if self.game:
-            
-        #     while self.game:
-        #         # print(self.timer, loop.time())
-        #         if (loop.time()) >= self.timer:
-        #             res = discord.Embed(title="Round over!", color=util.generate_random_color())
-        #             for channel in self.created_channels:
-        #                 await channel.send(embed=res)
-        #             await asyncio.sleep(1)
-        #             await self.udder_on(ctx)
-        #             break
-        #         await asyncio.sleep(1)
-        # else: 
-        #     self.timer = 10e22
 
-    @commands.command(aliases=['4p', 'c4', 'connect'])
+    @commands.command(aliases=['4p', 'c4', 'connect', 'fourplay'])
     async def start_fourplay(self, ctx):
         self.context = ctx
         res = discord.Embed(title="Starting Fourplay!", color=util.generate_random_color())
@@ -109,7 +113,7 @@ class Fourplay(commands.Cog):
 
         if len(self.tracked_players) == 0: 
             await ctx.send("No one joined!")
-            await self.stop_connect(ctx)
+            await self.stop_fourplay(ctx)
 
         # print(type(self.tracked_players))
         # random.shuffle(self.tracked_players)
@@ -136,10 +140,10 @@ class Fourplay(commands.Cog):
             
             await self.tracked_players[i].add_roles(uuid_role)
             await self.tracked_players[i+1].add_roles(uuid_role)
-        await self.connect_on(ctx)
+        await self.fourplay_on(ctx)
 
     @commands.command()
-    async def stop_connect(self, ctx):
+    async def stop_fourplay(self, ctx):
         res = discord.Embed(title="Fourplay over!", color=util.generate_random_color())
         await ctx.send(embed=res)
 
@@ -165,15 +169,16 @@ class Fourplay(commands.Cog):
             if not board.placePiece(self.emojiMap[reaction.emoji], user):
                 pass
             else: 
-                res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name)
-                res.add_field(name='\u200b', inline=False, value=board.getBoard())
+                res = discord.Embed(title=board.player1.name + " vs. " + board.player2.name, description=board.getBoard())
                 await reaction.message.edit(embed=res)
                 (p1, p2) = board.checkWin()
                 if p1:
-                    res = discord.Embed(name=board.player1.name + " Wins!", color=util.generate_random_color())
+                    self.finished_games += 1
+                    res = discord.Embed(title=board.player1.name + " Wins!", color=util.generate_random_color())
                     await reaction.message.channel.send(embed=res)
                 if p2: 
-                    res = discord.Embed(name=board.player2.name + " Wins!", color=util.generate_random_color())
+                    self.finished_games += 1
+                    res = discord.Embed(title=board.player2.name + " Wins!", color=util.generate_random_color())
                     await reaction.message.channel.send(embed=res)
             
     @commands.Cog.listener()
@@ -181,18 +186,18 @@ class Fourplay(commands.Cog):
         if reaction.message.id == self.msgid and not user.bot:
             self.tracked_players.remove(user)
 
-    @commands.Cog.listener() 
-    async def on_message(self, message):
-        if not message.author.bot and self.game and message.channel in self.created_channels:
+    # @commands.Cog.listener() 
+    # async def on_message(self, message):
+    #     if not message.author.bot and self.game and message.channel in self.created_channels:
             
-            board = self.created_channels[message.channel]
-            # for channel, board in message.channel:
-            if message.author == board.player1 and board.turn == 1:
-                board.placePiece(int(message.content), message.author)
-                await message.channel.send(board.getBoard())
-            if message.author == board.player2 and board.turn == 2:
-                board.placePiece(int(message.content), message.author)
-                await message.channel.send(board.getBoard())
+    #         board = self.created_channels[message.channel]
+    #         # for channel, board in message.channel:
+    #         if message.author == board.player1 and board.turn == 1:
+    #             board.placePiece(int(message.content), message.author)
+    #             await message.channel.send(board.getBoard())
+    #         if message.author == board.player2 and board.turn == 2:
+    #             board.placePiece(int(message.content), message.author)
+    #             await message.channel.send(board.getBoard())
 
 
 

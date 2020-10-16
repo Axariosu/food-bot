@@ -293,8 +293,8 @@ class AlphaFuse(commands.Cog):
                     else:
                         if self.round <= 3:
                             if message.author.name not in self.trackedPlayers:
-                                self.trackedPlayers[message.author.name] = (self.defaultLifeCount - self.round, True)
-                            self.usedWords[word] = (message.author.name, self.round)
+                                self.trackedPlayers[message.author.name] = [self.defaultLifeCount - self.round, True]
+                            self.usedWords[word] = [message.author.name, self.round]
                             self.trackedPlayers[message.author.name][0] -= 1 if self.trackedPlayers[message.author.name][0] > 0 else 0
                             self.trackedPlayers[message.author.name][1] = True
                             await channel.send("Unlucky, **" + word + "** was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
@@ -303,8 +303,8 @@ class AlphaFuse(commands.Cog):
                     # if 0 < self.round < 4:
                     if message.author.name not in self.trackedPlayers:
                         if self.round <= 3:
-                            self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount + 1 - self.round, True])
-                            self.usedWords.setdefault(word, (message.author.name, self.round))
+                            self.trackedPlayers[message.author.name] = [self.defaultLifeCount + 1 - self.round, True]
+                            self.usedWords[word] = [message.author.name, self.round]
                             await message.add_reaction('✅')
                         # await channel.send("Valid submission, " + message.author.name + "!")
                     else: 

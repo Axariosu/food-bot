@@ -214,15 +214,15 @@ class OmegaFuse(commands.Cog):
                 keys = self.usedWords.keys()
 
                 if word in keys:
-                    await message.add_reaction("\u274C")
+                    await message.add_reaction('❌')
                     user, rnd = self.usedWords[word]
                     if message.author.name == user:
                         await channel.send("What " + user + "? You already used this word in round " + str(rnd) + "! Use another word! (no penalty)")
                     else:
                         if self.round <= 3:
                             if message.author.name not in self.trackedPlayers:
-                                self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount - self.round, True])
-                            self.usedWords.setdefault(word, (message.author.name, self.round))
+                                self.trackedPlayers[message.author.name] = [self.defaultLifeCount - self.round, True]
+                            self.usedWords[word] = [message.author.name, self.round]
                             self.trackedPlayers[message.author.name][0] -= 1 if self.trackedPlayers[message.author.name][0] > 0 else 0
                             self.trackedPlayers[message.author.name][1] = True
                             await channel.send("Unlucky, **" + word + "** was already used by " + user + " on round " + str(rnd) + "! (-1 life)")
@@ -230,14 +230,14 @@ class OmegaFuse(commands.Cog):
                 else: 
                     if message.author.name not in self.trackedPlayers:
                         if self.round <= 3:
-                            self.trackedPlayers.setdefault(message.author.name, [self.defaultLifeCount + 1 - self.round, True])
-                            self.usedWords.setdefault(word, (message.author.name, self.round))
-                            await message.add_reaction("\u2705")
+                            self.trackedPlayers[message.author.name] = [self.defaultLifeCount + 1 - self.round, True]
+                            self.usedWords[word] = [message.author.name, self.round]
+                            await message.add_reaction('✅')
                     else: 
 
-                        self.usedWords.setdefault(word, (message.author.name, self.round))
+                        self.usedWords[word] = [message.author.name, self.round]
                         self.trackedPlayers[message.author.name][1] = True
-                        await message.add_reaction("\u2705")
+                        await message.add_reaction('✅')
 
 
 

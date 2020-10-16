@@ -1,14 +1,14 @@
 import json
 import os
 import random
-f = open("words_lower_alpha.txt", "w+")
-for line in open("words_lower.txt", "r"):
+f = open("wordlist_10000_.txt", "w+")
+for line in open("wordlist_10000.txt", "r"):
     if line.strip().isalpha():
         f.write(line)
 
 f.close()
 
-a = {"a": 1, "b": 2, "c": 3}
+# a = {"a": 1, "b": 2, "c": 3}
 # b = a.copy()
 # for k, v in list(a.items()):
 #     if v == 1:
@@ -16,12 +16,6 @@ a = {"a": 1, "b": 2, "c": 3}
 # print(a)
 # print(b)
 
-nights = 3
-for i in range(nights):
-    for j in range(nights):
-        for k in range(nights):
-            for l in range(nights):
-                print(i, j, k, l, sep='', end=" ")
     
 
 # print(random.sample([x for x in range(20)], k=25))

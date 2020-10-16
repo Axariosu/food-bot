@@ -13,7 +13,8 @@ import math
 from discord.ext import commands
 from discord.ext import tasks
 
-
+# weakly typed - python? 
+# strong typed - c++ java?
 class Gamerizer(commands.Cog):
     def __init__(self, bot):
         self.bot = bot
@@ -77,6 +78,7 @@ class Gamerizer(commands.Cog):
 
     @commands.command()
     async def stop_gamerizer(self, ctx):
+        self.round = 0
         self.game = False
         self.queue.clear()
         res = discord.Embed(title="Gamerizer over!", description="Thanks for playing!", color=util.generate_random_color())
