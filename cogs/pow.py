@@ -113,6 +113,7 @@ class Pow(commands.Cog):
                     res = discord.Embed(title="Round over!", color=util.generate_random_color())
                     self.game = False
                     await ctx.send(embed=res)
+                    await asyncio.sleep(1)
                     await self.pow_on(ctx)
                     # self.timer = 10e22
                     break

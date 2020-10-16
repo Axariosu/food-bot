@@ -30,7 +30,7 @@ class UdderCode(commands.Cog):
     async def on_ready(self):
         print('cog.uddercode successfully loaded!')
     
-    @commands.command()
+    @commands.command(aliases=['udder'])
     async def start_udder(self, ctx):
         self.context = ctx
         res = discord.Embed(title="Starting UdderCode!", color=util.generate_random_color())

@@ -43,23 +43,23 @@ class Fourplay(commands.Cog):
     async def on_ready(self):
         print('cog.fourplay successfully loaded!')
 
-    @commands.command(hidden=True)
-    async def check_games(self, ctx):
-        loop = asyncio.get_running_loop()
-        self.timer = loop.time() + 5
-        while self.game:
-            # print(self.timer, loop.time())
-            if (loop.time()) >= self.timer:
-                # res = discord.Embed(title="Round over!", color=util.generate_random_color())
-                # for channel in self.created_channels:
-                    # await channel.send(embed=res)
-                if self.finished_games >= len(self.created_channels):
-                    for channel in self.created_channels:
-                        await channel.send("All games are finished! Fourplay will end in 15 seconds.")
-                    await asyncio.sleep(15)
-                    await self.stop_fourplay(ctx)
-                await self.check_games(ctx)
-                break
+    # @commands.command(hidden=True)
+    # async def check_games(self, ctx):
+    #     loop = asyncio.get_running_loop()
+    #     self.timer = loop.time() + 5
+    #     while self.game:
+    #         # print(self.timer, loop.time())
+    #         if (loop.time()) >= self.timer:
+    #             # res = discord.Embed(title="Round over!", color=util.generate_random_color())
+    #             # for channel in self.created_channels:
+    #                 # await channel.send(embed=res)
+    #             if self.finished_games >= len(self.created_channels):
+    #                 for channel in self.created_channels:
+    #                     await channel.send("All games are finished! Fourplay will end in 15 seconds.")
+    #                 await asyncio.sleep(15)
+    #                 await self.stop_fourplay(ctx)
+    #             await self.check_games(ctx)
+    #             break
 
     @commands.command()
     async def fourplay_on(self, ctx):
@@ -85,7 +85,7 @@ class Fourplay(commands.Cog):
             await msg.add_reaction('6️⃣')
             await msg.add_reaction('7️⃣')
             # await channel.send("Player 1:" + board.player1.name + "\nPlayer 2:" + board.player2.name)
-        await self.check_games(ctx)
+        # await self.check_games(ctx)
 
 
     @commands.command(aliases=['4p', 'c4', 'connect', 'fourplay'])
