@@ -5,8 +5,9 @@ from discord.ext import commands
 class GamesCog(commands.Cog):
     @commands.command(aliases=["startg"])
     @commands.guild_only()
-    async def start_game(self, ctx):
+    async def start_game(self, ctx, arg1):
         ctx.bot.games[ctx.guild.id] = games.Game(20)
+        await ctx.bot.games[ctx.guild.id].sendMessage(ctx)
 
     @commands.command(aliases=["checkstate"])
     @commands.guild_only()

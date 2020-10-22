@@ -1,10 +1,13 @@
 import json
 import os
 import random
-f = open("wordlist_10000_.txt", "w+")
-for line in open("wordlist_10000.txt", "r"):
-    if line.strip().isalpha():
-        f.write(line)
+f = open("retrivia.txt", "w+")
+for line in open("trivia-questions.txt", "r"):
+    a = line.split("\"")
+    if len(a) > 6: 
+        print(line)
+    # print(k)
+    
 
 f.close()
 
