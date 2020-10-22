@@ -176,12 +176,6 @@ class SigmaFuse(commands.Cog):
     #     res = discord.Embed(title=c, color=util.generate_random_color())
     #     await ctx.send(embed=res)
 
-    def generate_random_color(self):
-        """
-        Returns a value between 0 and 16777215, the max value for int(rgb).
-        """
-        return random.randint(0, 256**3-1)
-
     @commands.command()
     async def sigma_poss(self, ctx, arg1, brief="Usage: !sigma_poss <string>", description="Usage: !sigma_poss <strings>, returns the number of valid possibilities for the given character combination."):
         """

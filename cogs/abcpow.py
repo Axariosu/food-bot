@@ -77,13 +77,16 @@ class ABCPow(commands.Cog):
             # every round, reset this flag, eliminate players that failed to type the word 
             # self.trackedPlayersPrevious = everyone who survives from previous round
             # make a shallow copy
+            
+            self.round += 1
             self.trackedPlayersPrevious = self.trackedPlayers.copy()
             for player, submitted in list(self.trackedPlayers.items()):
                 if not submitted:
                     del self.trackedPlayers[player]
                 else: 
                     self.trackedPlayers[player] = False
-                
+            
+            
             if self.round >= 2 and len(self.trackedPlayers) == 0:
                 res = discord.Embed(title="Winners", description="\n".join([x for x in self.trackedPlayersPrevious.keys()]), color=util.generate_random_color())
                 await ctx.send(embed=res)
@@ -95,7 +98,6 @@ class ABCPow(commands.Cog):
             #     await ctx.send(embed=res)
             #     await self.stop_chainage(ctx)
             #     return
-            self.round += 1
 
             spaceInsertedWord, self.currentWord = powutil.generate_random_word_alphabetized(self.minL, self.maxL)
             res = discord.Embed(title="ABCPow! Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter the letters in ABC order: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=util.generate_random_color())

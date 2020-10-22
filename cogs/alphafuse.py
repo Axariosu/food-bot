@@ -21,7 +21,9 @@ from discord.ext import tasks
 with open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/tracking.json'))) as json_file:
     data = json.load(json_file)
 f = open(os.path.abspath(os.path.join(os.path.dirname(__file__), '../storage/output.txt')), "a+")
-    
+
+
+
 
 class AlphaFuse(commands.Cog):
     
@@ -203,12 +205,6 @@ class AlphaFuse(commands.Cog):
         c = "Valid" if alphafuseutil.in_wordlist(arg1) else "Invalid"
         res = discord.Embed(title=c, color=util.generate_random_color())
         await ctx.send(embed=res)
-
-    def generate_random_color(self):
-        """
-        Returns a value between 0 and 16777215, the max value for int(rgb).
-        """
-        return random.randint(0, 256**3-1)
 
     @commands.command()
     async def alpha_poss(self, ctx, arg1, brief="Usage: !alpha_poss <string>", description="Usage: !alpha_poss <strings>, returns the number of valid possibilities for the given character combination."):

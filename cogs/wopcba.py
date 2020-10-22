@@ -77,6 +77,8 @@ class woPCBA(commands.Cog):
             # every round, reset this flag, eliminate players that failed to type the word 
             # self.trackedPlayersPrevious = everyone who survives from previous round
             # make a shallow copy
+            self.round += 1
+            
             self.trackedPlayersPrevious = self.trackedPlayers.copy()
             for player, submitted in list(self.trackedPlayers.items()):
                 if not submitted:
@@ -95,7 +97,6 @@ class woPCBA(commands.Cog):
             #     await ctx.send(embed=res)
             #     await self.stop_chainage(ctx)
             #     return
-            self.round += 1
 
             spaceInsertedWord, self.currentWord = powutil.generate_random_word_alphabetized_reversed(self.minL, self.maxL)
             res = discord.Embed(title="!woPCBA Round " + str(self.round), description="You have **" + (str(self.roundTimer[self.round]) if self.round < len(self.roundTimer) else str(self.minTime)) + "** seconds to enter the letters in CBA order: **" + spaceInsertedWord + "**\n**Remaining players: **\n" + ", ".join([x for x in self.trackedPlayers.keys()]), color=util.generate_random_color())

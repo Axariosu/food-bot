@@ -57,6 +57,8 @@ ext = {
     'unscramble': 'unscramble',
 }
 
+bot.games = {}
+
 @bot.event
 async def on_ready():
     print('Logged in as')
@@ -120,6 +122,42 @@ for filename in os.listdir('./cogs'):
     #     bot.load_extension(f'cogs.alphafuse.py'[:-3])
     if filename != "__pycache__":
         bot.load_extension(f'cogs.{filename[:-3]}')
+
+
+# create game module? or something 
+# ctx of where the command is called 
+# -> run that game in that context (?) 
+
+
+# game in different class 
+# -> where to store the timers asyncio.sleep or loop.time() cog (?) 
+# !start game -> (create instance of class, and somehow run that instance on a server)
+# dictionary (guildid : class instance)
+# class Game: .... and when you run it first make an instance like game = Game(some arguments) and then call game.start
+# bot.games = {}; bot.games[ctx.guild.id] = Game(); and on every command, you do: game = bot.games.get(ctx.guild.id); 
+# how to include on_message in this? 
+# you make it so it only listens to messages within its specified server
+# check if game is None, if it's not, then game will be the Game instance of that guild, where you can then call it's methods to do stuff on the game
+# -> APScheduler
+
+
+
+# on_message 
+# main file: global ? dictionary -> 
+# global game dict (has all games) 
+# 
+# inside start command: i get guildid, guildid as argument into the game? 
+# save the guildid within the cog class, do some functionality with that? << 
+# dictionary {guildid : self.game (?)}
+# -> run the game within the guildid
+
+# invoke does pass additional arg 
+# ctx.invoke(bot.get_command('command'), "arg", "arg")
+
+# have the Game class with all the attributes related to the game; then on that class, make methods that will be the game functionality; then you use commands to call those methods
+# when initializing the game, you create a new instance of Game, and store it as the value of a dict, where the key is the guild id, and the other commands the the existing game from that dict, and call the required functions
+
+# -> make game from scratch using this idea ^ 
 
 # @bot.command()
 # async def gamequeue(ctx, *args):
