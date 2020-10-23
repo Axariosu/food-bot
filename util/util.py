@@ -46,4 +46,4 @@ def insert_zero_width_space(word):
     Given a word: 
     Returns a zero-width-space inserted word.
     """
-    return '\u200b'.join([x for x in word])
+    return '\u200b'.join([(x if x != "_" else ("\\" + x)) for x in word])
