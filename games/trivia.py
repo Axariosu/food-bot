@@ -15,32 +15,32 @@ class Trivia():
         self.maxRound = maxRound
         self.round = 0
         self.timer = 1e22
-        self.roundTimer = 20
+        self.roundTimer = 10
         self.trackedPlayers = {}
         self.accepting_answers = False
 
-    async def run(self):
+    async def start(self):
         self.game = True
         res = discord.Embed(title="Starting Trivia!", description="Players answer my question correctly to get one point! There are " + str(self.maxRound) + " rounds in this Trivia!\nIf the answer is tricky, I'll let some typos slide (1 per 8 characters and 1 for non-alphanumeric characters)!")
         await self.ctx.send(embed=res)
         await asyncio.sleep(2)
-        await self.trivia_on()
+        await self.trivia_loop()
 
-    async def trivia_on(self):
+    async def trivia_loop(self):
         loop = asyncio.get_running_loop()
 
         self.round += 1
         
         if (self.round > self.maxRound):
-            sorted_leaderboard = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
-            res = discord.Embed(title="Leaderboard", description="\n".join([util.bold(str(k) + ": " + str(v)) for (k, v) in self.trackedPlayers.items()]))
             await self.trivia_off()
             return
 
         self.question, self.answer = triviautil.fetch_question()
+        # print(self.question, self.answer)
         self.accepting_answers = True
 
-        res = discord.Embed(title="Trivia Round " + str(self.round) + " of " + str(self.maxRound), description=util.bold(util.insert_zero_width_space(self.question)))
+        res = discord.Embed(title="Trivia Round " + str(self.round) + " of " + str(self.maxRound), description=util.bold(util.insert_zero_width_space(self.question)), color=util.generate_random_color())
+        await self.ctx.send(embed=res)
 
         self.timer = loop.time() + self.roundTimer
         while self.game:
@@ -49,11 +49,14 @@ class Trivia():
                 
                 await self.ctx.send(embed=res)
                 await asyncio.sleep(2)
-                await self.trivia_on()
+                await self.trivia_loop()
                 break
             await asyncio.sleep(1)
 
-    async def trivia_off(self):
+    async def stop(self):
+        sorted_leaderboard = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
+        res = discord.Embed(title="Leaderboard", description="\n".join([util.bold(str(k) + ": " + str(v)) for (k, v) in self.trackedPlayers.items()]), color=util.generate_random_color())
+        await self.ctx.send(embed=res)
         self.round = 0
         self.game = False
         self.accepting_answers = False

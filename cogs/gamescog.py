@@ -9,11 +9,18 @@ class GamesCog(commands.Cog):
     @commands.guild_only()
     async def start_trivia(self, ctx):
         # food.games[ctx.guild.id] = Trivia(ctx)
-        awaitctx.bot.games[ctx.guild.id] = Trivia(ctx)
+        ctx.bot.games[ctx.guild.id] = Trivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+        del ctx.bot.games[ctx.guild.id]
+        
         # ctx.bot.games[ctx.guild.id] = gamestest.Game(20)
-        await ctx.bot.games[ctx.guild.id].run()
+        
         # await food.games[ctx.guild.id].run()
 
+    @commands.command(aliases=["kill"])
+    @commands.is_owner()
+    async def kill(self, ctx):
+        await ctx.bot.games[ctx.guild.id].stop()
     # @commands.command(aliases=["checkstate"])
     # @commands.guild_only()
     # async def check_state(self, ctx):
@@ -48,9 +55,8 @@ class GamesCog(commands.Cog):
     @commands.Cog.listener()
     @commands.guild_only()
     async def on_message(self, message):
-        if not message.author.bot:
+        if not message.author.bot and message.guild.id in food.bot.games:
             await food.bot.games[message.guild.id].handle_on_message(message)
-            pass
             # ctx = await commands.Bot.get_context(message=message)
             # await ctx.send("test")
             # ctx = message.channel
