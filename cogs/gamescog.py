@@ -9,7 +9,7 @@ class GamesCog(commands.Cog):
     @commands.guild_only()
     async def start_trivia(self, ctx):
         # food.games[ctx.guild.id] = Trivia(ctx)
-        ctx.bot.games[ctx.guild.id] = Trivia(ctx)
+        awaitctx.bot.games[ctx.guild.id] = Trivia(ctx)
         # ctx.bot.games[ctx.guild.id] = gamestest.Game(20)
         await ctx.bot.games[ctx.guild.id].run()
         # await food.games[ctx.guild.id].run()

@@ -40,3 +40,10 @@ def codeblock(s):
     Returns an codeblocked string.
     """
     return "```" + str(s) + "```"
+
+def insert_zero_width_space(word):
+    """
+    Given a word: 
+    Returns a zero-width-space inserted word.
+    """
+    return '\u200b'.join([x for x in word])
