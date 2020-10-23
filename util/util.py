@@ -30,13 +30,13 @@ def underline(s):
 def strikethrough(s):
     """
     Given a string s:
-    Returns an underlined string.
+    Returns an strikethrough string.
     """
     return "~~" + str(s) + "~~"
 
 def codeblock(s):
     """
     Given a string s:
-    Returns an underlined string.
+    Returns an codeblocked string.
     """
     return "```" + str(s) + "```"
