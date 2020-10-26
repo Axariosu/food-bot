@@ -1,4 +1,6 @@
-import games
+import games.trivia
+import games.scrambivia
+import games.jservicetrivia
 import gamestest
 import discord
 from discord.ext import commands
@@ -9,23 +11,33 @@ class GamesCog(commands.Cog):
     @commands.guild_only()
     async def trivia(self, ctx):
         if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.Trivia(ctx)
+        ctx.bot.games[ctx.guild.id] = games.trivia.Trivia(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
     @commands.guild_only()
     async def scrambivia(self, ctx):
         if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.Scrambivia(ctx)
+        ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command(aliases=['jstrivia'])
+    @commands.guild_only()
+    async def jservicetrivia(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.jservicetrivia.jServiceTrivia(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
     @commands.is_owner()
     async def kill(self, ctx):
         await ctx.bot.games[ctx.guild.id].stop()
-
 
     # commands shouldn't get more complicated than this.
     # all the game functionallity should be handled by the game class,
@@ -51,17 +63,8 @@ class GamesCog(commands.Cog):
     @commands.Cog.listener()
     @commands.guild_only()
     async def on_message(self, message):
-        if not message.author.bot and message.guild.id in food.bot.games and not message.content.startswith("!"):
+        if not message.author.bot and message.guild.id in food.bot.games:
             await food.bot.games[message.guild.id].handle_on_message(message)
-            # ctx = await commands.Bot.get_context(message=message)
-            # await ctx.send("test")
-            # ctx = message.channel
-            # await ctx.bot.games[ctx.guild.id].handle_on_message(message)
-            # ctx = await commands.Bot.get_context(self, message)
-            # await ctx.send("test: " + message.content)
-            # await ctx.bot.games[ctx.guild.id].handle_on_message(message)
-        # if not message.author.bot:
-            # await message.channel.send("hi")
 
 def setup(bot): 
     bot.add_cog(GamesCog(bot))

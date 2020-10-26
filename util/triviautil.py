@@ -1,7 +1,16 @@
 import random
+import requests
 
 trivia = open("trivia-questions.txt", "r")
 trivialist = set([x[:-1] for x in trivia])
+
+def fetch_questions_jservice(): 
+    """
+    Returns a list of length 50 of a dictionary which contains: 
+    http://jservice.io/ documentation
+    """
+    return requests.get("http://jservice.io/api/random?count=50").json()
+
 
 def fetch_question():
     """
@@ -49,7 +58,7 @@ def valid_guess(s1, s2):
     # Add a possible error for: 
     # Every 8 characters
     # Every non-alphanumeric character
-    max_errors = len(s2) // 8
+    max_errors = len(s2) // 5
     for k in s2: 
         if not k.isalnum(): 
             max_errors += 1

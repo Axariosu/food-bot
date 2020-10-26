@@ -15,7 +15,7 @@ class Trivia():
         self.maxRound = maxRound
         self.round = 0
         self.timer = 1e22
-        self.roundTimer = 10
+        self.roundTimer = 15
         self.trackedPlayers = {}
         self.accepting_answers = False
 
@@ -24,6 +24,8 @@ class Trivia():
         res = discord.Embed(title="Starting Trivia!", description="Players answer my question correctly to get one point! There are " + str(self.maxRound) + " rounds in this Trivia!\nIf the answer is tricky, I'll let some typos slide (1 per 8 characters and 1 for non-alphanumeric characters)!", color=util.generate_random_color())
         await self.ctx.send(embed=res)
         await asyncio.sleep(10)
+        res = discord.Embed(title="Let's begin!")
+        await self.ctx.send(embed=res)
         await self.trivia_loop()
 
     async def trivia_loop(self):
@@ -56,7 +58,7 @@ class Trivia():
 
     async def stop(self):
         sorted_leaderboard = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
-        res = discord.Embed(title="Leaderboard", description="\n".join([str(k) + ": " + str(v) for (k, v) in sorted_leaderboard.items()]), color=util.generate_random_color())
+        res = discord.Embed(title="Leaderboard", description="\n".join([str(k) + ": " + str(v) for (k, v) in sorted_leaderboard]), color=util.generate_random_color())
         await self.ctx.send(embed=res)
         self.round = 0
         self.game = False
