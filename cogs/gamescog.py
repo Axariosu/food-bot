@@ -1,35 +1,31 @@
-from games.trivia import Trivia
+import games
 import gamestest
 import discord
 from discord.ext import commands
 import food
 
 class GamesCog(commands.Cog):
-    @commands.command(aliases=["trivia"])
+    @commands.command()
     @commands.guild_only()
-    async def start_trivia(self, ctx):
-        # food.games[ctx.guild.id] = Trivia(ctx)
-        ctx.bot.games[ctx.guild.id] = Trivia(ctx)
+    async def trivia(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            return
+        ctx.bot.games[ctx.guild.id] = games.Trivia(ctx)
         await ctx.bot.games[ctx.guild.id].start()
-        del ctx.bot.games[ctx.guild.id]
-        
-        # ctx.bot.games[ctx.guild.id] = gamestest.Game(20)
-        
-        # await food.games[ctx.guild.id].run()
 
-    @commands.command(aliases=["kill"])
+    @commands.command()
+    @commands.guild_only()
+    async def scrambivia(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            return
+        ctx.bot.games[ctx.guild.id] = games.Scrambivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command()
     @commands.is_owner()
     async def kill(self, ctx):
         await ctx.bot.games[ctx.guild.id].stop()
-    # @commands.command(aliases=["checkstate"])
-    # @commands.guild_only()
-    # async def check_state(self, ctx):
-    #     game = ctx.bot.games[ctx.guild.id]
-    #     if not game:
-    #         await ctx.send("No game found, Start a game with `!start_game` first!")
-    #         return
 
-    #     await ctx.send(f"Current state: {game.some_state}")
 
     # commands shouldn't get more complicated than this.
     # all the game functionallity should be handled by the game class,
@@ -55,7 +51,7 @@ class GamesCog(commands.Cog):
     @commands.Cog.listener()
     @commands.guild_only()
     async def on_message(self, message):
-        if not message.author.bot and message.guild.id in food.bot.games:
+        if not message.author.bot and message.guild.id in food.bot.games and not message.content.startswith("!"):
             await food.bot.games[message.guild.id].handle_on_message(message)
             # ctx = await commands.Bot.get_context(message=message)
             # await ctx.send("test")

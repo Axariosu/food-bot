@@ -1,15 +1,21 @@
 import json
 import os
 import random
-f = open("retrivia.txt", "w+")
-for line in open("trivia-questions.txt", "r"):
-    a = line.split("\"")
-    if len(a) > 6: 
-        print(line)
-    # print(k)
+# f = open("retrivia.txt", "w+")
+# for line in open("trivia-questions.txt", "r"):
+#     a = line.split("\"")
+#     if len(a) > 6: 
+#         print(line)
+#     # print(k)
     
 
-f.close()
+# f.close()
+from os.path import dirname, basename, isfile, join
+import glob
+modules = glob.glob(join(dirname("games/"), "*.py"))
+__all__ = [ basename(f)[:-3] for f in modules if isfile(f) and not f.endswith('__init__.py')]
+import __all__
+
 
 # a = {"a": 1, "b": 2, "c": 3}
 # b = a.copy()
