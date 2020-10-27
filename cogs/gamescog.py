@@ -1,6 +1,7 @@
 import games.trivia
 import games.scrambivia
 import games.jservicetrivia
+import games.alphafuse
 import gamestest
 import discord
 from discord.ext import commands
@@ -33,6 +34,16 @@ class GamesCog(commands.Cog):
             return
         ctx.bot.games[ctx.guild.id] = games.jservicetrivia.jServiceTrivia(ctx)
         await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command(aliases=['alpha'])
+    @commands.guild_only()
+    async def alphafuse(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.alphafuse.AlphaFuse(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+    
 
     @commands.command()
     @commands.is_owner()
