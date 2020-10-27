@@ -11,7 +11,6 @@ def fetch_questions_jservice():
     """
     return requests.get("http://jservice.io/api/random?count=50").json()
 
-
 def fetch_question():
     """
     Returns a tuple (question, answer) from the trivia list. 
