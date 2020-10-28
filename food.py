@@ -2,63 +2,16 @@ import os, re, asyncio
 import uuid
 import discord
 from dotenv import load_dotenv
-from discord.ext import commands
+from discord.ext import commands, menus
 from discord.ext.commands import CommandNotFound
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-__COGS__ = ['alphafuse.py']
-GUILD = os.getenv('DISCORD_GUILD')
-
-# client = discord.Client()
-
 bot = commands.Bot(command_prefix="!")
 
-"""
-Two dictionaries to start and stop games -- definitely a better way to manage this
-startdict (sd)
-stopdict (pd)
-extension (ext)
-"""
-td = {
-    'alpha': 'alpha', 
-    'omega': 'omega',
-    'sigma': 'sigma',
-    'udder': 'udder', 
-    'c4': 'fourplay',
-    '4p': 'fourplay', 
-    'schwootsh': 'schwootsh',
-    'pow': 'pow',
-    'wop': 'wop',
-    'unscramble': 'unscramble',
-}
-pd = {
-    'alpha': 'stop_alpha', 
-    'udder': 'stop_udder',
-    'sigma': 'stop_sigma',
-    'omega': 'stop_omega',
-    'c4': 'stop_fourplay',
-    '4p': 'stop_fourplay', 
-    'schwootsh': 'stop_schwootsh',
-    'pow': 'stop_pow',
-    'wop': 'stop_wop',
-    'unscramble': 'stop_unscramble',
-}
-ext = {
-    'alpha': 'alphafuse',
-    'omega': 'omegafuse',
-    'sigma': 'sigmafuse',
-    'udder': 'uddercode',
-    'c4': 'fourplay',
-    '4p': 'fourplay',
-    'schwootsh': 'schwootsh',
-    'pow': 'pow', 
-    'wop': 'wop',
-    'unscramble': 'unscramble',
-}
-
 bot.games = {}
+
 
 @bot.event
 async def on_ready():
@@ -67,48 +20,29 @@ async def on_ready():
     print(bot.user.id)
     print('------')
 
-@bot.command()
+@bot.command(hidden=True)
 async def quit(ctx):
     message = 'Quitting!'
     await ctx.send(message)
     await bot.logout()
 
-@bot.command()
+@bot.command(hidden=True)
 async def load(ctx, extension):
-    if extension in ext:
-        bot.load_extension(f'cogs.{ext[extension]}')
-    else:
-        bot.load_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{extension}')
 
-@bot.command()
+@bot.command(hidden=True)
 async def unload(ctx, extension):
-    if extension in ext:
-        bot.unload_extension(f'cogs.{ext[extension]}')
-    else:
-        bot.unload_extension(f'cogs.{extension}')
+    bot.unload_extension(f'cogs.{extension}')
 
-@bot.command()
+@bot.command(hidden=True)
 async def reload(ctx, extension):
-    if extension in ext:
-        bot.unload_extension(f'cogs.{ext[extension]}')
-        bot.load_extension(f'cogs.{ext[extension]}')
-    else:
-        bot.unload_extension(f'cogs.{extension}')
-        bot.load_extension(f'cogs.{extension}')
+    bot.unload_extension(f'cogs.{extension}')
+    bot.load_extension(f'cogs.{extension}')
 
 @bot.command()
 async def avatar(ctx, *, avamember : discord.Member=None):
     userAvatarUrl = avamember.avatar_url
     await ctx.send(userAvatarUrl)
-
-@bot.command()
-async def start(ctx, arg1):
-    # print(bot.get_command(td[arg1])
-    await ctx.invoke(bot.get_command(td[arg1]))
-
-@bot.command()
-async def stop(ctx, arg1):
-    await ctx.invoke(bot.get_command(pd[arg1]))
 
 @bot.command()
 async def commandlist(ctx):
@@ -117,6 +51,34 @@ async def commandlist(ctx):
         helptext+=f"{command}\n"
     helptext+="```"
     await ctx.send(helptext)
+
+# @bot.command()
+# async def help(ctx):
+#     res = discord.Embed(title="Bot Commands", description="!powracer")
+#     # for command in bot.commands:
+#     #     res.add_field(name=f"!{command}", value="test", inline=True)
+#     await ctx.send(embed=res)
+
+# @bot.command()
+# async def menu_example(ctx):
+#     m = MyMenu()
+#     await m.start(ctx)
+
+# @bot.command()
+# async def delete_things(ctx):
+#     confirm = await Confirm('Delete everything?').prompt(ctx)
+#     if confirm:
+#         await ctx.send('deleted...')
+
+# @bot.command()
+# async def test_command(ctx):
+#     pages = menus.MenuPages(source=Source(data, key=lambda t: t.key, per_page=12), clear_reactions_after=True)
+#     await pages.start(ctx)
+
+# @bot.command()
+# async def test_command2(ctx):
+#     pages = menus.MenuPages(source=Source(), clear_reactions_after=True)
+#     await pages.start(ctx)
 
 @bot.event
 async def on_command_error(ctx, error):

@@ -10,7 +10,7 @@ import games.uddercode
 import games.unscramble
 import gamestest
 import discord
-from discord.ext import commands
+from discord.ext import flags, commands
 import food
 
 class GamesCog(commands.Cog):
@@ -59,13 +59,22 @@ class GamesCog(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.pow.Pow(ctx)
         await ctx.bot.games[ctx.guild.id].start()
     
-    @commands.command()
+    @flags.add_flag("-s", type=int, default=90)
+    @flags.add_flag("-w", type=int, default=30)
+    @flags.command()
     @commands.guild_only()
-    async def powracer(self, ctx):
+    async def powracer(self, ctx, **flags):
+        """
+        Usage: !powracer [options]
+        -s [--similarity] *default*: 90
+        -w [--words] *default*: 30
+        Players have some time per round to type my randomly generated words! 
+        I'll accept your message if it's at least [-s]% similar!
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.powracer.PowRacer(ctx)
+        ctx.bot.games[ctx.guild.id] = games.powracer.PowRacer(ctx, flags["s"], flags["w"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
@@ -104,7 +113,7 @@ class GamesCog(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.unscramble.Unscramble(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.is_owner()
     async def kill(self, ctx):
         await ctx.bot.games[ctx.guild.id].stop()
@@ -125,8 +134,8 @@ class GamesCog(commands.Cog):
 
         await ctx.send(f"Changed state from {old_state} to {game.some_state}")
 
-    @commands.command(aliases=["checkgames"])
-    @commands.guild_only()
+    @commands.command(aliases=["checkgames"], hidden=True)
+    @commands.is_owner()
     async def current_games(self, ctx):
         await ctx.send(food.bot.games)
 
@@ -150,3 +159,11 @@ class GamesCog(commands.Cog):
 
 def setup(bot): 
     bot.add_cog(GamesCog(bot))
+
+# @a
+# def b:
+#   pass
+
+# def b:
+#   pass
+# b = a(b)
