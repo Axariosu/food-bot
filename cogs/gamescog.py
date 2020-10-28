@@ -1,9 +1,12 @@
-import games.trivia
-import games.scrambivia
-import games.jservicetrivia
 import games.alphafuse
+import games.fourplay
+import games.jservicetrivia
 import games.powracer
 import games.pow
+import games.schwootsh
+import games.scrambivia
+import games.trivia
+import games.uddercode
 import games.unscramble
 import gamestest
 import discord
@@ -18,6 +21,15 @@ class GamesCog(commands.Cog):
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.alphafuse.AlphaFuse(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command(aliases=['4p'])
+    @commands.guild_only()
+    async def fourplay(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.fourplay.Fourplay(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command(aliases=['trivia'])
@@ -58,11 +70,29 @@ class GamesCog(commands.Cog):
 
     @commands.command()
     @commands.guild_only()
+    async def schwootsh(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.schwootsh.Schwootsh(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command()
+    @commands.guild_only()
     async def scrambivia(self, ctx):
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command(aliases=['udder'])
+    @commands.guild_only()
+    async def uddercode(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.uddercode.UdderCode(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
@@ -105,6 +135,18 @@ class GamesCog(commands.Cog):
     async def on_message(self, message):
         if not message.author.bot and message.guild.id in food.bot.games:
             await food.bot.games[message.guild.id].handle_on_message(message)
+
+    @commands.Cog.listener()
+    @commands.guild_only()
+    async def on_reaction_add(self, reaction, user):
+        if not user.bot and reaction.message.guild.id in food.bot.games:
+            await food.bot.games[reaction.message.guild.id].handle_on_reaction_add(reaction, user)
+        
+    @commands.Cog.listener()
+    @commands.guild_only()
+    async def on_reaction_remove(self, reaction, user):
+        if not user.bot and reaction.message.guild.id in food.bot.games:
+            await food.bot.games[reaction.message.guild.id].handle_on_reaction_remove(reaction, user)
 
 def setup(bot): 
     bot.add_cog(GamesCog(bot))

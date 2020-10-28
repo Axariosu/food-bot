@@ -3,6 +3,7 @@ import uuid
 import discord
 from dotenv import load_dotenv
 from discord.ext import commands
+from discord.ext.commands import CommandNotFound
 
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
@@ -116,6 +117,12 @@ async def commandlist(ctx):
         helptext+=f"{command}\n"
     helptext+="```"
     await ctx.send(helptext)
+
+@bot.event
+async def on_command_error(ctx, error):
+    if isinstance(error, CommandNotFound):
+        return
+    raise error
 
 for filename in os.listdir('./cogs'):
     # if filename in __COGS__:
