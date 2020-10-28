@@ -2,19 +2,58 @@ import games.trivia
 import games.scrambivia
 import games.jservicetrivia
 import games.alphafuse
+import games.powracer
+import games.pow
+import games.unscramble
 import gamestest
 import discord
 from discord.ext import commands
 import food
 
 class GamesCog(commands.Cog):
+    @commands.command(aliases=['alpha'])
+    @commands.guild_only()
+    async def alphafuse(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.alphafuse.AlphaFuse(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command(aliases=['trivia'])
+    @commands.guild_only()
+    async def jservicetrivia(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.jservicetrivia.jServiceTrivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
     @commands.command()
     @commands.guild_only()
-    async def trivia(self, ctx):
+    async def oldtrivia(self, ctx):
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.trivia.Trivia(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @commands.command()
+    @commands.guild_only()
+    async def pow(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.pow.Pow(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+    
+    @commands.command()
+    @commands.guild_only()
+    async def powracer(self, ctx):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.powracer.PowRacer(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
@@ -26,24 +65,14 @@ class GamesCog(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command(aliases=['jstrivia'])
+    @commands.command()
     @commands.guild_only()
-    async def jservicetrivia(self, ctx):
+    async def unscramble(self, ctx):
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.jservicetrivia.jServiceTrivia(ctx)
+        ctx.bot.games[ctx.guild.id] = games.unscramble.Unscramble(ctx)
         await ctx.bot.games[ctx.guild.id].start()
-
-    @commands.command(aliases=['alpha'])
-    @commands.guild_only()
-    async def alphafuse(self, ctx):
-        if ctx.guild.id in ctx.bot.games:
-            await ctx.send("A game is already running, wait for it to finish!")
-            return
-        ctx.bot.games[ctx.guild.id] = games.alphafuse.AlphaFuse(ctx)
-        await ctx.bot.games[ctx.guild.id].start()
-    
 
     @commands.command()
     @commands.is_owner()

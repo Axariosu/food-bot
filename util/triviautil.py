@@ -4,6 +4,8 @@ import requests
 trivia = open("trivia-questions.txt", "r")
 trivialist = set([x[:-1] for x in trivia])
 
+# https://github.com/luozhouyang/python-string-similarity#levenshtein
+
 def fetch_questions_jservice(): 
     """
     Returns a list of length 50 of a dictionary which contains: 
@@ -24,35 +26,34 @@ def lehvenstein_distance(s1, s2):
     Given strings s1, s2: 
     Returns the lehvenstein distance.
     """
-    m, n = len(s1), len(s2)
-    count = 0 
-    i = 0
-    j = 0
-    while i < m and j < n: 
-        if s1[i] != s2[j]: 
-            if m > n: 
-                i += 1
-            elif m < n: 
-                j += 1
-            else:
-                i += 1
-                j += 1
-            count += 1
-        else:
-            i += 1
-            j += 1
-    while i < m:
-        i += 1
-        count += 1
-    while j < n: 
-        j += 1
-        count += 1
-    return count
+    if s1 == s2:
+        return 0.0
+    if len(s1) == 0:
+        return len(s2)
+    if len(s2) == 0:
+        return len(s1)
+
+    v0 = [0] * (len(s2) + 1)
+    v1 = [0] * (len(s2) + 1)
+
+    for i in range(len(v0)):
+        v0[i] = i
+
+    for i in range(len(s1)):
+        v1[0] = i + 1
+        for j in range(len(s2)):
+            cost = 1
+            if s1[i] == s2[j]:
+                cost = 0
+            v1[j + 1] = min(v1[j] + 1, v0[j + 1] + 1, v0[j] + cost)
+        v0, v1 = v1, v0
+
+    return v0[len(s2)]
 
 def valid_guess(s1, s2):
     """
-    Given strings s1, s2:
-    Returns True if the errors of s1 is an acceptable response for s2, else False.
+    Given strings s2, s2:
+    Returns True if the errors of s2 is an acceptable response for s2, else False.
     """
     # Add a possible error for: 
     # Every 8 characters

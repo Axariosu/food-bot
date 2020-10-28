@@ -1,8 +1,37 @@
 import time, random, re
+import asyncio
 
 f = open("words_lower_alpha.txt", "r")
+f2 = open("wordlist_10000.txt", "r")
 
 wordlist = set([word[:-1] for word in f])
+wordlist2 = set([word[:-1] for word in f2])
+
+async def generate_k_random_words(minL, maxL, l):
+    """
+    Given three integers minL, maxL, l:
+    Returns a list of l length of words 
+    with at least minL characters and at most maxL characters.
+    Note: Slow for small maxL (<=10).
+    """
+    res = random.choices(list(wordlist2), k=l)
+    for i in range(len(res)):
+        while not (minL <= len(res[i]) <= maxL):
+            res[i] = random.sample(wordlist2, k=1)[0]
+    return " ".join(insert_zero_width_space(w) for w in res), " ".join(res)
+
+async def generate_k_random_words_hard(minL, maxL, l):
+    """
+    Given three integers minL, maxL, l:
+    Returns a list of l length of **hard** words
+    with at least minL characters and at most maxL characters.
+    Note: Slow for small maxL (<=10).
+    """
+    res = random.choices(list(wordlist2), k=l)
+    for i in range(len(res)):
+        while not (minL <= len(res[i]) <= maxL):
+            res[i] = random.sample(wordlist2, k=1)[0]
+    return " ".join(insert_zero_width_space(w) for w in res), " ".join(res)
 
 def generate_random_word(minL, maxL):
     """
@@ -56,7 +85,9 @@ def scramble(s):
     return "".join(k)
 
 def insert_zero_width_space(word):
-    return '\u200b'.join([x for x in word])
+    return '\uFEFF'.join([x for x in word])
+
+# print(generate_k_random_words(5, 15, 50))
 
 # print(generate_random_word_alphabetized(5, 20))
 
