@@ -10,14 +10,22 @@ class TemplateGame():
         self.round = 0
         self.maxRound = maxRound
         self.delay = 10
+        self.trackedPlayers = {}
+
+    def __del__(self):
+        print("bye!")
 
     async def start(self):
         await asyncio.sleep(self.delay)
         await self.template_loop()
 
     async def template_loop(self):
-        self.round += 1
         loop = asyncio.get_running_loop()
+
+        self.round += 1
+        if (self.round > self.maxRound):
+            await self.stop()
+            return
         
         # round over logic
 
@@ -28,6 +36,8 @@ class TemplateGame():
             if loop.time() >= self.timer:
                 res = discord.Embed(title="Round Over!")
                 await self.ctx.send(embed=res)
+                await asyncio.sleep(2)
+                await self.template_loop() # TODO: CHANGE THIS FN NAME
                 break
             await asyncio.sleep(0.5) 
 
