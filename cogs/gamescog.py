@@ -1,6 +1,6 @@
 import games.alphafuse
 import games.fourplay
-import games.jservicetrivia
+import games.jstrivia
 import games.powracer
 import games.pow
 import games.schwootsh
@@ -32,13 +32,23 @@ class GamesCog(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.fourplay.Fourplay(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command(aliases=['trivia'])
+    @flags.add_flag("-r", type=int, default=50)
+    @flags.add_flag("-s", type=int, default=70)
+    @flags.add_flag("-sc", type=bool, default=False)
+    @flags.command()
     @commands.guild_only()
-    async def jservicetrivia(self, ctx):
+    async def trivia(self, ctx, **flags):
+        """
+        Usage: !trivia [options]
+        -s  [similarity]    default: 70
+        -r  [rounds]        default: 50
+        -sc [scramble]      default: False
+        I'll accept your answer if it's at least [-s]% similar!
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.jservicetrivia.jServiceTrivia(ctx)
+        ctx.bot.games[ctx.guild.id] = games.jstrivia.jsTrivia(ctx, flags["r"], flags["s"], flags["sc"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()
@@ -61,6 +71,8 @@ class GamesCog(commands.Cog):
     
     @flags.add_flag("-s", type=int, default=90)
     @flags.add_flag("-w", type=int, default=30)
+    @flags.add_flag("-l", type=int, default=3)
+    @flags.add_flag("-h", type=int, default=15)
     @flags.command()
     @commands.guild_only()
     async def powracer(self, ctx, **flags):
@@ -68,13 +80,15 @@ class GamesCog(commands.Cog):
         Usage: !powracer [options]
         -s [--similarity] *default*: 90
         -w [--words] *default*: 30
+        -l [--lowercharlimit] *default*: 3
+        -h [--highercharlimit] *default*: 15
         Players have some time per round to type my randomly generated words! 
         I'll accept your message if it's at least [-s]% similar!
         """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.powracer.PowRacer(ctx, flags["s"], flags["w"])
+        ctx.bot.games[ctx.guild.id] = games.powracer.PowRacer(ctx, flags["s"], flags["w"], flags["l"], flags["h"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()

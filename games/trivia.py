@@ -16,6 +16,7 @@ class Trivia():
         self.round = 0
         self.timer = 1e22
         self.roundTimer = 15
+        self.similarity = 55
         self.trackedPlayers = {}
         self.accepting_answers = False
 
@@ -70,7 +71,7 @@ class Trivia():
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def handle_on_message(self, message):
-        if triviautil.valid_guess(message.content, self.answer) and self.accepting_answers:
+        if triviautil.valid_guess(message.content, self.answer, self.similarity) and self.accepting_answers:
             self.accepting_answers = False
             if message.author.name not in self.trackedPlayers:
                 self.trackedPlayers[message.author.name] = 1

@@ -12,7 +12,6 @@ bot = commands.Bot(command_prefix="!")
 
 bot.games = {}
 
-
 @bot.event
 async def on_ready():
     print('Logged in as')

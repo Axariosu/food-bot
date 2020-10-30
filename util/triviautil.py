@@ -50,17 +50,18 @@ def lehvenstein_distance(s1, s2):
 
     return v0[len(s2)]
 
-def valid_guess(s1, s2):
+def valid_guess(s1, s2, similarity):
     """
-    Given strings s2, s2:
-    Returns True if the errors of s2 is an acceptable response for s2, else False.
+    Given strings s1, s2 and integer similarity:
+    Returns True if the similarity between s1 and s2 >= similarity, else False.
     """
     # Add a possible error for: 
     # Every 8 characters
     # Every non-alphanumeric character
-    max_errors = len(s2) // 5
+    max_errors = 0
     for k in s2: 
         if not k.isalnum(): 
             max_errors += 1
-    return lehvenstein_distance(s1, s2) <= max_errors
+    sim = (len(s2) - lehvenstein_distance(s1, s2) + max_errors) / len(s2) * 100
+    return sim >= similarity
 
