@@ -13,7 +13,7 @@ class TemplateGame():
         self.trackedPlayers = {}
 
     def __del__(self):
-        print("bye!")
+        pass
 
     async def start(self):
         await asyncio.sleep(self.delay)

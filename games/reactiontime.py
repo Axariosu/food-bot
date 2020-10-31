@@ -20,9 +20,6 @@ class ReactionTime():
         self.minReactionSpeed = [1e100, None]
         self.tooearly = []
     
-    def __del__(self):
-        print("bye!")
-
     async def start(self):
         res = discord.Embed(title="Reaction Time", description="A reaction game (or, maybe ping diff) for you!", color=util.generate_random_color())
         res.add_field(inline=False, name="Rules", value="Type anything in chat to get a point, but only after my message changes!\nIf you type too early, you won't be able to get the points for the round!")
@@ -69,11 +66,9 @@ class ReactionTime():
         await asyncio.sleep(1)
         res = discord.Embed(title="Fastest Reaction", description=util.bold(str(self.minReactionSpeed[1]) + ": `" + str(round(self.minReactionSpeed[0] * 1000, 3)) + "ms`"), color=util.generate_random_color())
         await self.ctx.send(embed=res)
-        self.round = 0
-        self.accepting_answers = False
-        self.trackedPlayers = {}
         res = discord.Embed(title="Reaction Time Over!")
         await self.ctx.send(embed=res)
+        del self
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def handle_on_message(self, message):
