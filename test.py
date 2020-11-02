@@ -1,6 +1,14 @@
 import json
 import os
 import random
+import aiohttp
+
+async def fetch():
+    async with aiohttp.request('GET',
+            'http://python.org/') as resp:
+        assert resp.status == 200
+        print(await resp.text())
+
 # f = open("retrivia.txt", "w+")
 # for line in open("trivia-questions.txt", "r"):
 #     a = line.split("\"")
