@@ -77,8 +77,8 @@ def generate_unpixellating_gif(query, n, duration):
         delay=1000,
         loop=0)
     ani = Image.open(animated_gif)
-    animated_gif.seek(0)
-    open(f'{query}.gif', 'wb+').write(animated_gif.read())
+    # animated_gif.seek(0)
+    # open(f'{query}.gif', 'wb+').write(animated_gif.read())
     return ani
 
 def get_center_square_of_image(image):
