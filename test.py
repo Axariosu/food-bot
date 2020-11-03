@@ -4,27 +4,33 @@ import random
 import aiohttp
 import asyncio
 from PIL import Image
-
 import queue    # For Python 2.x use 'import Queue as queue'
 import threading, time, random
-
-
-
-from bs4 import BeautifulSoup
 import requests
 
 
-query = "koko"
-url = "https://www.google.com/search?q=" + str(query) + "&source=lnms&tbm=isch"
 
-HEADERS = {"content-type": "image/png"}
+f = open("wordlist_league.txt2", "w+")
+for word in open("wordlist_league.txt", "r"):
+    for k in word.split(", "):
+        
+        f.write("".join([x.lower() for x in k if (x.isalpha() or x.isspace())]) + "\n")
+f.close()
 
-html = requests.get(url, headers=HEADERS).text
 
-soup = BeautifulSoup(html, "html.parser")
 
-for img in soup.find_all("img"):
-    print(img["src"])
+
+# query = "koko"
+# url = "https://www.google.com/search?q=" + str(query) + "&source=lnms&tbm=isch"
+
+# HEADERS = {"content-type": "image/png"}
+
+# html = requests.get(url, headers=HEADERS).text
+
+# soup = BeautifulSoup(html, "html.parser")
+
+# for img in soup.find_all("img"):
+#     print(img["src"])
 
 
 

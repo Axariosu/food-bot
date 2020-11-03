@@ -39,8 +39,8 @@ api = API(PEXELS_API_KEY)
 #     'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived'
 # }
 
-# f = open("wordlist_10000.txt")
-# wordlist = set([x.strip() for x in f])
+f = open("wordlist_10000.txt")
+wordlist = set([x.strip() for x in f])
 
 def generate_unpixellating_pictures(query, n):
     """

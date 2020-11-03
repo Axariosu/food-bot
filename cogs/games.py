@@ -34,7 +34,8 @@ class Games(commands.Cog):
         await ctx.bot.games[ctx.guild.id].start()
 
     @flags.add_flag("-h", type=bool, default=False)
-    @flags.add_flag("-r", type=int, default=1)
+    @flags.add_flag("-r", type=int, default=15)
+    @flags.add_flag("-w", "--wordlist", type=str, default="10000")
     @flags.command(aliases=['jpeg'])
     @commands.guild_only()
     async def jpegtionary(self, ctx, **flags):

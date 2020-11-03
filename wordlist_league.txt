@@ -1,0 +1,343 @@
+cull
+dorans blade
+dorans ring
+dorans shield
+control ward
+corrupting potion
+amplifying tome
+bf sword
+blasting wand
+boots
+cloak of agility
+cloth armour
+dagger
+dark seal
+long sword
+needlessly large rod
+nullmagic mantle
+pickaxe
+relic shield
+ruby crystal
+sapphire crystal
+aegis of the legion
+aether wisp
+bamis cinder
+bilgewater cutlass
+bramble vest
+catalyst of aeons
+caulfields warhammer
+chain vest
+chalice of harmony
+crystalline bracer
+executioners calling
+amplifying tomb
+forbidden idol
+guardians belt
+glacial shroud
+haunting guise
+hexdrinker
+hextech revolver
+jaurims fist
+kindlegem
+kircheis shard
+last whisper
+lost chapter
+negatron cloak
+oblivion orb
+phage
+quicksilver sash
+recurve bow
+seekers armguard
+serrated dirk
+sheen
+spectres cowl
+stinger
+tear of the goddess
+tiamat
+vampiric scepter
+wardens mail
+zeal
+abyssal mask
+adaptive helm
+archangels staff
+ardent censer
+athenes unholy grail
+banshees veil
+berserkers greaves
+black cleaver
+blade of the ruined king
+bloodthirster
+boots of mobility
+boots of swiftness
+dead mans plate
+deaths dance
+duskblade of draktharr
+edge of night
+frozen heart
+frozen mallet
+gargoyle stoneplate
+guardian angel
+guinsoos rageblade
+hextech glp
+hextech gunblade
+hextech protobelt
+iceborn gauntlet
+infinity edge
+ionian boots of lucidity
+knights vow
+liandrys torment
+lich bane
+locket of the iron solari
+lord dominiks regards
+ludens echo
+zhonyas hourglass
+zekes convergence
+youmuus ghostblade
+wits end
+warmogs armor
+void staff
+umbral glaive
+twin shadows
+trinity force
+titanic hydra
+thornmail
+sunfire cape
+stormrazor
+steraks gage
+statikk shiv
+spirit visage
+spellbinder
+sorcerers shoes
+shurelyas reverie
+seraphs embrace
+sanguine blade
+rylais crystal scepter
+runaans hurricane
+rod of ages
+righteous glory
+redemption
+ravenous hydra
+rapid firecannon
+randuins omen
+rabadons deathcap
+phantom dancer
+ninja tabi
+nashors tooth
+muramana 
+mortal reminder
+morellonomicon
+mikaels crucible
+mercurys treads
+mercurial scimitar
+mejais soulstealer
+maw of malmortius
+manamune
+guardians hammer
+guardians horn
+guardians orb
+corrupting potion
+elixir of iron
+elixir of sorcery
+elixir of wrather
+health potion
+oracles extract
+refillable potion
+farsight alteration
+oracle lens
+scarecrow effigy
+warding totem
+black spear
+eye of the herald
+minion dematerializer
+porosnax
+total biscuit of everlasting will
+prototype hex core
+hex core mk
+hex core mk
+perfect hex core
+stopwatch
+slightly magical boots
+hunters machete
+hunters talisman
+relic shield
+targons buckler
+bulwark of the mountain
+spectral sickle
+harrowing crescent
+black mist scythe
+spellthiefs edge
+frostfang
+shard of true ice
+steel shoulderguards
+runesteel spaulders
+pauldrons of whiterock
+skirmishers sabre
+stalkers blade
+bloodrazor
+cinderhulk
+runic echoes
+warrior
+fire at will
+deaths daughter
+raise morale
+circlet of the iron solari
+forgefire cape
+frozen fist
+infernal mask
+molten edge
+ludens pulse
+obsidian cleaver
+rabadons deathcrown
+trinity fusion
+youmuus wraithblade
+might of the ruined king
+aatrox
+ahri
+akali
+alistar
+amumu
+anivia
+annie
+aphelios
+ashe
+aurelion sol
+azir
+bard
+blitzcrank
+brand
+braum
+caitlyn
+camille
+cassiopeia
+chogath
+corki
+darius
+diana
+dr mundo
+draven
+ekko
+elise
+evelynn
+ezreal
+fiddlesticks
+fiora
+fizz
+galio
+gangplank
+garen
+gnar
+gragas
+graves
+hecarim
+heimerdinger
+illaoi
+irelia
+ivern
+janna
+jarvan iv
+jax
+jayce
+jhin
+jinx
+kaisa
+kalista
+karma
+karthus
+kassadin
+katarina
+kayle
+kayn
+kennen
+khazix
+kindred
+kled
+kogmaw
+leblanc
+lee sin
+leona
+lissandra
+lucian
+lulu
+lux
+lillia
+malphite
+malzahar
+maokai
+master yi
+miss fortune
+mordekaiser
+morgana
+nami
+nasus
+nautilus
+neeko
+nidalee
+nocturne
+nunu and willump
+olaf
+orianna
+ornn
+pantheon
+poppy
+pyke
+qiyana
+quinn
+rakan
+rammus
+reksai
+renekton
+rengar
+riven
+rumble
+ryze
+samira
+sejuani
+senna
+sett
+shaco
+shen
+shyvana
+singed
+sion
+sivir
+skarner
+sona
+soraka
+swain
+sylas
+syndra
+tahm kench
+taliyah
+talon
+taric
+teemo
+thresh
+tristana
+trundle
+tryndamere
+twisted fate
+twitch
+udyr
+urgot
+varus
+vayne
+veigar
+velkoz
+vi
+viktor
+vladimir
+volibear
+warwick
+wukong
+xayah
+xerath
+xin zhao
+yasuo
+yorick
+yuumi
+zac
+zed
+ziggs
+zilean
+zoe
+zyra
