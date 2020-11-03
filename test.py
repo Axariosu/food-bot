@@ -8,25 +8,47 @@ from PIL import Image
 import queue    # For Python 2.x use 'import Queue as queue'
 import threading, time, random
 
-def func(id, result_queue):
-    print("Thread", id)
-    time.sleep(random.random() * 5)
-    result_queue.put((id, 'done'))
 
-def main():
-    q = queue.Queue()
-    threads = [ threading.Thread(target=func, args=(i, q)) for i in range(5) ]
-    for th in threads:
-        th.daemon = True
-        th.start()
 
-    result1 = q.get()
-    result2 = q.get()
+from bs4 import BeautifulSoup
+import requests
 
-    print("Second result: {}".format(result2))
 
-if __name__=='__main__':
-    main()
+query = "koko"
+url = "https://www.google.com/search?q=" + str(query) + "&source=lnms&tbm=isch"
+
+HEADERS = {"content-type": "image/png"}
+
+html = requests.get(url, headers=HEADERS).text
+
+soup = BeautifulSoup(html, "html.parser")
+
+for img in soup.find_all("img"):
+    print(img["src"])
+
+
+
+
+
+# def func(id, result_queue):
+#     print("Thread", id)
+#     time.sleep(random.random() * 5)
+#     result_queue.put((id, 'done'))
+
+# def main():
+#     q = queue.Queue()
+#     threads = [ threading.Thread(target=func, args=(i, q)) for i in range(5) ]
+#     for th in threads:
+#         th.daemon = True
+#         th.start()
+
+#     result1 = q.get()
+#     result2 = q.get()
+
+#     print("Second result: {}".format(result2))
+
+# if __name__=='__main__':
+#     main()
 
 
 # async def fetch(client):
