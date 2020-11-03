@@ -9,7 +9,6 @@ import threading
 import os
 import copy
 import random
-from player import Player
 from discord.ext import commands
 from discord.ext import tasks
 

@@ -28,7 +28,6 @@ class TemplateGame():
             return
         
         # round over logic
-
         # current round logic
 
         self.timer = loop.time() + self.roundTime
@@ -42,6 +41,11 @@ class TemplateGame():
             await asyncio.sleep(0.5) 
 
     async def stop(self):
+        sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
+        res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
+        await self.ctx.send(embed=res)        
+        res = discord.Embed(title="Template Over!", color=util.generate_random_color())
+        await self.ctx.send(embed=res)
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def handle_on_message(self, message):

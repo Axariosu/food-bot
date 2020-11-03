@@ -1,5 +1,6 @@
 import games.alphafuse
 import games.fourplay
+import games.jpegtionary
 import games.jstrivia
 import games.powracer
 import games.pow
@@ -9,7 +10,6 @@ import games.scrambivia
 import games.trivia
 import games.uddercode
 import games.unscramble
-import gamestest
 import discord
 from discord.ext import flags, commands
 import food
@@ -31,6 +31,17 @@ class Games(commands.Cog):
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.fourplay.Fourplay(ctx)
+        await ctx.bot.games[ctx.guild.id].start()
+
+    @flags.add_flag("-h", type=bool, default=False)
+    @flags.add_flag("-r", type=int, default=1)
+    @flags.command(aliases=['jpeg'])
+    @commands.guild_only()
+    async def jpegtionary(self, ctx, **flags):
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("A game is already running, wait for it to finish!")
+            return
+        ctx.bot.games[ctx.guild.id] = games.jpegtionary.JPEGtionary(ctx, flags["r"], flags["h"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @flags.add_flag("-r", type=int, default=50)

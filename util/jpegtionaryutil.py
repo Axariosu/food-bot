@@ -3,14 +3,21 @@ import asyncio
 import io
 import os, sys
 import math
+import time
+import random
+import requests
 from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont, ImageOps
 from google_images_search import GoogleImagesSearch
+from pexels_api import API
 
 load_dotenv()
 GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
 PROJECT_CX_KEY = os.getenv("PROJECT_CX_KEY")
+PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+
 gis = GoogleImagesSearch(GOOGLE_API_KEY, PROJECT_CX_KEY)
+api = API(PEXELS_API_KEY)
 
 # ====== POSSIBLE SEARCH PARAMETERS ======
 # _search_params = {
@@ -23,6 +30,9 @@ gis = GoogleImagesSearch(GOOGLE_API_KEY, PROJECT_CX_KEY)
 #     'imgDominantColor': 'black|blue|brown|gray|green|pink|purple|teal|white|yellow',
 #     'rights': 'cc_publicdomain|cc_attribute|cc_sharealike|cc_noncommercial|cc_nonderived'
 # }
+
+f = open("wordlist_10000.txt")
+wordlist = set([x.strip() for x in f])
 
 def get_center_square_of_image(image):
     """
@@ -38,13 +48,32 @@ def get_center_square_of_image(image):
     else:
         return ImageOps.fit(image, (w, w), method=3, bleed=0.0, centering=(0.5, 0.5))
 
-def get_mosaic(query, n):
+def generate_pexels_mosaic(query, n):
+    res = Image.new(mode='RGB', size=(1024, 1024))
+    api.search(query, page=1, results_per_page=n)
+    max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+    new_size = round(res.width // max_pictures_per_side)
+    picture_id = 0
+    photos = api.get_entries()
+    my_bytes_io = io.BytesIO()
+    for photo in photos:
+        response = requests.get(photo.original)
+        img = Image.open(io.BytesIO(response.content))
+        temp_img = img
+        temp_img = get_center_square_of_image(temp_img)
+        temp_img = temp_img.resize((new_size, new_size))
+        row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+        res.paste(temp_img, (col * new_size, row * new_size))
+        picture_id += 1
+    return res
+
+def generate_mosaic(query, n):
     """
     Given a string query, integer n: 
     Returns a mosaic size 1024 x 1024 with n pictures of the top google searches.
     """
     res = Image.new(mode='RGB', size=(1024, 1024))
-    _search_params = {'q': query, 'num': n, 'filetype': 'jpg'}
+    _search_params = {'q': query, 'num': n, 'filetype': 'png', 'rights': 'cc_publicdomain'}
     gis.search(search_params=_search_params)
 
     max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
@@ -56,8 +85,9 @@ def get_mosaic(query, n):
         my_bytes_io.seek(0)
         raw_image_data = image.get_raw_data()
         image.copy_to(my_bytes_io, raw_image_data)
-        image.copy_to(my_bytes_io)
+        # image.copy_to(my_bytes_io)
         my_bytes_io.seek(0)
+
         temp_img = Image.open(my_bytes_io)
         temp_img = get_center_square_of_image(temp_img)
         temp_img = temp_img.resize((new_size, new_size))
@@ -71,39 +101,56 @@ def construct_pixel_average(image, blur):
     Given a PIL.Image image and integer blur:
     Returns an image with image.size // 2 ** blur pixels taken
     by getting the average pixels of that square region. 
+    NOTE: Takes about 2 seconds to run for size 1024x1024. 
     """
     averages_of_x_y = {}
     max_blur = round(math.log2(image.width)) # gets the total size of blur, generally will be 10
-    pixel_count = round(2 ** blur) # the amount of divisions needed, up to 10. 
-    pixel_range = image.width // pixel_count # 1024 / (2 ** 10) = 1 pixel, for example. 
+    pixel_count = round(2 ** blur) # the amount of pixels per side, up to blur=10.
+    pixel_range = image.width // pixel_count # For example: 1024 / (2 ** 3) = 1028 / 8 = 128 pixels per side. Ends up being a 8 x 8 grid of 128 pixels.
     # 1m operations on 1024x1024 picture
     px = image.load()
     r_sum, g_sum, b_sum, count = 0, 0, 0, 0
     # print(pixel_count, pixel_range)
     res = Image.new(mode=image.mode, size=image.size)
     # ImageStat.Stat could also work for median here. 
-    for row in range(pixel_range): 
-        for col in range(pixel_range):
-            for i in range(pixel_count):
-                for j in range(pixel_count):
-                    x, y = row * pixel_count + i, col * pixel_count + j
+    for row in range(pixel_count): 
+        for col in range(pixel_count):
+            for i in range(pixel_range):
+                for j in range(pixel_range):
+                    x, y = row * pixel_range + i, col * pixel_range + j
                     r_sum += px[x, y][0]
                     g_sum += px[x, y][1]
                     b_sum += px[x, y][2]
                     count += 1
             avg_r, avg_g, avg_b = r_sum // count, g_sum // count, b_sum // count
-            # print(avg_r, avg_g, avg_b, row * pixel_range, col * pixel_range)
+            # print(row, col, row * pixel_range, col * pixel_range, avg_r, avg_g, avg_b)
             to_paste = Image.new(mode=image.mode, size=(pixel_range, pixel_range), color=(avg_r, avg_g, avg_b))
             res.paste(to_paste, (row * pixel_range, col * pixel_range))
             r_sum, g_sum, b_sum, count = 0, 0, 0, 0
     return res
 
+def generate_list_of_words(n):
+    """
+    Given an integer n: 
+    Returns a wordlist of size n. 
+    """
+    return random.sample(wordlist, k=n)
 
+def generate_hangman(word):
+    """
+    Given a string word: 
+    Returns a space separated broken-underscore of len(word). 
+    """
+    return " ".join(["\_" for c in word])
 
-k = get_mosaic('ahri', 4)
-k.show()
-construct_pixel_average(k, 5).show()
+# k = generate_pexels_mosaic('managers', 4)
+# k.show()
+# start = time.time()
+# construct_pixel_average(k, 6).show()
+# stop = time.time()
+# print(stop-start)
 
+# print(generate_hangman("test"))
 
 # my_bytes_io = io.BytesIO()
 

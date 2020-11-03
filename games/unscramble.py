@@ -11,7 +11,6 @@ import copy
 import random
 import math
 # import player
-from player import Player
 from discord.ext import commands
 from discord.ext import tasks
 
