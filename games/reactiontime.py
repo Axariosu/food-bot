@@ -17,7 +17,7 @@ class ReactionTime():
         self.currentRoundMessage = None
         self.acceptingAnswer = False
         self.timer = 0
-        self.minReactionSpeed = [1e100, None]
+        self.minReactionSpeed = [1e100, None] # [rxntime, username]
         self.tooearly = []
     
     async def start(self):

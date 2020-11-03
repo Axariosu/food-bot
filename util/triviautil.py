@@ -1,5 +1,6 @@
 import random
 import requests
+import aiohttp
 
 trivia = open("trivia-questions.txt", "r")
 trivialist = set([x[:-1] for x in trivia])
