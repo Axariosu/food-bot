@@ -1,5 +1,12 @@
 import random
 
+def generate_random_words_from_wordlist(n, wordlist):
+    """
+    Given an integer n and a list wordlist:
+    Returns n words from the given wordlist. 
+    """
+    return random.sample(set(wordlist), k=n)
+
 def generate_random_color():
     """
     Returns a value between 0 and 16777215, the max value for int(rgb).

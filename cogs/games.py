@@ -35,14 +35,14 @@ class Games(commands.Cog):
 
     @flags.add_flag("-h", type=bool, default=False)
     @flags.add_flag("-r", type=int, default=15)
-    @flags.add_flag("-w", "--wordlist", type=str, default="10000")
+    @flags.add_flag("-wl", type=str, default="10000")
     @flags.command(aliases=['jpeg'])
     @commands.guild_only()
     async def jpegtionary(self, ctx, **flags):
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.jpegtionary.JPEGtionary(ctx, flags["r"], flags["h"])
+        ctx.bot.games[ctx.guild.id] = games.jpegtionary.JPEGtionary(ctx, flags["r"], flags["h"], flags["wl"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @flags.add_flag("-r", type=int, default=50)

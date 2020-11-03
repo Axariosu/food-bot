@@ -114,8 +114,11 @@ def generate_google_images_scrape_mosaic(query, n):
     html = requests.get(search_url, headers=headers).text
     soup = BeautifulSoup(html, "html.parser")
     my_bytes_io = io.BytesIO()
-    for img in soup.find_all("img")[1:n+1]:
-        response = requests.get(img["src"])
+    link_list = []
+    for img in soup.find_all("img")[1:21]:
+        link_list.append(img["src"])
+    for link in random.sample(link_list, k=n):
+        response = requests.get(link)
         img = Image.open(io.BytesIO(response.content))
         temp_img = img
         temp_img = get_center_square_of_image(temp_img)
