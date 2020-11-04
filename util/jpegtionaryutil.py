@@ -42,6 +42,42 @@ api = API(PEXELS_API_KEY)
 f = open("wordlist_10000.txt")
 wordlist = set([x.strip() for x in f])
 
+frequency = [1,
+0.963685034393,
+0.915514439871,
+0.855651813287,
+0.786739117086,
+0.711649593506,
+0.633291209438,
+0.554424618597,
+0.477510961618,
+0.404600092133,
+0.33726432237,
+0.276577354646,
+0.223133423003,
+0.177098315259,
+0.138282118453,
+0.106223207516,
+0.0802739420852,
+0.0596803776859,
+0.0436506110419,
+0.0314087667764,
+0]
+
+def binary_search(l, start, end, target): 
+    """
+    Given a list l, int start, int end, and int target:
+    Returns a position p in the array which p < target < q. 
+    In this case, target is not in l, so we don't check l[p] or l[q] == target.
+    """
+    p, q = start, end
+    if p + 1 == q: 
+        return p
+    if target <= l[int((p + q) / 2)]:
+        return binary_search(l, p, int((p + q) / 2), target)
+    else: 
+        return binary_search(l, int((p + q) / 2), q, target)
+
 def generate_unpixellating_pictures(query, n):
     """
     Given string query, integers n, duration:
@@ -50,7 +86,7 @@ def generate_unpixellating_pictures(query, n):
     mosaic = generate_google_images_scrape_mosaic(query, n)
     pictures = []
     pixellation_count = round(math.log2(mosaic.width))
-    for i in range(pixellation_count):
+    for i in range(pixellation_count + 1):
         pictures.append(construct_pixel_average(mosaic, i))
     return pictures
 
@@ -68,7 +104,6 @@ def generate_unpixellating_gif(query, n, duration):
         frame = Image.open(fobj)
         for i in range(duration * 300):
             frames.append(frame)
-    print(len(frames))
     animated_gif = io.BytesIO()
     frames[0].save(animated_gif, 
         format="GIF", 
@@ -97,6 +132,67 @@ def get_center_square_of_image(image):
 
 def get_soup(url,header):
     return BeautifulSoup(urllib.request.urlopen(urllib.request.Request(url, headers=header)), 'html.parser')
+
+# def generate_google_images_scrape_mosaic_normalized_gaussian(query, n):
+#     """
+#     Given a query and integer n: 
+#     Returns a mosaic with n pictures of query n. 
+#     1 <= n <= 20
+#     """
+#     res = Image.new(mode='RGB', size=(256, 256))
+#     max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+#     new_size = round(res.width // max_pictures_per_side)
+#     picture_id = 0
+#     q = "+".join(query.split())
+#     headers = {"content-type": "image/png"}
+#     search_url="https://www.google.com/search?q="+q+"&safe=off&source=lnms&tbm=isch"
+#     html = requests.get(search_url, headers=headers).text
+#     soup = BeautifulSoup(html, "html.parser")
+#     my_bytes_io = io.BytesIO()
+#     link_list = []
+#     for img in soup.find_all("img")[1:21]:
+#         link_list.append(img["src"])
+#     for i in range(n):
+#         link = link_list[binary_search(frequency, 0, len(frequency), random.random()) - 1]
+#         response = requests.get(link)
+#         img = Image.open(io.BytesIO(response.content))
+#         temp_img = img
+#         temp_img = get_center_square_of_image(temp_img)
+#         temp_img = temp_img.resize((new_size, new_size))
+#         row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+#         res.paste(temp_img, (col * new_size, row * new_size))
+#         picture_id += 1
+#     return res
+
+# def generate_google_images_scrape_mosaic_first(query, n):
+#     """
+#     Given a query and integer n: 
+#     Returns a mosaic with n pictures of query n. 
+#     1 <= n <= 20
+#     """
+#     res = Image.new(mode='RGB', size=(256, 256))
+#     max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+#     new_size = round(res.width // max_pictures_per_side)
+#     picture_id = 0
+#     q = "+".join(query.split())
+#     headers = {"content-type": "image/png"}
+#     search_url="https://www.google.com/search?q="+q+"&safe=off&source=lnms&tbm=isch"
+#     html = requests.get(search_url, headers=headers).text
+#     soup = BeautifulSoup(html, "html.parser")
+#     my_bytes_io = io.BytesIO()
+#     link_list = []
+#     for img in soup.find_all("img")[1:21]:
+#         link_list.append(img["src"])
+#     for link in random.sample(link_list, k=n):
+#         response = requests.get(link)
+#         img = Image.open(io.BytesIO(response.content))
+#         temp_img = img
+#         temp_img = get_center_square_of_image(temp_img)
+#         temp_img = temp_img.resize((new_size, new_size))
+#         row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+#         res.paste(temp_img, (col * new_size, row * new_size))
+#         picture_id += 1
+#     return res
 
 def generate_google_images_scrape_mosaic(query, n):
     """
@@ -217,7 +313,8 @@ def generate_hangman(word):
     Given a string word: 
     Returns a space separated broken-underscore of len(word). 
     """
-    return " ".join(["\_" for c in word])
+    "/".join(word.split(" "))
+    return "\xa0".join(["\_\xa0" for c in word])
 
 def benchmark(query, n, duration):
     """
@@ -227,8 +324,6 @@ def benchmark(query, n, duration):
     gif = generate_unpixellating_gif(query, n, duration)
     stop = time.time()
     print(stop-start)
-
-
 
 
 # pic.show()

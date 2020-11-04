@@ -18,7 +18,7 @@ wordlistDictionary = {"10000": "wordlist_10000.txt",
 }
 
 class JPEGtionary():
-    def __init__(self, ctx, max_round, hangman, wordlist, similarity):
+    def __init__(self, ctx, max_round, hangman, wordlist, similarity, picture_amount):
         self.ctx = ctx
         self.game = False
         self.timer = 0
@@ -34,10 +34,9 @@ class JPEGtionary():
         self.answer = ""
         self.image_list = None
         self.queue = queue.Queue()
-        self.mosaic_size = 4
+        self.mosaic_size = picture_amount
         self.msgid = None
         self.internal_round = 0
-        
 
     def __del__(self):
         print("killed jpegtionary")
@@ -50,7 +49,7 @@ class JPEGtionary():
         """
         print(word)
         if self.wordlist == "lol":
-            query = word + " league of legends"
+            query = "league of legends " + word
         queue.put([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
         print("done")
 
@@ -102,8 +101,14 @@ class JPEGtionary():
                 self.internal_round += 1 if self.internal_round < len(self.image_list) else 0
 
             if loop.time() >= self.timer:
-                res = discord.Embed(title="Round Over!", description="The answer was: " + self.answer)
-                await self.ctx.send(embed=res)
+                image_binary = io.BytesIO()
+                image = self.image_list[len(self.image_list) - 1]
+                image.save(image_binary, 'jpeg')
+                image_binary.seek(0)
+                f = discord.File(fp=image_binary, filename=f'{self.answer}.jpeg')
+                res = discord.Embed(title="Round Over!", description="The answer was: " + util.bold(self.answer))
+                res.set_image(url=f'attachment://{self.answer}.jpeg')
+                await self.ctx.send(embed=res, file=f)
                 await asyncio.sleep(2)
                 await self.template_loop()
                 break
@@ -121,7 +126,7 @@ class JPEGtionary():
         if triviautil.valid_guess(message.content.lower(), self.answer, self.similarity) and self.accepting_answers:
             # points = round(math.log2(self.image_list[self.internal_round].width) - self.internal_round)
             loop = asyncio.get_running_loop()
-            points = round(self.timer - loop.time(), 2)
+            points = round(self.timer - loop.time(), 3)
             self.accepting_answers = False
             self.timer = 0
             await message.add_reaction('✅')
@@ -129,7 +134,7 @@ class JPEGtionary():
                 self.trackedPlayers[message.author.name] = points
             else: 
                 self.trackedPlayers[message.author.name] += points
-            await self.ctx.send(message.author.name + " got it for `" + str(points) + "` points!")
+            await self.ctx.send(message.author.name + " got it for **`" + str(points) + "`** points!")
         pass
 
     async def handle_on_reaction_add(self, reaction, user):

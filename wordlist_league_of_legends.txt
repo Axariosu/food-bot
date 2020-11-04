@@ -138,7 +138,7 @@ guardians orb
 corrupting potion
 elixir of iron
 elixir of sorcery
-elixir of wrather
+elixir of wrath
 health potion
 oracles extract
 refillable potion
