@@ -60,6 +60,8 @@ def valid_guess(s1, s2, similarity):
     # Every 8 characters
     # Every non-alphanumeric character
     max_errors = 0
+    if s1 == None or s2 == None:
+        return False
     for k in s2: 
         if not k.isalnum(): 
             max_errors += 1

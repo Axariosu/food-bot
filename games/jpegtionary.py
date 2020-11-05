@@ -18,14 +18,14 @@ wordlistDictionary = {"10000": "wordlist_10000.txt",
 }
 
 class JPEGtionary():
-    def __init__(self, ctx, max_round, hangman, wordlist, similarity, picture_amount):
+    def __init__(self, ctx, max_round, hangman, wordlist, similarity, picture_amount, round_timer):
         self.ctx = ctx
         self.game = False
         self.timer = 0
-        self.round_timer = 100
+        self.round_timer = round_timer
         self.current_round_timer = 0
         self.round = 0
-        self.similarity = 90
+        self.similarity = similarity
         self.max_round = max_round
         self.hangman = hangman
         self.wordlist = wordlist
@@ -47,11 +47,11 @@ class JPEGtionary():
         Given a word and a queue: 
         Enqueues [word, image]. 
         """
-        print(word)
+        query = word
+        # TODO: dictionary of tags to append to construct query
         if self.wordlist == "lol":
             query = "league of legends " + word
         queue.put([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
-        print("done")
 
     async def start(self):
         self.game = True
@@ -80,7 +80,8 @@ class JPEGtionary():
             await self.stop()
             return
         
-        self.answer, self.image_list = self.queue.get()
+        async with self.ctx.channel.typing():
+            self.answer, self.image_list = self.queue.get()
         self.accepting_answers = True
 
         self.timer = loop.time() + self.round_timer
@@ -94,7 +95,8 @@ class JPEGtionary():
                 image_binary.seek(0)
                 unique = uuid.uuid4()
                 f = discord.File(fp=image_binary, filename=f'{unique}.jpeg')
-                res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), footer="Image " + str(self.internal_round) + " of " + str(len(self.image_list)), description=discord.Embed.Empty if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
+                res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), description=discord.Embed.Empty if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
+                res.set_footer(text="Image " + str(self.internal_round + 1) + " of " + str(len(self.image_list)))
                 res.set_image(url=f'attachment://{unique}.jpeg')
                 await self.ctx.send(embed=res, file=f)
                 self.current_round_timer = loop.time() + self.round_timer / len(self.image_list)

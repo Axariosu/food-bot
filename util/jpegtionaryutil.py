@@ -102,8 +102,8 @@ def generate_unpixellating_gif(query, n, duration):
         fobj = io.BytesIO()
         construct_pixel_average(mosaic, i).save(fobj, 'GIF')
         frame = Image.open(fobj)
-        for i in range(duration * 300):
-            frames.append(frame)
+        # for i in range(duration * 300):
+        frames.append(frame)
     animated_gif = io.BytesIO()
     frames[0].save(animated_gif, 
         format="GIF", 
@@ -111,10 +111,12 @@ def generate_unpixellating_gif(query, n, duration):
         append_images=frames[1:], 
         delay=1000,
         loop=0)
-    ani = Image.open(animated_gif)
+    return animated_gif
+    # ani = Image.open(animated_gif)
+    # print(type(animated_gif), type(ani)) # <class '_io.BytesIO'> <class 'PIL.GifImagePlugin.GifImageFile'>
     # animated_gif.seek(0)
     # open(f'{query}.gif', 'wb+').write(animated_gif.read())
-    return ani
+    # return ani
 
 def get_center_square_of_image(image):
     """
@@ -313,8 +315,8 @@ def generate_hangman(word):
     Given a string word: 
     Returns a space separated broken-underscore of len(word). 
     """
-    "/".join(word.split(" "))
-    return "\xa0".join(["\_\xa0" for c in word])
+    w = "/".join(word.split(" "))
+    return "\xa0".join(["\_\xa0" for c in w])
 
 def benchmark(query, n, duration):
     """

@@ -33,18 +33,19 @@ class Games(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.fourplay.Fourplay(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @flags.add_flag("-h", type=bool, default=False)
+    @flags.add_flag("-h", type=bool, default=True)
     @flags.add_flag("-r", type=int, default=15)
     @flags.add_flag("-wl", type=str, default="10000")
     @flags.add_flag("-s", type=int, default=80)
-    @flags.add_flag("-p", type=int, default=1)
+    @flags.add_flag("-p", type=int, default=4)
+    @flags.add_flag("-rt", type=int, default=90)
     @flags.command(aliases=['jpeg'])
     @commands.guild_only()
     async def jpegtionary(self, ctx, **flags):
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.jpegtionary.JPEGtionary(ctx, flags["r"], flags["h"], flags["wl"], flags["s"], flags["p"])
+        ctx.bot.games[ctx.guild.id] = games.jpegtionary.JPEGtionary(ctx, flags["r"], flags["h"], flags["wl"], flags["s"], flags["p"], flags["rt"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @flags.add_flag("-r", type=int, default=50)
@@ -157,9 +158,18 @@ class Games(commands.Cog):
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command(hidden=True)
-    @commands.is_owner()
+    @commands.guild_only()
     async def kill(self, ctx):
-        await ctx.bot.games[ctx.guild.id].stop()
+        if ctx.guild.id in ctx.bot.games:
+            await ctx.send("Are you sure you want to end this game? (`y`/`n`)")
+        else: 
+            await ctx.send("food doesn't see a game!")
+            return
+        def check(m): 
+            return True if m.content.lower() == 'y' else False
+        val = await ctx.bot.wait_for('message', check=check)
+        if val:
+            await ctx.bot.games[ctx.guild.id].stop()
 
     # commands shouldn't get more complicated than this.
     # all the game functionallity should be handled by the game class,

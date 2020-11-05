@@ -20,6 +20,7 @@ async def on_ready():
     print('------')
 
 @bot.command(hidden=True)
+@commands.is_owner()
 async def quit(ctx):
     message = 'Quitting!'
     await ctx.send(message)
