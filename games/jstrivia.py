@@ -3,6 +3,7 @@ import asyncio
 from discord import Embed
 from discord.ext import commands
 import util.util as util
+import util.powutil as powutil
 import util.triviautil as triviautil
 import util.unscrambleutil as unscrambleutil
 
@@ -49,7 +50,7 @@ class jsTrivia():
                 await self.stop()
                 return
 
-            self.question, self.answer = self.questionList[self.round - 1]["question"], self.questionList[self.round - 1]["answer"].lower().replace("<i>", "").replace("</i>", "")
+            self.question, self.answer = powutil.insert_zero_width_space(self.questionList[self.round - 1]["question"]), self.questionList[self.round - 1]["answer"].lower().replace("<i>", "").replace("</i>", "")
             if self.answer.startswith("the "):
                 self.answer = self.answer[4:]
             if self.answer.startswith("an "):

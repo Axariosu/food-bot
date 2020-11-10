@@ -33,9 +33,9 @@ class ReactionTime():
             await self.reaction_loop()
 
     async def reaction_loop(self):
-        loop = asyncio.get_running_loop()
-        self.round += 1
         if self.game:
+            loop = asyncio.get_running_loop()
+            self.round += 1
             if (self.round > self.maxRound):
                 await self.stop()
                 return

@@ -18,15 +18,21 @@ class Games(commands.Cog):
     @commands.command(aliases=['alpha'])
     @commands.guild_only()
     async def alphafuse(self, ctx):
+        """
+        `!alphafuse [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.alphafuse.AlphaFuse(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command(aliases=['4p'])
+    @commands.command(aliases=['4p', 'fp', 'c4'])
     @commands.guild_only()
     async def fourplay(self, ctx):
+        """
+        `!fourplay [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
@@ -35,13 +41,23 @@ class Games(commands.Cog):
 
     @flags.add_flag("-h", type=bool, default=True)
     @flags.add_flag("-r", type=int, default=15)
-    @flags.add_flag("-wl", type=str, default="10000")
     @flags.add_flag("-s", type=int, default=80)
     @flags.add_flag("-p", type=int, default=4)
     @flags.add_flag("-rt", type=int, default=90)
+    @flags.add_flag("-wl", type=str, default="10000")
     @flags.command(aliases=['jpeg'])
     @commands.guild_only()
     async def jpegtionary(self, ctx, **flags):
+        """
+        `!jpegtionary [options]`
+        **`-h <bool>` - Default: True**
+        Enables hangman mode 
+        **`-r <int>` - Default: 15**
+        Number of rounds
+        **`-s <int>` - Default: 70**
+        Accepts answers above this similarity percentage
+        Use `!scramble` to reshuffle the answer
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
@@ -55,11 +71,14 @@ class Games(commands.Cog):
     @commands.guild_only()
     async def trivia(self, ctx, **flags):
         """
-        Usage: !trivia [options]
-        -s  [similarity]    default: 70
-        -r  [rounds]        default: 50
-        -sc [scramble]      default: False
-        I'll accept your answer if it's at least [-s]% similar!
+        `!trivia [options]`
+        **`-r <int>` - Default: 50**
+        Number of rounds
+        **`-s <int>` - Default: 70**
+        Accepts answers above this similarity percentage
+        **`-sc <bool>` - Default: False**
+        Enables scramble mode by showing the answer shuffled
+        Use `!scramble` to reshuffle the answer
         """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
@@ -67,7 +86,7 @@ class Games(commands.Cog):
         ctx.bot.games[ctx.guild.id] = games.jstrivia.jsTrivia(ctx, flags["r"], flags["s"], flags["sc"])
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command()
+    @commands.command(hidden=True)
     @commands.guild_only()
     async def oldtrivia(self, ctx):
         if ctx.guild.id in ctx.bot.games:
@@ -79,12 +98,14 @@ class Games(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def pow(self, ctx):
+        """
+        `!pow [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.pow.Pow(ctx)
         await ctx.bot.games[ctx.guild.id].start()
-
 
     @flags.add_flag("-r", type=int, default=25)
     @flags.add_flag("-mn", type=int, default=2)
@@ -93,6 +114,17 @@ class Games(commands.Cog):
     @flags.command(aliases=['rt', 'rxn', 'rxt'])
     @commands.guild_only()
     async def reactiontime(self, ctx, **flags):
+        """
+        `!reactiontime aliases [options]`
+        **`-r <int>` - Default: 25** 
+        Number of rounds
+        **`-mn <int>` - Default: 2** 
+        Mininum time per round
+        **`-mx <int>` - Default: 7** 
+        Maximum time per round
+        **`-d <int>` - Default: 10** 
+        Delay before starting
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
@@ -107,13 +139,15 @@ class Games(commands.Cog):
     @commands.guild_only()
     async def powracer(self, ctx, **flags):
         """
-        Usage: !powracer [options]
-        -s [--similarity] *default*: 90
-        -w [--words] *default*: 30
-        -l [--lowercharlimit] *default*: 3
-        -h [--highercharlimit] *default*: 15
-        Players have some time per round to type my randomly generated words! 
-        I'll accept your message if it's at least [-s]% similar!
+        `!powracer [options]`
+        **`-s <int>` - Default: 90**
+        Accepts answers above this similarity percentage
+        **`-w` - Default: 30**
+        Number of words
+        **`-l` - Default: 3**
+        Words will have at least this many characters
+        **`-h` - Default: 15**
+        Words will have at most this many characters
         """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
@@ -124,24 +158,30 @@ class Games(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def schwootsh(self, ctx):
+        """
+        `!schwootsh [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
         ctx.bot.games[ctx.guild.id] = games.schwootsh.Schwootsh(ctx)
         await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command()
-    @commands.guild_only()
-    async def scrambivia(self, ctx):
-        if ctx.guild.id in ctx.bot.games:
-            await ctx.send("A game is already running, wait for it to finish!")
-            return
-        ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
-        await ctx.bot.games[ctx.guild.id].start()
+    # @commands.command(enabled=False)
+    # @commands.guild_only()
+    # async def scrambivia(self, ctx):
+    #     if ctx.guild.id in ctx.bot.games:
+    #         await ctx.send("A game is already running, wait for it to finish!")
+    #         return
+    #     ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
+    #     await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command(aliases=['udder'])
     @commands.guild_only()
     async def uddercode(self, ctx):
+        """
+        `!uddercode [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
@@ -151,6 +191,9 @@ class Games(commands.Cog):
     @commands.command()
     @commands.guild_only()
     async def unscramble(self, ctx):
+        """
+        `!unscramble [options]`
+        """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
@@ -170,22 +213,6 @@ class Games(commands.Cog):
         val = await ctx.bot.wait_for('message', check=check)
         if val:
             await ctx.bot.games[ctx.guild.id].stop()
-
-    # commands shouldn't get more complicated than this.
-    # all the game functionallity should be handled by the game class,
-    # and not the command.
-    @commands.command(aliases=["changestate", "sawp_state", "sawpstate"])
-    @commands.guild_only()
-    async def change_state(self, ctx, new_state: int):
-        game = ctx.bot.games[ctx.guild.id]
-        if not game:
-            await ctx.send("No game found, Start a game with `!start_game` first!")
-            return
-
-        old_state = game.some_state
-        game.change_state(new_state)
-
-        await ctx.send(f"Changed state from {old_state} to {game.some_state}")
 
     @commands.command(aliases=["checkgames"], hidden=True)
     @commands.is_owner()

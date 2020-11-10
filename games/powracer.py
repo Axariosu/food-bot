@@ -63,7 +63,6 @@ class PowRacer():
     async def powracer_loop(self):
         self.game = True
         loop = asyncio.get_running_loop()
-
         if self.game:
             res = discord.Embed(title="Type the words below as quickly as possible!", description=self.brokenText + "\n\nYou have " + util.bold(self.wordCount * self.timePerWord) + " seconds!")
             await self.ctx.send(embed=res)

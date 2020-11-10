@@ -61,9 +61,9 @@ class Schwootsh():
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def schwootsh_loop(self):
-        loop = asyncio.get_running_loop()
-        self.round += 1
         if self.game:
+            loop = asyncio.get_running_loop()
+            self.round += 1
             if self.round > self.maxRound:
                 await self.stop()
                 return

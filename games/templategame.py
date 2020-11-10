@@ -20,27 +20,29 @@ class TemplateGame():
         await self.template_loop()
 
     async def template_loop(self):
-        loop = asyncio.get_running_loop()
+        if self.game:
+            loop = asyncio.get_running_loop()
 
-        self.round += 1
-        if (self.round > self.maxRound):
-            await self.stop()
-            return
-        
-        # round over logic
-        # current round logic
+            self.round += 1
+            if (self.round > self.maxRound):
+                await self.stop()
+                return
+            
+            # round over logic
+            # current round logic
 
-        self.timer = loop.time() + self.roundTime
-        while True:
-            if loop.time() >= self.timer:
-                res = discord.Embed(title="Round Over!")
-                await self.ctx.send(embed=res)
-                await asyncio.sleep(2)
-                await self.template_loop() # TODO: CHANGE THIS FN NAME
-                break
-            await asyncio.sleep(0.5) 
+            self.timer = loop.time() + self.roundTime
+            while True:
+                if loop.time() >= self.timer:
+                    res = discord.Embed(title="Round Over!")
+                    await self.ctx.send(embed=res)
+                    await asyncio.sleep(2)
+                    await self.template_loop() # TODO: CHANGE THIS FN NAME
+                    break
+                await asyncio.sleep(0.5) 
 
     async def stop(self):
+        self.game = False
         sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
         res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
         await self.ctx.send(embed=res)        

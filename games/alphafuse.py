@@ -63,9 +63,9 @@ class AlphaFuse():
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def alpha_loop(self):
-        loop = asyncio.get_running_loop()
         if self.game:
             # need a submission every round, so we can check that here: 
+            loop = asyncio.get_running_loop()
             self.round += 1
             if self.round >= 2:
                 if self.round >= 4 and len(self.trackedPlayers) == 0: 

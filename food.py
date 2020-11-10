@@ -8,8 +8,7 @@ from discord.ext.commands import CommandNotFound
 load_dotenv()
 TOKEN = os.getenv('DISCORD_TOKEN')
 
-bot = commands.Bot(command_prefix="!")
-
+bot = commands.Bot(command_prefix="!", help_command=None)
 bot.games = {}
 
 @bot.event
@@ -36,8 +35,7 @@ async def unload(ctx, extension):
 
 @bot.command(hidden=True)
 async def reload(ctx, extension):
-    bot.unload_extension(f'cogs.{extension}')
-    bot.load_extension(f'cogs.{extension}')
+    bot.reload_extension(f'cogs.{extension}')
 
 @bot.command()
 async def avatar(ctx, *, avamember : discord.Member=None):

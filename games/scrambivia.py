@@ -30,9 +30,7 @@ class Scrambivia():
     async def scrambivia_loop(self):
         if self.game:
             loop = asyncio.get_running_loop()
-
             self.round += 1
-            
             if (self.round > self.maxRound):
                 await self.stop()
                 return

@@ -11,19 +11,18 @@ import urllib
 # import cookielib
 import json
 import re
-
-from dotenv import load_dotenv
 from PIL import Image, ImageDraw, ImageFont, ImageOps
-from google_images_search import GoogleImagesSearch
-from pexels_api import API
 
-load_dotenv()
-GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
-PROJECT_CX_KEY = os.getenv("PROJECT_CX_KEY")
-PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+# from dotenv import load_dotenv
+# from google_images_search import GoogleImagesSearch
+# from pexels_api import API
 
-gis = GoogleImagesSearch(GOOGLE_API_KEY, PROJECT_CX_KEY)
-api = API(PEXELS_API_KEY)
+# load_dotenv()
+# GOOGLE_API_KEY = os.getenv("GOOGLE_API_KEY")
+# PROJECT_CX_KEY = os.getenv("PROJECT_CX_KEY")
+# PEXELS_API_KEY = os.getenv("PEXELS_API_KEY")
+# gis = GoogleImagesSearch(GOOGLE_API_KEY, PROJECT_CX_KEY)
+# api = API(PEXELS_API_KEY)
 
 # https://stackoverflow.com/questions/64215836/python-requests-scrape-image-returns-src-in-format-dataimage
 
@@ -93,7 +92,7 @@ def generate_unpixellating_pictures(query, n):
 def generate_unpixellating_gif(query, n, duration):
     """
     Given string query, integers n, duration:
-    Returns a gif which unpixellates after duration seconds. 
+    Returns a BytesIO gif which unpixellates after duration seconds. 
     """
     mosaic = generate_google_images_scrape_mosaic(query, n)
     frames = []
@@ -111,6 +110,7 @@ def generate_unpixellating_gif(query, n, duration):
         append_images=frames[1:], 
         delay=1000,
         loop=0)
+    animated_gif.seek(0)
     return animated_gif
     # ani = Image.open(animated_gif)
     # print(type(animated_gif), type(ani)) # <class '_io.BytesIO'> <class 'PIL.GifImagePlugin.GifImageFile'>
@@ -196,10 +196,10 @@ def get_soup(url,header):
 #         picture_id += 1
 #     return res
 
-def generate_google_images_scrape_mosaic(query, n):
+def generate_google_images_scrape_mosaic_BytesIO(query, n):
     """
     Given a query and integer n: 
-    Returns a mosaic with n pictures of query n. 
+    Returns a BytesIO object with n pictures of query n. 
     1 <= n <= 20
     """
     res = Image.new(mode='RGB', size=(256, 256))
@@ -211,7 +211,39 @@ def generate_google_images_scrape_mosaic(query, n):
     search_url="https://www.google.com/search?q="+q+"&safe=off&source=lnms&tbm=isch"
     html = requests.get(search_url, headers=headers).text
     soup = BeautifulSoup(html, "html.parser")
+    link_list = []
+    for img in soup.find_all("img")[1:21]:
+        link_list.append(img["src"])
+    for link in random.sample(link_list, k=n):
+        response = requests.get(link)
+        img = Image.open(io.BytesIO(response.content))
+        temp_img = img
+        temp_img = get_center_square_of_image(temp_img)
+        temp_img = temp_img.resize((new_size, new_size))
+        row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+        res.paste(temp_img, (col * new_size, row * new_size))
+        picture_id += 1
+
     my_bytes_io = io.BytesIO()
+    res.save(my_bytes_io, 'JPEG')
+    my_bytes_io.seek(0)
+    return my_bytes_io
+
+def generate_google_images_scrape_mosaic(query, n):
+    """
+    Given a query and integer n: 
+    Returns a PIL Image with n pictures of query n. 
+    1 <= n <= 20
+    """
+    res = Image.new(mode='RGB', size=(256, 256))
+    max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+    new_size = round(res.width // max_pictures_per_side)
+    picture_id = 0
+    q = "+".join(query.split())
+    headers = {"content-type": "image/png"}
+    search_url="https://www.google.com/search?q="+q+"&safe=off&source=lnms&tbm=isch"
+    html = requests.get(search_url, headers=headers).text
+    soup = BeautifulSoup(html, "html.parser")
     link_list = []
     for img in soup.find_all("img")[1:21]:
         link_list.append(img["src"])
@@ -226,49 +258,49 @@ def generate_google_images_scrape_mosaic(query, n):
         picture_id += 1
     return res
 
-def generate_pexels_mosaic(query, n):
-    res = Image.new(mode='RGB', size=(1024, 1024))
-    api.search(query, page=1, results_per_page=n)
-    max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
-    new_size = round(res.width // max_pictures_per_side)
-    picture_id = 0
-    photos = api.get_entries()
-    my_bytes_io = io.BytesIO()
-    for photo in photos:
-        response = requests.get(photo.original)
-        img = Image.open(io.BytesIO(response.content))
-        temp_img = img
-        temp_img = get_center_square_of_image(temp_img)
-        temp_img = temp_img.resize((new_size, new_size))
-        row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
-        res.paste(temp_img, (col * new_size, row * new_size))
-        picture_id += 1
-    return res
+# def generate_pexels_mosaic(query, n):
+#     res = Image.new(mode='RGB', size=(1024, 1024))
+#     api.search(query, page=1, results_per_page=n)
+#     max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+#     new_size = round(res.width // max_pictures_per_side)
+#     picture_id = 0
+#     photos = api.get_entries()
+#     my_bytes_io = io.BytesIO()
+#     for photo in photos:
+#         response = requests.get(photo.original)
+#         img = Image.open(io.BytesIO(response.content))
+#         temp_img = img
+#         temp_img = get_center_square_of_image(temp_img)
+#         temp_img = temp_img.resize((new_size, new_size))
+#         row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+#         res.paste(temp_img, (col * new_size, row * new_size))
+#         picture_id += 1
+#     return res
 
-def generate_mosaic(query, n):
-    """
-    Given a string query, integer n: 
-    Returns a mosaic size 1024 x 1024 with n pictures of the top google searches.
-    """
-    res = Image.new(mode='RGB', size=(512, 512))
-    _search_params = {'q': query, 'num': n, 'filetype': 'png', 'rights': 'cc_publicdomain'}
-    gis.search(search_params=_search_params)
-    max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
-    new_size = round(res.width // max_pictures_per_side)
-    picture_id = 0
-    my_bytes_io = io.BytesIO()
-    for image in gis.results():
-        my_bytes_io.seek(0)
-        raw_image_data = image.get_raw_data()
-        image.copy_to(my_bytes_io, raw_image_data)
-        my_bytes_io.seek(0)
-        temp_img = Image.open(my_bytes_io)
-        temp_img = get_center_square_of_image(temp_img)
-        temp_img = temp_img.resize((new_size, new_size))
-        row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
-        res.paste(temp_img, (col * new_size, row * new_size))
-        picture_id += 1
-    return res
+# def generate_mosaic(query, n):
+#     """
+#     Given a string query, integer n: 
+#     Returns a mosaic size 1024 x 1024 with n pictures of the top google searches.
+#     """
+#     res = Image.new(mode='RGB', size=(512, 512))
+#     _search_params = {'q': query, 'num': n, 'filetype': 'png', 'rights': 'cc_publicdomain'}
+#     gis.search(search_params=_search_params)
+#     max_pictures_per_side = math.ceil(math.sqrt(n)) # max number of pictures on a side
+#     new_size = round(res.width // max_pictures_per_side)
+#     picture_id = 0
+#     my_bytes_io = io.BytesIO()
+#     for image in gis.results():
+#         my_bytes_io.seek(0)
+#         raw_image_data = image.get_raw_data()
+#         image.copy_to(my_bytes_io, raw_image_data)
+#         my_bytes_io.seek(0)
+#         temp_img = Image.open(my_bytes_io)
+#         temp_img = get_center_square_of_image(temp_img)
+#         temp_img = temp_img.resize((new_size, new_size))
+#         row, col = round(picture_id // max_pictures_per_side), round(picture_id % max_pictures_per_side)
+#         res.paste(temp_img, (col * new_size, row * new_size))
+#         picture_id += 1
+#     return res
 
 def construct_pixel_average(image, blur):
     """
@@ -313,10 +345,18 @@ def generate_list_of_words(n):
 def generate_hangman(word):
     """
     Given a string word: 
-    Returns a space separated broken-underscore of len(word). 
+    Returns a &nbsp; separated escaped underscore of word. 
     """
-    w = "/".join(word.split(" "))
-    return "\xa0".join(["\_\xa0" for c in w])
+    temp = word.split(" ") # listify
+    word_lengths = [len(x) for x in temp]
+    w = "/".join(temp) # "blade/of/the/ruined/king, for example"
+    res = "("
+    for i in range(len(word_lengths)):
+        res += str(word_lengths[i]) 
+        if i + 1 < len(word_lengths): 
+            res += ",\xa0"
+    res += ")"
+    return "\xa0".join(["\_\xa0" for c in w]) + "\n" + res
 
 def benchmark(query, n, duration):
     """

@@ -72,51 +72,52 @@ class JPEGtionary():
         await self.template_loop()
 
     async def template_loop(self):
-        
-        loop = asyncio.get_running_loop()
+        if self.game:
+            loop = asyncio.get_running_loop()
+            self.round += 1
+            if (self.round > self.max_round):
+                await self.stop()
+                return
+            
+            async with self.ctx.channel.typing():
+                self.answer, self.image_list = self.queue.get()
+            self.accepting_answers = True
 
-        self.round += 1
-        if (self.round > self.max_round):
-            await self.stop()
-            return
-        
-        async with self.ctx.channel.typing():
-            self.answer, self.image_list = self.queue.get()
-        self.accepting_answers = True
+            self.timer = loop.time() + self.round_timer
+            self.current_round_timer = loop.time()
+            self.internal_round = 0
+            while self.game: 
+                if loop.time() >= self.current_round_timer:
+                    image_binary = io.BytesIO()
+                    image = self.image_list[self.internal_round]
+                    image.save(image_binary, 'jpeg')
+                    image_binary.seek(0)
+                    unique = uuid.uuid4()
+                    f = discord.File(fp=image_binary, filename=f'{unique}.jpeg')
+                    res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), description=discord.Embed.Empty if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
+                    res.set_footer(text="Image " + str(self.internal_round + 1) + " of " + str(len(self.image_list)))
+                    res.set_image(url=f'attachment://{unique}.jpeg')
+                    await self.ctx.send(embed=res, file=f)
+                    self.current_round_timer = loop.time() + self.round_timer / len(self.image_list)
+                    self.internal_round += 1 if self.internal_round < len(self.image_list) else 0
 
-        self.timer = loop.time() + self.round_timer
-        self.current_round_timer = loop.time()
-        self.internal_round = 0
-        while self.game: 
-            if loop.time() >= self.current_round_timer:
-                image_binary = io.BytesIO()
-                image = self.image_list[self.internal_round]
-                image.save(image_binary, 'jpeg')
-                image_binary.seek(0)
-                unique = uuid.uuid4()
-                f = discord.File(fp=image_binary, filename=f'{unique}.jpeg')
-                res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), description=discord.Embed.Empty if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
-                res.set_footer(text="Image " + str(self.internal_round + 1) + " of " + str(len(self.image_list)))
-                res.set_image(url=f'attachment://{unique}.jpeg')
-                await self.ctx.send(embed=res, file=f)
-                self.current_round_timer = loop.time() + self.round_timer / len(self.image_list)
-                self.internal_round += 1 if self.internal_round < len(self.image_list) else 0
-
-            if loop.time() >= self.timer:
-                image_binary = io.BytesIO()
-                image = self.image_list[len(self.image_list) - 1]
-                image.save(image_binary, 'jpeg')
-                image_binary.seek(0)
-                f = discord.File(fp=image_binary, filename=f'{self.answer}.jpeg')
-                res = discord.Embed(title="Round Over!", description="The answer was: " + util.bold(self.answer))
-                res.set_image(url=f'attachment://{self.answer}.jpeg')
-                await self.ctx.send(embed=res, file=f)
-                await asyncio.sleep(2)
-                await self.template_loop()
-                break
-            await asyncio.sleep(0.5)
+                if loop.time() >= self.timer:
+                    self.accepting_answers = False
+                    image_binary = io.BytesIO()
+                    image = self.image_list[len(self.image_list) - 1]
+                    image.save(image_binary, 'jpeg')
+                    image_binary.seek(0)
+                    f = discord.File(fp=image_binary, filename=f'{self.answer}.jpeg')
+                    res = discord.Embed(title="Round Over!", description="The answer was: " + util.bold(self.answer))
+                    res.set_image(url=f'attachment://{self.answer}.jpeg')
+                    await self.ctx.send(embed=res, file=f)
+                    await asyncio.sleep(2)
+                    await self.template_loop()
+                    break
+                await asyncio.sleep(0.5)
 
     async def stop(self):
+        self.game = False
         sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
         res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
         await self.ctx.send(embed=res)        
