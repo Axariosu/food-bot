@@ -1,10 +1,13 @@
 import threading, queue, uuid, os
 import numpy as np
 import soundfile as sf
+import math
 from pydub import AudioSegment
 
 import matplotlib.pyplot as plt
-
+from scipy.signal import hilbert
+from scipy.signal import convolve
+from scipy.signal import fftconvolve
 # https://pypi.org/project/SoundFile/0.8.1/
 # https://pysoundfile.readthedocs.io/en/latest/
 # SoundFile Documentation
@@ -37,6 +40,19 @@ import matplotlib.pyplot as plt
 # In order to convert and compare these values you'll have to first use the python wave module's functions to check the bit depth and number of channels. /
 # Otherwise, you'll be comparing mismatched quality settings.
 
+# https://www.audiolabs-erlangen.de/resources/MIR/2017-GI-Tutorial-Musik/2017_MuellerWeissBalke_GI_BeatTracking.pdf
+# Tempo and Beat Tracking
+
+# https://web.media.mit.edu/~tristan/Blog/WASPAA05_Tristan.pdf
+# DOWNBEAT PREDICTION BY LISTENING AND LEARNING
+
+# https://en.wikipedia.org/wiki/Rectifier#Full-wave_rectification
+# Mathematically, this corresponds to the absolute value function.
+
+# https://www.clear.rice.edu/elec301/Projects01/beat_sync/beatalgo.html
+# Beat This
+# A Beat Synchronization Project
+
 queue = queue.Queue()
 
 def converter(fp, queue):
@@ -57,22 +73,146 @@ def mp3_to_wav(fp):
 
 if __name__ == "__main__":
     # fp_to_wav = mp3_to_wav("../audio.mp3")
+    
     fp = '../46537490-d263-43db-b01d-e1aeb094f627.wav'
     data, samplerate = sf.read(fp, always_2d=False)
+    bandlimits = [0, 200, 400, 800, 1600, 3200]
+    maxfreq = 4096
     left_channel = data.T[0]
     right_channel = data.T[1]
-    c = np.fft.fft(left_channel)
-    # d = np.fft.fftfreq(7632495)
-    # plt.plot(c.real)
+    dft = np.fft.fft(left_channel)
+    n = dft.size
+    nbands = len(bandlimits)
+
+    bl, br = [], []
+    for i in range(nbands - 1):
+        bl.append(math.floor(bandlimits[i] / maxfreq * n / 2) + 1)
+        br.append(math.floor(bandlimits[i + 1] / maxfreq * n / 2))
+
+    bl.append(math.floor(bandlimits[nbands - 1]/maxfreq*n/2) + 1)
+    br.append(math.floor(n/2))
+
+    output = np.zeros(n)
+
+    for i in range(nbands):
+        output[bl[i]:br[i]] = dft[bl[i]:br[i]]
+        output[n+1-br[i]:n+1-bl[i]] = dft[n+1-br[i]:n+1-bl[i]]
+    print(output, output.shape)
+    print(bl, br)
+    # plt.plot(output)
     # plt.show()
 
-    for block in sf.blocks(fp, blocksize=44100):
-        left_ch = block.T[0]
-        d = np.fft.fft(left_ch)
-        freqs = np.fft.fftfreq(len(left_ch))
-        plt.plot(d)
+    hannlen = round(.4 * 2 * maxfreq)
+    hann = np.zeros(n)
+
+    for i in range(hannlen):
+        hann[i] = math.cos(i * math.pi / hannlen / 2) ** 2
+    
+    wave = np.fft.ifft(output)
+    # for i in range(nbands):
+    #     wave.append(np.fft.ifft(output[bl[i]:br[i]]).real)
+
+
+
+    print(wave)
+    plt.plot(wave)
     plt.show()
 
+
+
+
+
+
+
+
+    # d = np.fft.fftfreq(len(left_channel))
+    # plt.plot(d, c.real**2 + c.imag**2)
+    # plt.show()
+    # analytical_signal = hilbert(left_channel)
+    # plt.plot(analytical_signal.real)
+    # plt.plot(analytical_signal.imag)
+    # amplitude_envelope = np.abs(analytical_signal)
+    # plt.plot(amplitude_envelope)
+    # plt.show()
+    # plt.clf()
+    # idx = 0
+    # split_signals = []
+    # for block in sf.blocks(fp, blocksize=44100):
+    #     idx += 1
+    #     if idx == 50:
+    #         left_ch = block.T[0]
+    #         d = np.fft.fft(left_ch)
+    #         plt.plot(left_ch)
+    #         plt.show()
+    #         plt.clf()
+
+    #         # freqs = np.fft.fftfreq(len(left_ch))
+    #         for i in range(len(bands) - 1):
+    #             # print(d[bands[i]:bands[i+1] - 1], bands[i], bands[i+1])
+    #             # full_wave_rectified = np.absolute(d[bands[i]:bands[i+1]].real)
+                
+    #             # hanning_window = np.hanning(44100*0.4)
+    #             # print(full_wave_rectified.shape, hanning_window.shape)
+    #             # filter_pass = np.convolve(hanning_window, full_wave_rectified)
+    #             # print(filter_pass.shape)
+    #             # np.fft.ifft(filter_pass)
+    #             # plt.plot(np.arange(bands[i], bands[i+1], 1), filter_pass)
+    #             # plt.plot(filter_pass)
+    #             k = d[bands[i]:bands[i+1]]
+    #             split_signals.append(k)
+    #             plt.plot(np.arange(bands[i], bands[i+1], 1), k)
+    #             # np.fft.ifft(split_signal)
+    #             # wave = hilbert(d[bands[i]:bands[i+1]].real)
+    #             # plt.plot(np.arange(bands[i], bands[i+1], 1), wave)
+                
+    #         #     inverse_fft_d = np.fft.ifft(d[bands[i]:bands[i+1]])
+    #         #     rectify_signal = np.absolute(inverse_fft_d)
+    #         #     fft_rectify_signal = np.fft.fft(rectify_signal)
+    #         #     plt.plot(np.arange(bands[i], bands[i+1], 1), fft_rectify_signal.real)
+
+    #         # print(d.real.shape)
+    #         # plt.plot(d.real)
+    #     # plt.plot(freqs, d.real**2 + d.imag**2)
+    # plt.show()
+    # plt.clf()
+    # # smoothing
+    # wave = []
+    # for i in range(len(split_signals)):
+    #     print(split_signals[i].shape)
+    #     ifft_signal = np.fft.ifft(split_signals[i])
+    #     ifft_signal_absolute = np.absolute(ifft_signal)
+    #     wave.append(ifft_signal)
+    #     plt.plot(np.arange(bands[i], bands[i+1], 1), ifft_signal.real)
+    # plt.show()
+    # plt.clf()
+
+    # freq = []
+    # for i in range(len(wave)):
+    #     frequency_to_add = np.fft.fft(wave[i])
+    #     freq.append(frequency_to_add)
+    #     plt.plot(frequency_to_add)
+    # plt.show()
+    # plt.clf()
+
+
+    # k = np.concatenate(split_signals)
+    # p = np.fft.ifft(k)
+    # plt.plot(p)
+    # plt.show()
+    # plt.clf()
+
+
+    # plt.clf()
+
+    # for block in sf.blocks(fp, blocksize=44100):
+    #     left_ch = block.T[0]
+    #     d = np.fft.fft(left_ch)
+    #     # freqs = np.fft.fftfreq(len(left_ch))
+    #     # for i in range(len(bands) - 1):
+    #     #     k = d[bands[i]:bands[i+1]]
+    #     #     plt.plot(k.real)
+    #     plt.plot(d.real[0:200])
+    # plt.show()
     # # np.hsplit(data, 1)[0] first col of adata
     # # np.hsplit(data)
     # # print(data.max(), data.min())

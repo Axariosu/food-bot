@@ -39,6 +39,15 @@ class GamesUtil(commands.Cog):
         res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
+    @commands.command(aliases=['sub25'], hidden=True)
+    @commands.guild_only()
+    async def substring_25(self, ctx, arg1, brief="Usage: !substring_25 <string>", description="Usage: !substring_25 <string>, returns a list of at most 25 possible combinations for the given character combination."):
+        """
+        Returns a list of up to 25 valid words that satisfy the given letter combination. 
+        """
+        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_substring(arg1)), color=util.generate_random_color())
+        await ctx.send(embed=res)
+
     @commands.command(hidden=True)
     @commands.guild_only()
     async def check(self, ctx, arg1):

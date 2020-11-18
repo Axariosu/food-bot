@@ -68,7 +68,6 @@ class ReactionTime():
         await self.ctx.send(embed=res)
         res = discord.Embed(title="Reaction Time Over!")
         await self.ctx.send(embed=res)
-        del self
         self.ctx.bot.games.pop(self.ctx.guild.id)
 
     async def handle_on_message(self, message):

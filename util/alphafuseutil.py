@@ -396,6 +396,20 @@ def get_first_possibility_in_order(l):
         if check_valid_combinations_in_order(l, word):
             return word
 
+def get_many_possibilities_substring(l):
+    """
+    Given a substring l:
+    Returns up to 25 valid possibilities.
+    """
+    combinations = []
+    for word in wordlist:
+        if word.find(l) != -1:
+            combinations.append(word)
+    if len(combinations) > 25:
+        return random.sample(combinations, k=25) if combinations != [] else None
+    else:
+        return combinations if combinations != [] else None
+
 def get_many_possibilities(l):
     """
     Given a string or list l:

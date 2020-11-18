@@ -26,14 +26,17 @@ async def quit(ctx):
     await bot.logout()
 
 @bot.command(hidden=True)
+@commands.is_owner()
 async def load(ctx, extension):
     bot.load_extension(f'cogs.{extension}')
 
 @bot.command(hidden=True)
+@commands.is_owner()
 async def unload(ctx, extension):
     bot.unload_extension(f'cogs.{extension}')
 
 @bot.command(hidden=True)
+@commands.is_owner()
 async def reload(ctx, extension):
     bot.reload_extension(f'cogs.{extension}')
 
@@ -42,13 +45,14 @@ async def avatar(ctx, *, avamember : discord.Member=None):
     userAvatarUrl = avamember.avatar_url
     await ctx.send(userAvatarUrl)
 
-@bot.command()
-async def commandlist(ctx):
-    helptext = "```"
-    for command in bot.commands:
-        helptext+=f"{command}\n"
-    helptext+="```"
-    await ctx.send(helptext)
+# @bot.command()
+# @commands.is_owner()
+# async def commandlist(ctx):
+#     helptext = "```"
+#     for command in bot.commands:
+#         helptext+=f"{command}\n"
+#     helptext+="```"
+#     await ctx.send(helptext)
 
 # @bot.command()
 # async def help(ctx):

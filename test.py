@@ -7,18 +7,33 @@ from PIL import Image
 import queue    # For Python 2.x use 'import Queue as queue'
 import threading, time, random
 import requests
+import math
 
 
-
-f = open("wordlist_league.txt2", "w+")
-for word in open("wordlist_league.txt", "r"):
-    for k in word.split(", "):
+# f = open("wordlist_league.txt2", "w+")
+# for word in open("wordlist_league.txt", "r"):
+#     for k in word.split(", "):
         
-        f.write("".join([x.lower() for x in k if (x.isalpha() or x.isspace())]) + "\n")
-f.close()
+#         f.write("".join([x.lower() for x in k if (x.isalpha() or x.isspace())]) + "\n")
+# f.close()
 
 
+def indexMin(A: list, p: int, q: int):
+    if p + 1 == q:
+        return p
+    else:
+        m = math.floor((p+q)/2)
+        j = indexMin(A, p, m)
+        k = indexMin(A, m, q)
+        if A[j] <= A[k]:
+            return j
+        else: 
+            return k
 
+l = [5, 3, 2]
+p, q = 0, 3
+
+print("list:", l, "p: %s, q: %s" % (p, q), "result: %s" % indexMin(l, p, q))
 
 # query = "koko"
 # url = "https://www.google.com/search?q=" + str(query) + "&source=lnms&tbm=isch"
