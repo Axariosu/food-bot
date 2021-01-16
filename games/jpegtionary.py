@@ -33,7 +33,7 @@ class JPEGtionary():
         self.trackedPlayers = {}
         self.answer = ""
         self.image_list = None
-        self.queue = queue.Queue()
+        self.queue = asyncio.Queue()
         self.mosaic_size = picture_amount
         self.msgid = None
         self.internal_round = 0
@@ -42,7 +42,7 @@ class JPEGtionary():
         print("killed jpegtionary")
         pass
 
-    def initialize_queue(self, word, queue):
+    async def initialize_queue(self, word, queue):
         """
         Given a word and a queue: 
         Enqueues [word, image]. 
@@ -51,7 +51,7 @@ class JPEGtionary():
         # TODO: dictionary of tags to append to construct query
         if self.wordlist == "lol":
             query = "league of legends " + word
-        queue.put([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
+        await queue.put([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
 
     async def start(self):
         self.game = True
@@ -80,7 +80,7 @@ class JPEGtionary():
                 return
             
             async with self.ctx.channel.typing():
-                self.answer, self.image_list = self.queue.get()
+                self.answer, self.image_list = await self.queue.get()
             self.accepting_answers = True
 
             self.timer = loop.time() + self.round_timer

@@ -176,16 +176,17 @@ class Games(commands.Cog):
     #     ctx.bot.games[ctx.guild.id] = games.scrambivia.Scrambivia(ctx)
     #     await ctx.bot.games[ctx.guild.id].start()
 
-    @commands.command(aliases=['udder'])
+    @flags.add_flag("-l", type=int, default=4)
+    @flags.command(aliases=['udder'])
     @commands.guild_only()
-    async def uddercode(self, ctx):
+    async def uddercode(self, ctx, **flags):
         """
         `!uddercode [options]`
         """
         if ctx.guild.id in ctx.bot.games:
             await ctx.send("A game is already running, wait for it to finish!")
             return
-        ctx.bot.games[ctx.guild.id] = games.uddercode.UdderCode(ctx)
+        ctx.bot.games[ctx.guild.id] = games.uddercode.UdderCode(ctx, flags["l"])
         await ctx.bot.games[ctx.guild.id].start()
 
     @commands.command()

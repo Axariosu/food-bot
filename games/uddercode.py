@@ -11,7 +11,7 @@ from discord.ext import tasks
 from discord.ext import commands
 
 class UdderCode():
-    def __init__(self, ctx):
+    def __init__(self, ctx, code_length):
         self.ctx = ctx
         self.game = False
         self.round = 0
@@ -22,7 +22,7 @@ class UdderCode():
         self.created_channels = []
         self.created_roles = []
         self.tracked_players = {}
-        self.code_length = 4
+        self.code_length = code_length
         self.ready_up = 25
         self.round_timer = 15
     
@@ -47,7 +47,10 @@ class UdderCode():
         await asyncio.sleep(self.ready_up)
 
         guild = self.ctx.guild
-        
+
+        if not self.game:
+            return
+            
         if len(self.tracked_players) == 0: 
             await self.ctx.send("No one joined!")
             await self.stop()

@@ -17,23 +17,14 @@ import math
 #         f.write("".join([x.lower() for x in k if (x.isalpha() or x.isspace())]) + "\n")
 # f.close()
 
+names=["Arnesh Dawar","Moses Maldonado","Sean Li","Crystal Yu","Kevin Cui","Stanley Wu","Cameron Farhan","Triniti Chan","Christopher Quinto","Karan Sharma","Hana Burton"]
 
-def indexMin(A: list, p: int, q: int):
-    if p + 1 == q:
-        return p
-    else:
-        m = math.floor((p+q)/2)
-        j = indexMin(A, p, m)
-        k = indexMin(A, m, q)
-        if A[j] <= A[k]:
-            return j
-        else: 
-            return k
+a = random.sample(names,k=len(names))
 
-l = [5, 3, 2]
-p, q = 0, 3
+for i in range(len(names)):
+    print(names[i] + " -> " + a[i])
 
-print("list:", l, "p: %s, q: %s" % (p, q), "result: %s" % indexMin(l, p, q))
+# print([names[i] + " -> " + random.sample(names, k=len(names))[i] for i in range(len(names))])
 
 # query = "koko"
 # url = "https://www.google.com/search?q=" + str(query) + "&source=lnms&tbm=isch"
