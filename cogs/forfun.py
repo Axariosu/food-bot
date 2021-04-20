@@ -115,7 +115,7 @@ class ForFun(commands.Cog):
         1: n goals (slow, refrain from using)
 
         Default call:
-        **`!starforce -n 10000 -l 150 -s 12 -e 22 -sc 0 -sg 0 -event 0 -b 1 -si -0`**
+        **`!starforce -n 10000 -l 150 -s 12 -e 22 -sc 0 -sg 0 -event 0 -b 1 -si 0`**
         """
 
         n_simulations = min(abs(flags["n"]), 10000)

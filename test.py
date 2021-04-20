@@ -17,12 +17,12 @@ import math
 #         f.write("".join([x.lower() for x in k if (x.isalpha() or x.isspace())]) + "\n")
 # f.close()
 
-names=["Arnesh Dawar","Moses Maldonado","Sean Li","Crystal Yu","Kevin Cui","Stanley Wu","Cameron Farhan","Triniti Chan","Christopher Quinto","Karan Sharma","Hana Burton"]
+# names=["Arnesh Dawar","Moses Maldonado","Sean Li","Crystal Yu","Kevin Cui","Stanley Wu","Cameron Farhan","Triniti Chan","Christopher Quinto","Karan Sharma","Hana Burton"]
 
-a = random.sample(names,k=len(names))
+# a = random.sample(names,k=len(names))
 
-for i in range(len(names)):
-    print(names[i] + " -> " + a[i])
+# for i in range(len(names)):
+#     print(names[i] + " -> " + a[i])
 
 # print([names[i] + " -> " + random.sample(names, k=len(names))[i] for i in range(len(names))])
 
@@ -126,3 +126,27 @@ for i in range(len(names)):
 # print("a" if "apple" in mylist else "b")
 
 # print(mylist)
+
+def mystery(s, l, r): 
+    if l == r:
+        pass
+        # print(s)
+    else: 
+        for i in range(r-l): 
+            s[i], s[l] = s[l], s[i]
+            mystery(s, l + 1, r)
+            s[i], s[l] = s[l], s[i]
+
+def main(m):
+    s = list(m)
+    mystery(s, 0, len(s) - 1)
+    return
+
+
+if __name__ == "__main__":
+    k = "abcdefghijkl"
+    for i in range(len(k)):
+        start = time.time()
+        main(k[0:i])
+        stop = time.time()
+        print(k[0:i], stop-start)
