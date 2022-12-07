@@ -91,7 +91,7 @@ class Schwootsh():
         """
         Returns a list of up to 25 neighboring words of the given word.
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(wooshutil.get_levenshtein_neighbors_possibility(arg1)), color=util.generate_random_color())
+        res = discord.Embed(title=None, description=", ".join(wooshutil.get_levenshtein_neighbors_possibility(arg1)), color=util.generate_random_color())
         await self.ctx.send(embed=res)
 
     async def handle_on_message(self, message):

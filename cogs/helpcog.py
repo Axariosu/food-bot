@@ -1,12 +1,13 @@
-import util.util as util
-import discord
-import asyncio
-import random
-import time
 from discord.ext import tasks
 from discord.ext import commands
 from discord.ext import menus
-import util.jpegtionaryutil as jpegtionaryutil
+from discord import app_commands
+import discord
+import util.util as util
+import asyncio
+import random
+import time
+
 
 class CustomHelp(menus.Menu):
     def __init__(self, command_name):
@@ -26,8 +27,9 @@ class CustomHelp(menus.Menu):
                         desc += command.name
                         desc += "\n"
             res = discord.Embed(title="General Help",
-                    description=discord.Embed.Empty,
+                    description=None,
                     color=util.generate_random_color())
+
             for cog in ctx.bot.cogs:
                 val = ""
                 for command in ctx.bot.get_cog(cog).walk_commands():
@@ -110,6 +112,13 @@ class CustomHelp(menus.Menu):
 #         return '\n'.join(f'{i}. {v}' for i, v in enumerate(entries, start=offset))
 
 class Help(commands.Cog):
+    def __init__(self, bot):
+        self.bot = bot
+
+    @commands.Cog.listener()
+    async def on_ready(self): 
+        print(__name__ + " loaded.")
+
     @commands.command()
     @commands.guild_only()
     async def help(self, ctx, *args):
@@ -119,11 +128,23 @@ class Help(commands.Cog):
             m = CustomHelp(*args)
         await m.start(ctx)
 
+    @commands.command()
+    async def sync(self, ctx):
+        fmt = await ctx.bot.tree.sync(guild=ctx.guild)
+        await ctx.send(
+            f'Synced {len(fmt)} commands to the current guild.'
+        )
+
+    @app_commands.command(name="choosecolor", description="testdescription")
+    async def test(self, interaction: discord.Interaction, color:str):
+        print(interaction)
+        await interaction.response.send_message(f'Color selected:" {color}')
+
     # @commands.command()
     # @commands.guild_only()
     # async def help2(self, ctx):
     #     pages = menus.MenuPages(source=Source(), clear_reactions_after=True)
     #     await pages.start(ctx)
 
-def setup(bot): 
-    bot.add_cog(Help(bot))
+async def setup(bot): 
+    await bot.add_cog(Help(bot), guilds=[discord.Object(id=1047577234577305600)])

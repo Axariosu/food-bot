@@ -193,8 +193,8 @@ class AlphaFuse(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
-        # res.add_field(name=discord.Embed.Empty, inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
+        res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
+        # res.add_field(name=None, inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
         await ctx.send(embed=res)
 
     @commands.command(aliases=['check'])

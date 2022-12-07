@@ -6,6 +6,7 @@ import math
 import time
 import random
 import requests
+import threading
 from bs4 import BeautifulSoup
 import urllib
 # import cookielib
@@ -258,6 +259,7 @@ def generate_google_images_scrape_mosaic(query, n):
         picture_id += 1
     return res
 
+
 # def generate_pexels_mosaic(query, n):
 #     res = Image.new(mode='RGB', size=(1024, 1024))
 #     api.search(query, page=1, results_per_page=n)
@@ -431,3 +433,24 @@ def benchmark(query, n, duration):
 
 # loop = asyncio.get_event_loop()
 # loop.run_until_complete(main())
+
+# PROOF OF CONCEPT FOR JPEGTIONARY 
+# async def main(): 
+#     # proof of concept for jpegtionary. 
+#     queue = asyncio.Queue()
+#     word = "thresh"
+#     query = "league of legends " + word
+#     queue.put_nowait([word, generate_unpixellating_pictures(query, 4)])
+
+#     threads = [threading.Thread(target=queue.put([word, generate_unpixellating_pictures(query, 4)]), args=(word, queue))]
+
+#     for thread in threads: 
+#         thread.daemon = True
+#         thread.start()
+#     answer, image_list = await queue.get()
+#     for image in image_list: 
+#         image.show()
+
+
+# if __name__ == "__main__": 
+#     asyncio.run(main())

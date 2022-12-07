@@ -163,7 +163,7 @@ class SigmaFuse(commands.Cog):
     #     """
     #     Returns a list of up to 25 valid words that satisfy the given letter combination. 
     #     """
-    #     res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=util.generate_random_color())
+    #     res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=util.generate_random_color())
     #     await ctx.send(embed=res)
 
     # @commands.command(aliases=['scheck'])

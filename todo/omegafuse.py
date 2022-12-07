@@ -160,7 +160,7 @@ class OmegaFuse(commands.Cog):
     #     """
     #     Returns a list of up to 25 valid words that satisfy the given letter combination. 
     #     """
-    #     res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_random_possibility_inverted(arg1)), color=util.generate_random_color())
+    #     res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_random_possibility_inverted(arg1)), color=util.generate_random_color())
     #     # res.add_field(name='\u200b', inline=False, value=", ".join(alphafuseutil.get_many_possibilities(arg1)))
     #     await ctx.send(embed=res)
 

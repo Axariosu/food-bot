@@ -30,7 +30,7 @@ class JPEGtionary():
         self.hangman = hangman
         self.wordlist = wordlist
         self.delay = 10
-        self.trackedPlayers = {}
+        self.tracked_players = {}
         self.answer = ""
         self.image_list = None
         self.queue = asyncio.Queue()
@@ -42,7 +42,7 @@ class JPEGtionary():
         print("killed jpegtionary")
         pass
 
-    async def initialize_queue(self, word, queue):
+    def initialize_queue(self, word, queue):
         """
         Given a word and a queue: 
         Enqueues [word, image]. 
@@ -51,7 +51,7 @@ class JPEGtionary():
         # TODO: dictionary of tags to append to construct query
         if self.wordlist == "lol":
             query = "league of legends " + word
-        await queue.put([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
+        queue.put_nowait([word, jpegtionaryutil.generate_unpixellating_pictures(query, self.mosaic_size)])
 
     async def start(self):
         self.game = True
@@ -61,9 +61,10 @@ class JPEGtionary():
         f = open(wordlistDictionary[self.wordlist], "r")
         wl = [x.strip() for x in f]
         wordlist = util.generate_random_words_from_wordlist(self.max_round, wl)
+        print(wordlist)
         threads = [threading.Thread(target=self.initialize_queue, args=(word, self.queue)) for word in wordlist]
         for thread in threads:
-            thread.daemon = True
+            thread.setDaemon(True)
             thread.start() # time scales based on self.mosaic_size
         
         await asyncio.sleep(self.delay)
@@ -75,6 +76,7 @@ class JPEGtionary():
         if self.game:
             loop = asyncio.get_running_loop()
             self.round += 1
+
             if (self.round > self.max_round):
                 await self.stop()
                 return
@@ -94,7 +96,7 @@ class JPEGtionary():
                     image_binary.seek(0)
                     unique = uuid.uuid4()
                     f = discord.File(fp=image_binary, filename=f'{unique}.jpeg')
-                    res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), description=discord.Embed.Empty if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
+                    res = discord.Embed(title="JPEGtionary Round " + str(self.round) + " of " + str(self.max_round), description=None if not self.hangman else jpegtionaryutil.generate_hangman(self.answer), color=util.generate_random_color())
                     res.set_footer(text="Image " + str(self.internal_round + 1) + " of " + str(len(self.image_list)))
                     res.set_image(url=f'attachment://{unique}.jpeg')
                     await self.ctx.send(embed=res, file=f)
@@ -118,7 +120,7 @@ class JPEGtionary():
 
     async def stop(self):
         self.game = False
-        sortedPlayers = sorted(self.trackedPlayers.items(), key=lambda x: x[1], reverse=True)
+        sortedPlayers = sorted(self.tracked_players.items(), key=lambda x: x[1], reverse=True)
         res = discord.Embed(title="Leaderboards", description="\n".join([(str(i[0]) + ": " + str(i[1])) for i in sortedPlayers]), color=util.generate_random_color())
         await self.ctx.send(embed=res)        
         res = discord.Embed(title="JPEGtionary Over!", color=util.generate_random_color())
@@ -133,10 +135,10 @@ class JPEGtionary():
             self.accepting_answers = False
             self.timer = 0
             await message.add_reaction('✅')
-            if message.author.name not in self.trackedPlayers:
-                self.trackedPlayers[message.author.name] = points
+            if message.author.name not in self.tracked_players:
+                self.tracked_players[message.author.name] = points
             else: 
-                self.trackedPlayers[message.author.name] += points
+                self.tracked_players[message.author.name] += points
             await self.ctx.send(message.author.name + " got it for **`" + str(points) + "`** points!")
         pass
 

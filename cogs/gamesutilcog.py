@@ -14,13 +14,16 @@ from discord.ext import commands
 
 
 class GamesUtil(commands.Cog):
+    def __init__(self, bot: commands.Bot):
+        self.bot = bot
+        
     @commands.command(aliases=['a25'], hidden=True)
     @commands.guild_only()
     async def alpha_25(self, ctx, arg1, brief="Usage: !alpha_25 <string>", description="Usage: !alpha_25 <string>, returns a list of at most 25 possible combinations for the given character combination."):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
+        res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_many_possibilities(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.command(aliases=['o25'], hidden=True)
@@ -29,7 +32,7 @@ class GamesUtil(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_random_possibility_inverted(arg1)), color=util.generate_random_color())
+        res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_random_possibility_inverted(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.command(aliases=['s25'], hidden=True)
@@ -38,7 +41,7 @@ class GamesUtil(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=util.generate_random_color())
+        res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_many_possibilities_in_order(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.command(aliases=['sub25'], hidden=True)
@@ -47,7 +50,7 @@ class GamesUtil(commands.Cog):
         """
         Returns a list of up to 25 valid words that satisfy the given letter combination. 
         """
-        res = discord.Embed(title=discord.Embed.Empty, description=", ".join(alphafuseutil.get_many_possibilities_substring(arg1)), color=util.generate_random_color())
+        res = discord.Embed(title=None, description=", ".join(alphafuseutil.get_many_possibilities_substring(arg1)), color=util.generate_random_color())
         await ctx.send(embed=res)
 
     @commands.command(aliases=['fs'])
@@ -95,5 +98,5 @@ class GamesUtil(commands.Cog):
         """
         await ctx.send(str(round(ctx.bot.latency * 1000)) + "ms")
 
-def setup(bot): 
-    bot.add_cog(GamesUtil(bot))
+async def setup(bot): 
+    await bot.add_cog(GamesUtil(bot))

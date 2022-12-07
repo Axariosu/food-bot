@@ -1,5 +1,5 @@
 import discord
-from discord.ext import flags, commands
+from discord.ext import commands, flags
 import random
 import util.util as util
 import util.wooshutil as wooshutil
@@ -145,19 +145,6 @@ class ForFun(commands.Cog):
         res.set_image(url=f'attachment://{unique}.jpeg')
         await ctx.send(embed=res, file=f)
 
-        # with ctx.channel.typing():
-        #     await a.save(str(uuid.uuid4()))
-            # await ctx.send(file=await a.to_file())
-    # @flags.add_flag("-q", type=str)
-    # @flags.add_flag("-p", type=int, default=4)
-    # @flags.command(hidden=True)
-    # @commands.is_owner()
-    # async def img(self, ctx, **flags):
-    #     async with ctx.channel.typing():
-    #         res = jpegtionaryutil.scrap(flags["q"], flags["p"])
-    #     res.seek(0)
-    #     await ctx.send(file=discord.File(fp=res, filename=f'{flags["q"]}.jpg'))
-
     @flags.command(aliases=["f"])
     @flags.add_flag("-n", type=int, default=10000)
     @flags.add_flag("-l", type=int, default=150)
@@ -212,7 +199,7 @@ class ForFun(commands.Cog):
         f = discord.File(fp=image_binary, filename=f'{unique}.jpeg')
         res.set_image(url=f'attachment://{unique}.jpeg')
         await ctx.send(embed=res, file=f)
+    pass
 
-
-def setup(bot): 
-    bot.add_cog(ForFun(bot))
+async def setup(bot): 
+    await bot.add_cog(ForFun(bot))
